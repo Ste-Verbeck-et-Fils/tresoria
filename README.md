@@ -9,12 +9,12 @@ Bienvenue dans l'interface utilisateur de **Tresoria**. une application conçue 
 
 ## Technologies
 
-| Partie        | Technologies                                                                                                   |
-| :------------ | :------------------------------------------------------------------------------------------------------------- |
-| **Framework** | [React 19](https://react.dev/)                                                                                 |
-| **Outils**    | [Vite](https://vitejs.dev/)                                                                                    |
-| **Styling**   | CSS Moderne (Custom Properties, Flexbox, Grid) - Pas de framework CSS lourd, pour un contrôle total du design. |
-| **Linting**   | [ESLint](https://eslint.org/) Garantit la qualité et la cohérence du code.                                     |
+| Partie        | Technologies                                                                                                                                                        |
+| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Framework** | [React 19](https://react.dev/)                                                                                                                                      |
+| **Outils**    | [Vite](https://vitejs.dev/)                                                                                                                                         |
+| **Styling**   | CSS Moderne (Custom Properties, Flexbox, Grid) - Pas de framework CSS lourd, pour un contrôle total du design.                                                      |
+| **Linting**   | [Cloudnary](https://cloudinary.com/) pour le stockage des images de profile et d'autres, [ESLint](https://eslint.org/) Garantit la qualité et la cohérence du code. |
 
 ---
 
