@@ -7,7 +7,7 @@ const problems = [
   {
     title: 'Paiements difficiles à suivre',
     description: 'Les paiements des élèves peuvent vite devenir confus lorsqu\'ils sont enregistrés manuellement.',
-    image: 'https://i.ibb.co/7J6xcSj2/17346099-2009-i518-001-crowdfunding-set-07.jpg',
+    image: 'https://img.freepik.com/vecteurs-libre/conception-brochure-du-rapport-annuel-entreprise_1017-59689.jpg?semt=ais_hybrid&w=740&q=80',
     icon: <CreditCard size={20} />
   },
   {
@@ -19,13 +19,13 @@ const problems = [
   {
     title: 'Manque de transparence',
     description: "L'administration et les parents ont besoin d'une vision claire sur les paiements effectués.",
-    image: 'https://i.ibb.co/n83CK5NC/23997850-6894423.jpg',
+    image: 'https://t4.ftcdn.net/jpg/05/15/22/27/360_F_515222757_8D6g42WvLcwBW8DLozTPBJDQ2CDacCjt.jpg',
     icon: <WifiOff size={20} />
   },
   {
     title: 'Rapports financiers lents',
     description: 'Les rapports de caisse doivent être rapides, lisibles et faciles à exploiter.',
-    image: 'https://i.ibb.co/TqTYDWYm/18611445-Sandy-Bus-06-Single-11.jpg',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyDJxqrEQtkGc496Z2T8KhngS_jR0L-2HNsA&s',
     icon: <FileText size={20} />
   }
 ]
@@ -69,7 +69,7 @@ const ProblemWheelSection = () => {
                 style={{ '--slot-angle': `${angleDeg}deg`, '--slot-angle-reverse': `${-angleDeg}deg` }}
               >
                 <div className='wheel-card-wrapper'>
-                  <div className='wheel-card-inner' onClick={handleCardClick} role="button" tabIndex={0}>
+                  <div className='wheel-card-inner' onClick={handleCardClick} role='button' tabIndex={0}>
                     <FeatureCard
                       title={item.title}
                       description={item.description}

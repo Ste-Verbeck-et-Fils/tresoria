@@ -2,6 +2,11 @@
   display: flex;
   flex-direction: column;
   animation: fadeIn 0.5s ease;
+  margin-top: 2rem;
+}
+
+.hero-title {
+  font-size: 3rem;
 }
 
 /* ---- Hero ---- */
@@ -12,12 +17,9 @@
   margin: 0 auto;
 }
 
-.hero-title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1.2;
-  color: var(--color-dark);
-  margin-bottom: 24px;
+.wheel-section,
+.services-section {
+  margin-top: -3rem;
 }
 
 .hero-subtitle {
@@ -34,18 +36,16 @@
   flex-wrap: wrap;
 }
 
-/* ---- Shared ---- */
-.section-title {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 40px;
-  color: var(--color-dark);
-}
-
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ---- Responsive ---- */
@@ -61,10 +61,5 @@
   .hero-subtitle {
     font-size: 1.05rem;
     margin-bottom: 28px;
-  }
-
-  .section-title {
-    font-size: 1.6rem;
-    margin-bottom: 24px;
   }
 }

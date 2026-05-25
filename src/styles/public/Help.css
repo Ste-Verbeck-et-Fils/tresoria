@@ -1,8 +1,8 @@
 .help-page {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 40px 20px;
   animation: fadeIn 0.5s ease;
+  margin-top: 2.5rem;
 }
 
 .help-header {

@@ -19,10 +19,13 @@
 .wheel-viewport {
   position: relative;
   width: 100%;
-  height: 350px; /* Reduced height to not take the whole screen */
+  height: 350px;
+  /* Reduced height to not take the whole screen */
   overflow: hidden;
-  --wheel-radius: 550px; /* Huge radius to make the arc flat and wide */
-  --wheel-center-y: 680px; /* Pushed center way down */
+  --wheel-radius: 550px;
+  /* Huge radius to make the arc flat and wide */
+  --wheel-center-y: 680px;
+  /* Pushed center way down */
 }
 
 /* ---- Spinning ring ---- */
@@ -31,10 +34,11 @@
   width: calc(var(--wheel-radius) * 2);
   height: calc(var(--wheel-radius) * 2);
   left: 50%;
-  top: var(--wheel-center-y); 
+  top: var(--wheel-center-y);
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  animation: wheelSpin 60s linear infinite; /* Slower animation for 12 cards */
+  animation: wheelSpin 60s linear infinite;
+  /* Slower animation for 12 cards */
   animation-play-state: var(--play-state, running);
 }
 
@@ -119,13 +123,23 @@
 
 /* ---- Animations ---- */
 @keyframes wheelSpin {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to { transform: translate(-50%, -50%) rotate(360deg); }
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 @keyframes wheelCounterSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(-360deg);
+  }
 }
 
 /* ==========================================
@@ -136,7 +150,7 @@
   .wheel-section {
     padding: 48px 24px;
   }
-  
+
   .wheel-subtitle {
     font-size: 1.15rem;
     margin-bottom: 48px;
@@ -161,7 +175,7 @@
   .wheel-section {
     padding: 80px 32px;
   }
-  
+
   .wheel-subtitle {
     font-size: 1.25rem;
     margin-bottom: 64px;

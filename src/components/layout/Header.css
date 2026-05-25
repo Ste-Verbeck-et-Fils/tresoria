@@ -1,11 +1,18 @@
 .gsemmanuel-header {
-  position: absolute;
+  position: sticky;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: var(--header-z-index, 50);
+  z-index: var(--header-z-index, 100);
   font-family: var(--font-primary);
   background-color: #9494946a;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  margin-bottom: -3rem;
+}
+
+#logo-title {
+  color: var(--color-dark);
 }
 
 .header-container::before {
@@ -185,7 +192,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px;
+  padding: 0 24px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 

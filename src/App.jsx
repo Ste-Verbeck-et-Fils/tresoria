@@ -1,18 +1,15 @@
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
-import Header from './components/layout/Header'
-import Footer from './components/layout/Footer'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/public/Home'
 import About from './pages/public/About'
 import Services from './pages/public/Services'
 import Contact from './pages/public/Contact'
 import Help from './pages/public/Help'
+import Layout from './pages/public/Layout'
 import './App.css'
 
 function AppLayout () {
-  const navigate = useNavigate()
   return (
     <main className='main-content'>
-      <Header onActionClick={() => navigate('/login')} />
       <div className='content-inner'>
         <Routes>
           <Route path='/' element={<Home />} />
@@ -20,11 +17,10 @@ function AppLayout () {
           <Route path='/services' element={<Services />} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/help' element={<Help />} />
-          {/* Placeholder for login */}
+          <Route path='/dashboard' element={<Layout />} />
           <Route path='/login' element={<div style={{ padding: '100px', textAlign: 'center' }}><h2>Page de connexion en construction...</h2></div>} />
         </Routes>
       </div>
-      <Footer />
     </main>
   )
 }

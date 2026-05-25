@@ -30,8 +30,8 @@ const Header = ({
     ? links
     : [
         { label: 'Accueil', href: '/' },
-        { label: 'Services', href: '/services' },
         { label: 'À propos', href: '/about' },
+        { label: 'Services', href: '/services' },
         { label: 'Contact', href: '/contact' },
         { label: 'Aide', href: '/help' },
       ].map(link => ({ ...link, active: location.pathname === link.href }))
@@ -41,7 +41,7 @@ const Header = ({
       <div className='header-container'>
         <div className='header-logo' onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
           <div className='logo-icon-wrapper' />
-          <h2 className='handwritten-title'>
+          <h2 id='logo-title' className='handwritten-title'>
             Gs <span className='handwritten-highlight'>emmanuel</span>
           </h2>
         </div>

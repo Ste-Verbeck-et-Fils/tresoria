@@ -2,27 +2,29 @@ import React from 'react'
 import { CreditCard, Users, FileText, BarChart3, ShieldCheck, History } from 'lucide-react'
 import FeatureCard from '../../components/ui/FeatureCard'
 import '../../styles/public/Services.css'
+import Header from '../../components/layout/Header'
+import Footer from '../../components/layout/Footer'
 
 const servicesData = [
   {
     id: 1,
     title: 'Gestion des paiements',
     description: 'Enregistrez les versements des frais scolaires de manière numérique et générez des reçus automatiquement.',
-    image: 'https://i.ibb.co/7J6xcSj2/17346099-2009-i518-001-crowdfunding-set-07.jpg',
+    image: 'https://t4.ftcdn.net/jpg/05/15/22/27/360_F_515222757_8D6g42WvLcwBW8DLozTPBJDQ2CDacCjt.jpg',
     icon: <CreditCard size={22} />
   },
   {
     id: 2,
     title: 'Suivi par élève',
     description: "Visualisez le solde et l'historique des paiements pour chaque élève individuellement.",
-    image: 'https://i.ibb.co/n83CK5NC/23997850-6894423.jpg',
+    image: 'https://st2.depositphotos.com/2444809/5617/v/450/depositphotos_56170605-stock-illustration-cover-annual-report.jpg',
     icon: <Users size={22} />
   },
   {
     id: 3,
     title: 'Rapports financiers',
     description: "Éditez des rapports complets sur les entrées et sorties d'argent pour une comptabilité saine.",
-    image: 'https://i.ibb.co/TqTYDWYm/18611445-Sandy-Bus-06-Single-11.jpg',
+    image: 'https://img.freepik.com/vecteurs-libre/conception-brochure-du-rapport-annuel-entreprise_1017-59689.jpg?semt=ais_hybrid&w=740&q=80',
     icon: <BarChart3 size={22} />
   },
   {
@@ -36,38 +38,42 @@ const servicesData = [
     id: 5,
     title: 'Transparence totale',
     description: 'Un système conçu pour éviter les erreurs de caisse et fournir des données fiables à la direction.',
-    image: 'https://i.ibb.co/7J6xcSj2/17346099-2009-i518-001-crowdfunding-set-07.jpg',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyDJxqrEQtkGc496Z2T8KhngS_jR0L-2HNsA&s',
     icon: <FileText size={22} />
   },
   {
     id: 6,
     title: 'Sécurité & Authentification',
     description: "L'accès aux données financières est strictement protégé et réservé au personnel autorisé.",
-    image: 'https://i.ibb.co/TqTYDWYm/18611445-Sandy-Bus-06-Single-11.jpg',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQO4HEiz_ptaEOPFZasrtwl6JRAxNHSQPNiZA&s',
     icon: <ShieldCheck size={22} />
   }
 ]
 
 const Services = () => {
   return (
-    <div className='services-page'>
-      <div className='services-header'>
-        <h1 className='section-title'>Nos Services</h1>
-        <p className='services-intro'>Découvrez comment GSEMMANUEL modernise la gestion de votre école.</p>
-      </div>
+    <><Header />
+      <div className='services-page'>
+        <div className='services-header'>
+          <h1 className='section-title'>
+            <span className='brush-bg-text'>SERVICES</span>
+          </h1>
+        </div>
 
-      <div className='services-grid'>
-        {servicesData.map((service) => (
-          <FeatureCard
-            key={service.id}
-            title={service.title}
-            description={service.description}
-            image={service.image}
-            icon={service.icon}
-          />
-        ))}
+        <div className='services-grid'>
+          {servicesData.map((service) => (
+            <FeatureCard
+              key={service.id}
+              title={service.title}
+              description={service.description}
+              image={service.image}
+              icon={service.icon}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   )
 }
 
