@@ -1,0 +1,201 @@
+/* ==========================================
+   PROBLEM WHEEL SECTION
+   ========================================== */
+
+.wheel-section {
+  padding: 24px 16px;
+  overflow: hidden;
+}
+
+.wheel-subtitle {
+  text-align: center;
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+  margin-top: 0;
+  margin-bottom: 32px;
+}
+
+/* ---- Viewport: clips the wheel ---- */
+.wheel-viewport {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  /* Reduced height to not take the whole screen */
+  overflow: hidden;
+  --wheel-radius: 550px;
+  /* Huge radius to make the arc flat and wide */
+  --wheel-center-y: 680px;
+  /* Pushed center way down */
+}
+
+/* ---- Spinning ring ---- */
+.wheel-ring {
+  position: absolute;
+  width: calc(var(--wheel-radius) * 2);
+  height: calc(var(--wheel-radius) * 2);
+  left: 50%;
+  top: var(--wheel-center-y);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  animation: wheelSpin 60s linear infinite;
+  /* Slower animation for 12 cards */
+  animation-play-state: var(--play-state, running);
+}
+
+/* ---- Dashed border ---- */
+.wheel-dashed-border {
+  position: absolute;
+  inset: 0;
+  border: 2px dashed rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ---- Slot: positioned on the ring edge ---- */
+.wheel-slot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--slot-angle)) translateY(calc(-1 * var(--wheel-radius)));
+}
+
+/* ---- Card wrapper: counter-rotates initial angle ---- */
+.wheel-card-wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%) rotate(var(--slot-angle-reverse));
+}
+
+/* ---- Card inner: counter-rotates continuous spin ---- */
+.wheel-card-inner {
+  width: 85vw;
+  max-width: 260px;
+  animation: wheelCounterSpin 60s linear infinite;
+  animation-play-state: var(--play-state, running);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.wheel-card-inner:active {
+  transform: scale(0.98);
+}
+
+/* Limit card image height on wheel */
+.wheel-card-inner .feature-card__image-wrapper {
+  height: 120px;
+}
+
+.wheel-card-inner .feature-card__body {
+  padding: 16px;
+}
+
+.wheel-card-inner .feature-card__title {
+  font-size: 0.95rem;
+}
+
+.wheel-card-inner .feature-card__description {
+  font-size: 0.82rem;
+}
+
+/* ---- Horizontal masks ---- */
+.wheel-mask {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 15%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.wheel-mask--left {
+  left: 0;
+  background: linear-gradient(to right, var(--color-light) 40%, transparent);
+}
+
+.wheel-mask--right {
+  right: 0;
+  background: linear-gradient(to left, var(--color-light) 40%, transparent);
+}
+
+/* ---- Animations ---- */
+@keyframes wheelSpin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes wheelCounterSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (min-width: 640px) {
+  .wheel-section {
+    padding: 48px 24px;
+  }
+
+  .wheel-subtitle {
+    font-size: 1.15rem;
+    margin-bottom: 48px;
+  }
+
+  .wheel-viewport {
+    height: 380px;
+    --wheel-radius: 700px;
+    --wheel-center-y: 840px;
+  }
+
+  .wheel-card-inner {
+    max-width: 300px;
+  }
+
+  .wheel-card-inner .feature-card__image-wrapper {
+    height: 140px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wheel-section {
+    padding: 80px 32px;
+  }
+
+  .wheel-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 64px;
+  }
+
+  .wheel-viewport {
+    height: 420px;
+    --wheel-radius: 850px;
+    --wheel-center-y: 990px;
+  }
+
+  .wheel-card-inner {
+    max-width: 320px;
+  }
+
+  .wheel-card-inner .feature-card__image-wrapper {
+    height: 150px;
+  }
+
+  .wheel-mask {
+    width: 25%;
+  }
+}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Menu, X, ChevronDown } from 'lucide-react'
 import Button from '../ui/Button'
 import './Header.css'
@@ -11,6 +12,8 @@ const Header = ({
   ...props
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -23,22 +26,30 @@ const Header = ({
     }
   }, [isMobileMenuOpen])
 
+  const handleActionClick = () => {
+    if (onActionClick) {
+      onActionClick()
+    } else {
+      navigate('/login')
+    }
+  }
+
   const navLinks = links && links.length > 0
     ? links
     : [
-        { label: 'Accueil', href: '#', active: true },
-        { label: 'Services', href: '#', hasDropdown: true },
-        { label: 'À propos', href: '#' },
-        { label: 'Contact', href: '#' },
-        { label: 'Aide', href: '#' },
-      ]
+        { label: 'Accueil', href: '/' },
+        { label: 'À propos', href: '/about' },
+        { label: 'Services', href: '/services' },
+        { label: 'Contact', href: '/contact' },
+        { label: 'Aide', href: '/help' },
+      ].map(link => ({ ...link, active: location.pathname === link.href }))
 
   return (
     <header className={`gsemmanuel-header ${className}`} {...props}>
       <div className='header-container'>
-        <div className='header-logo'>
+        <div className='header-logo header-logo-clickable' onClick={() => navigate('/')}>
           <div className='logo-icon-wrapper' />
-          <h2 className='handwritten-title'>
+          <h2 id='logo-title' className='handwritten-title'>
             Gs <span className='handwritten-highlight'>emmanuel</span>
           </h2>
         </div>
@@ -50,6 +61,7 @@ const Header = ({
               <li key={idx} className='header-nav-item'>
                 <a
                   href={link.href}
+                  onClick={(e) => { e.preventDefault(); navigate(link.href) }}
                   className={`header-link ${link.active ? 'header-link--active' : ''}`}
                 >
                   {link.label}
@@ -61,7 +73,7 @@ const Header = ({
         </nav>
 
         <div className='header-actions'>
-          <Button variant='super' label={actionButtonLabel} onClick={onActionClick} />
+          <Button variant='super' label={actionButtonLabel} onClick={handleActionClick} />
         </div>
 
         <button
@@ -80,8 +92,8 @@ const Header = ({
 
       <div className={`header-nav-mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`} role='dialog' aria-modal='true' aria-label='Menu de navigation'>
         <div className='mobile-sidebar-header'>
-          <div className='header-logo header-logo--dark'>
-            <div className='logo-icon-wrapper' style={{ color: 'var(--color-header-text)' }} />
+          <div className='header-logo header-logo--dark header-logo-clickable' onClick={() => { navigate('/'); setIsMobileMenuOpen(false) }}>
+            <div className='logo-icon-wrapper logo-icon-wrapper--dark' />
             <h2 className='handwritten-title'>
               Gs <span className='handwritten-highlight'>emmanuel</span>
             </h2>
@@ -97,7 +109,7 @@ const Header = ({
               key={idx}
               href={link.href}
               className={`mobile-link ${link.active ? 'mobile-link--active' : ''}`}
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={(e) => { e.preventDefault(); navigate(link.href); setIsMobileMenuOpen(false) }}
             >
               {link.label}
               {link.hasDropdown && <ChevronDown size={16} />}
@@ -105,7 +117,7 @@ const Header = ({
           ))}
 
           <div className='mobile-nav-action'>
-            <Button variant='super' label={actionButtonLabel} onClick={onActionClick} style={{ width: '100%' }} />
+            <Button variant='super' label={actionButtonLabel} onClick={() => { handleActionClick(); setIsMobileMenuOpen(false) }} className='mobile-nav-action-btn' />
           </div>
         </nav>
       </div>

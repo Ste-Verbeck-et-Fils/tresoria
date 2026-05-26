@@ -1,0 +1,53 @@
+/* ==========================================
+   SERVICES SECTION (Home page)
+   ========================================== */
+
+.services-section {
+  padding: 20px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.services-section__subtitle {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  margin-top: -20px;
+  margin-bottom: 40px;
+}
+
+.services-section__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.services-section__cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+/* ---- Responsive ---- */
+
+@media (min-width: 640px) {
+  .services-section {
+    padding: 48px 20px;
+  }
+
+  .services-section__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .services-section {
+    padding: 80px 20px;
+  }
+
+  .services-section__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+  }
+}
