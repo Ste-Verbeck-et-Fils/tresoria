@@ -96,7 +96,7 @@ const Login = () => {
 
           <form className='auth-form' onSubmit={handleSubmit}>
             <Input
-              id={'1'}
+              id={'phone'}
               type={'tel'}
               label={'Numéro de téléphone'}
               value={formData.phone}
@@ -107,7 +107,7 @@ const Login = () => {
             />
 
             <Input
-              id={'2'}
+              id={'password'}
               type={'password'}
               label={'Mot de passe'}
               value={formData.password}
@@ -117,8 +117,6 @@ const Login = () => {
               disabled={isLoading}
             />
 
-            <div className='auth-options'>
-            </div>
 
             <Button
               type={'submit'}
