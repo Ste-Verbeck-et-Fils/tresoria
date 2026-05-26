@@ -54,7 +54,7 @@ const Register = () => {
       const hasLower = /[a-z]/.test(formData.password)
       const hasNumber = /\d/.test(formData.password)
       const hasSpecial = /[!@#$%^&*(),.?":{}|<>\-_]/.test(formData.password)
-      
+
       if (formData.password.length < 8 || !hasUpper || !hasLower || !hasNumber || !hasSpecial) {
         newErrors.password = 'Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial'
       }
@@ -116,7 +116,7 @@ const Register = () => {
               value={formData.full_name}
               onChange={handleChange}
               error={errors.full_name}
-              placeholder='Ex: Jean Dupont'
+              placeholder='Entrez votre nom'
               disabled={isLoading}
             />
 
