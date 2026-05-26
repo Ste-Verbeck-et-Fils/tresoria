@@ -23,6 +23,13 @@ const Login = () => {
     }, 5000)
   }
 
+  const persistMockSession = () => {
+    localStorage.setItem('authToken', 'mock-auth-token')
+    localStorage.setItem('token', 'mock-auth-token')
+    localStorage.setItem('access_token', 'mock-auth-token')
+    localStorage.setItem('user', JSON.stringify({ phone: formData.phone }))
+  }
+
   const handleChange = (e) => {
     const { id, value } = e.target
     setFormData((prev) => ({ ...prev, [id]: value }))
@@ -60,14 +67,16 @@ const Login = () => {
       setTimeout(() => {
         setIsLoading(false)
         if (formData.phone === '+243814717237' && formData.password === 'admin') {
+          persistMockSession()
           showMessage('success', 'Connexion réussie ! Redirection...')
-          setTimeout(() => navigate('/dashboard'), 1500)
+          setTimeout(() => navigate('/dashboard/profile', { replace: true }), 1500)
         } else if (formData.phone === '+243814717237') {
           showMessage('error', 'Mot de passe incorrect.')
         } else {
           // Accept any other valid phone format for testing
+          persistMockSession()
           showMessage('success', 'Connexion réussie ! Redirection...')
-          setTimeout(() => navigate('/dashboard'), 1500)
+          setTimeout(() => navigate('/dashboard/profile', { replace: true }), 1500)
         }
       }, 1000)
     }

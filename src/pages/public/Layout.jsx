@@ -1,12 +1,53 @@
 import React, { useState, useEffect } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/layout/Sidebar'
 import AdminHeader from '../../components/layout/AdminHeader'
 import { SwatchBook, Users, CreditCard, FileText, UserRound, HelpCircle } from 'lucide-react'
+import { getUserProfile, normalizeProfile } from '../../services/profileService'
 
 import '../../styles/public/layout.css'
 
+// Ce composant structure le dashboard et affiche les pages internes dans la zone de contenu.
 const Layout = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(window.innerWidth > 768)
+
+  const [sharedProfile, setSharedProfile] = useState(null)
+  const [isProfileLoading, setIsProfileLoading] = useState(true)
+  const [profileLoadError, setProfileLoadError] = useState('')
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const hasToken =
+        localStorage.getItem('authToken') ||
+        localStorage.getItem('token') ||
+        localStorage.getItem('access_token')
+
+      if (!hasToken) {
+        navigate('/login', { replace: true })
+        return
+      }
+
+      setIsProfileLoading(true)
+      setProfileLoadError('')
+
+      try {
+        const data = await getUserProfile()
+        setSharedProfile(normalizeProfile(data))
+      } catch (error) {
+        if (error?.status === 401 || error?.status === 403) {
+          navigate('/login', { replace: true })
+          return
+        }
+        setProfileLoadError(error.message || 'Impossible de charger le profil.')
+      } finally {
+        setIsProfileLoading(false)
+      }
+    }
+
+    fetchProfile()
+  }, [navigate])
 
   useEffect(() => {
     const handleResize = () => {
@@ -21,12 +62,17 @@ const Layout = () => {
   }
 
   const links = [
-    { label: 'Tableau de bord', href: '#', icon: <SwatchBook size={20} /> },
-    { label: 'Paiements', href: '#', icon: <CreditCard size={20} /> },
-    { label: 'Élèves', href: '#', icon: <Users size={20} /> },
-    { label: 'Rapports', href: '#', icon: <FileText size={20} /> },
-    { label: 'Profile', href: '#', icon: <UserRound size={20} /> },
-    { label: 'Aide', href: '#', icon: <HelpCircle size={20} /> },
+    { label: 'Tableau de bord', href: '#', icon: <SwatchBook size={20} />, disabled: true },
+    { label: 'Paiements', href: '#', icon: <CreditCard size={20} />, disabled: true },
+    { label: 'Élèves', href: '#', icon: <Users size={20} />, disabled: true },
+    { label: 'Rapports', href: '#', icon: <FileText size={20} />, disabled: true },
+    {
+      label: 'Profil',
+      href: '/dashboard/profile',
+      icon: <UserRound size={20} />,
+      active: location.pathname === '/dashboard/profile',
+    },
+    { label: 'Aide', href: '#', icon: <HelpCircle size={20} />, disabled: true },
   ]
 
   return (
@@ -37,9 +83,9 @@ const Layout = () => {
         links={links}
       />
       <div className='dashboard-main'>
-        <AdminHeader />
+        <AdminHeader profile={sharedProfile} />
         <div className='dashboard-content'>
-          {/* Main content will go here */}
+          <Outlet context={{ sharedProfile, setSharedProfile, isProfileLoading, profileLoadError }} />
         </div>
       </div>
     </div>

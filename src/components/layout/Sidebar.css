@@ -75,6 +75,9 @@
   display: flex;
   align-items: center;
   padding: 10px 12px;
+  width: 100%;
+  border: none;
+  background: transparent;
   text-decoration: none;
   color: var(--color-text-muted);
   border-radius: var(--radius-md);
@@ -91,6 +94,16 @@
 .sidebar-link:hover {
   background-color: rgba(0, 0, 0, 0.03);
   color: var(--color-primary);
+}
+
+.sidebar-link--disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.sidebar-link--disabled:hover {
+  color: var(--color-text-muted);
+  background: transparent;
 }
 
 .sidebar-link--active {
