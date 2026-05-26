@@ -7,9 +7,9 @@ import Footer from '../../components/layout/Footer'
 import Feedback from '../../components/ui/Feedback'
 import '../../styles/public/Auth.css'
 
-const Register = () => {
+const ResetPassword = () => {
   const navigate = useNavigate()
-  const [formData, setFormData] = useState({ full_name: '', phone: '', password: '' })
+  const [formData, setFormData] = useState({ password: '', confirmPassword: '' })
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState({ type: '', text: '' })
   const [isLoading, setIsLoading] = useState(false)
@@ -26,7 +26,6 @@ const Register = () => {
   const handleChange = (e) => {
     const { id, value } = e.target
     setFormData((prev) => ({ ...prev, [id]: value }))
-    // Clear error on change
     if (errors[id]) {
       setErrors((prev) => ({ ...prev, [id]: '' }))
     }
@@ -34,19 +33,6 @@ const Register = () => {
 
   const validate = () => {
     const newErrors = {}
-
-    if (!formData.full_name.trim()) {
-      newErrors.full_name = 'Le nom complet est requis'
-    } else if (formData.full_name.trim().length < 3) {
-      newErrors.full_name = 'Le nom doit contenir au moins 3 caractères'
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Le numéro de téléphone est requis'
-    } else if (!/^\+?\d{9,15}$/.test(formData.phone.replace(/\s+/g, ''))) {
-      newErrors.phone = 'Veuillez entrer un numéro valide'
-    }
-
     if (!formData.password) {
       newErrors.password = 'Le mot de passe est requis'
     } else {
@@ -58,6 +44,12 @@ const Register = () => {
       if (formData.password.length < 8 || !hasUpper || !hasLower || !hasNumber || !hasSpecial) {
         newErrors.password = 'Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial'
       }
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'La confirmation est requise'
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Les mots de passe ne correspondent pas'
     }
 
     setErrors(newErrors)
@@ -75,14 +67,8 @@ const Register = () => {
       // Mock API call
       setTimeout(() => {
         setIsLoading(false)
-        // Simulation: "+243814717237" est déjà utilisé
-        if (formData.phone === '+243814717237') {
-          setErrors({ phone: 'Ce numéro de téléphone est déjà utilisé' })
-          showMessage('error', 'Impossible de créer le compte, veuillez corriger les erreurs.')
-        } else {
-          showMessage('success', 'Inscription réussie ! Redirection vers la connexion...')
-          setTimeout(() => navigate('/login'), 2000)
-        }
+        showMessage('success', 'Mot de passe modifié avec succès ! Redirection...')
+        setTimeout(() => navigate('/login'), 1500)
       }, 1000)
     }
   }
@@ -93,8 +79,12 @@ const Register = () => {
       <div className='auth-page'>
         <div className='auth-card'>
           <h1 className='section-title'>
-            <span className='brush-bg-text'>INSCRIPTION</span>
+            <span className='brush-bg-text'>RÉINITIALISER</span>
           </h1>
+          <p className='auth-subtitle'>
+            Veuillez entrer votre nouveau mot de passe.
+          </p>
+
           {message.text && (
             <div className='auth-feedback-wrapper'>
               <Feedback
@@ -110,51 +100,39 @@ const Register = () => {
 
           <form className='auth-form' onSubmit={handleSubmit}>
             <Input
-              id='full_name'
-              type='text'
-              label='Nom complet'
-              value={formData.full_name}
-              onChange={handleChange}
-              error={errors.full_name}
-              placeholder='Ex: Jean Dupont'
-              disabled={isLoading}
-            />
-
-            <Input
-              id='phone'
-              type='tel'
-              label='Numéro de téléphone'
-              value={formData.phone}
-              onChange={handleChange}
-              error={errors.phone}
-              placeholder='Ex: +243814717237'
-              disabled={isLoading}
-            />
-
-            <Input
-              id='password'
-              type='password'
-              label='Mot de passe'
+              id={'password'}
+              type={'password'}
+              label={'Nouveau mot de passe'}
               value={formData.password}
               onChange={handleChange}
               error={errors.password}
-              placeholder='Votre mot de passe'
+              placeholder='Nouveau mot de passe'
+              disabled={isLoading}
+            />
+
+            <Input
+              id={'confirmPassword'}
+              type={'password'}
+              label={'Confirmer le mot de passe'}
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              error={errors.confirmPassword}
+              placeholder='Confirmez le mot de passe'
               disabled={isLoading}
             />
 
             <Button
-              type='submit'
-              variant='super'
-              label={isLoading ? 'Création...' : 'Créer un compte'}
-              className='auth-submit-btn-mt'
+              type={'submit'}
+              variant={'super'}
+              label={isLoading ? 'Enregistrement...' : 'Enregistrer'}
+              className={'auth-submit-btn-mt'}
               disabled={isLoading}
             />
-
-            <div className='auth-footer-text'>
-              <span className='auth-text-muted'>Déjà un compte ? </span>
-              <span onClick={() => navigate('/login')} className='auth-link'>Se connecter</span>
-            </div>
           </form>
+
+          <div className='auth-footer-text-large'>
+            <span onClick={() => navigate('/login')} className='auth-link'> Retour à la connexion</span>
+          </div>
         </div>
       </div>
       <Footer />
@@ -162,4 +140,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default ResetPassword

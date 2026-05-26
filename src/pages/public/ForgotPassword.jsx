@@ -54,6 +54,7 @@ const ForgotPassword = () => {
           showMessage('error', 'Aucun compte associé à ce numéro.')
         } else {
           showMessage('success', 'Demande envoyée ! Vous recevrez un SMS avec les instructions pour réinitialiser votre mot de passe.')
+          setTimeout(() => navigate('/verify-code'), 1500)
         }
       }, 1000)
     }
@@ -88,29 +89,29 @@ const ForgotPassword = () => {
             ? (
               <form className='auth-form' onSubmit={handleSubmit}>
                 <Input
-                  id='phone'
-                  type='tel'
-                  label='Numéro de téléphone'
+                  id={'phone'}
+                  type={'tel'}
+                  label={'Numéro de téléphone'}
                   value={phone}
                   onChange={handleChange}
                   error={error}
-                  placeholder='Ex: +243814717237'
+                  placeholder={'Ex: +243814717237'}
                   disabled={isLoading}
                 />
 
                 <Button
-                  type='submit'
-                  variant='primary'
+                  type={'submit'}
+                  variant={'super'}
                   label={isLoading ? 'Envoi en cours...' : 'Envoyer la demande'}
-                  className='auth-submit-btn-mt'
+                  className={'auth-submit-btn-mt'}
                   disabled={isLoading}
                 />
               </form>
-              )
+            )
             : null}
 
           <div className='auth-footer-text-large'>
-            <span onClick={() => navigate('/login')} className='auth-link'>&larr; Retour à la connexion</span>
+            <span onClick={() => navigate('/login')} className='auth-link'> Retour à la connexion</span>
           </div>
         </div>
       </div>

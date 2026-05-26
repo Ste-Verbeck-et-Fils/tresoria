@@ -8,6 +8,8 @@ import Layout from './pages/public/Layout'
 import Login from './pages/public/Login'
 import Register from './pages/public/Register'
 import ForgotPassword from './pages/public/ForgotPassword'
+import VerifyCode from './pages/public/VerifyCode'
+import ResetPassword from './pages/public/ResetPassword'
 import './App.css'
 
 function AppLayout () {
@@ -24,6 +26,8 @@ function AppLayout () {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
+          <Route path='/verify-code' element={<VerifyCode />} />
+          <Route path='/reset-password' element={<ResetPassword />} />
         </Routes>
       </div>
     </main>

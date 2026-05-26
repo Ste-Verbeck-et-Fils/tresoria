@@ -1,6 +1,6 @@
  .contact-page {
    max-width: 1600px;
-   margin: 0 auto;
+   margin: 0 6%;
    padding: 32px 20px 80px;
    animation: fadeIn 0.5s ease;
    margin-top: 2.5rem;
@@ -18,18 +18,15 @@
    margin-top: 16px;
  }
 
- /* ---- Split Container ---- */
  .contact-split-container {
    display: flex;
    flex-direction: column;
    background-color: var(--color-header-surface);
    border-radius: var(--radius-xl);
    overflow: hidden;
-   box-shadow: var(--shadow-lg);
-   border: 1px solid rgba(0, 0, 0, 0.05);
+
  }
 
- /* ================== LEFT SIDE (Coherent Light Theme) ================== */
  .contact-left {
    position: relative;
    background: linear-gradient(135deg, var(--color-header-surface) 60%, rgba(38, 182, 255, 0.05));
@@ -228,7 +225,7 @@
      padding: 2px;
    }
  }
-.contact-feedback-wrapper {
-  margin-bottom: 24px;
-}
 
+ .contact-feedback-wrapper {
+   margin-bottom: 24px;
+ }

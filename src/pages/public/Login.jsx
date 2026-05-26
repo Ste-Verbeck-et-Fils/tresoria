@@ -96,20 +96,20 @@ const Login = () => {
 
           <form className='auth-form' onSubmit={handleSubmit}>
             <Input
-              id='phone'
-              type='tel'
-              label='Numéro de téléphone'
+              id={'1'}
+              type={'tel'}
+              label={'Numéro de téléphone'}
               value={formData.phone}
               onChange={handleChange}
               error={errors.phone}
-              placeholder='Ex: +243814717237'
+              placeholder={'Ex: +243814717237'}
               disabled={isLoading}
             />
 
             <Input
-              id='password'
-              type='password'
-              label='Mot de passe'
+              id={'2'}
+              type={'password'}
+              label={'Mot de passe'}
               value={formData.password}
               onChange={handleChange}
               error={errors.password}
@@ -118,24 +118,23 @@ const Login = () => {
             />
 
             <div className='auth-options'>
-              <label className='auth-remember-label'>
-                <input type='checkbox' />
-                <span>Se souvenir de moi</span>
-              </label>
-              <span onClick={() => navigate('/forgot-password')} className='auth-link'>Mot de passe oublié ?</span>
             </div>
 
             <Button
-              type='submit'
-              variant='primary'
+              type={'submit'}
+              variant={'super'}
               label={isLoading ? 'Connexion...' : 'Se connecter'}
-              className='auth-submit-btn'
+              className={'auth-submit-btn'}
               disabled={isLoading}
+
             />
 
             <div className='auth-footer-text'>
-              <span className='auth-text-muted'>Pas encore de compte ? </span>
+              <span className='auth-text-muted'>Vous n'avez pas de compte ? </span>
               <span onClick={() => navigate('/register')} className='auth-link'>Créer un compte</span>
+              <br />
+              <span className='auth-text-muted'>Mot de passe oublié ? </span><span onClick={() => navigate('/forgot-password')} className='auth-link'>cliquer ici</span>
+
             </div>
           </form>
         </div>
