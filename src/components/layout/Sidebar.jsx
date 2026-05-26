@@ -13,7 +13,7 @@ const Sidebar = ({
     <aside className={`tresoria-sidebar ${isExpanded ? 'sidebar--expanded' : 'sidebar--collapsed'} ${className}`} {...props}>
       <div className='sidebar-header'>
         <h2 className='handwritten-title' id='sidebar-title'>
-          Gs <span className='handwritten-highlight'>emmanuel</span>
+          Gs {isExpanded && <span className='handwritten-highlight'>emmanuel</span>}
         </h2>
         <button className='sidebar-toggle-btn' onClick={onToggle} aria-label='Toggle Sidebar'>
           {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}

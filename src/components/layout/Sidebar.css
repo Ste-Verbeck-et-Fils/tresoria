@@ -16,20 +16,7 @@
 }
 
 #sidebar-title {
-  font-size: 1.5rem;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.sidebar--collapsed #sidebar-title {
-  font-size: 1.2rem;
-  text-align: center;
-  width: 100%;
-  margin-right: 14px; /* Adjust for the toggle button */
-}
-
-.sidebar--collapsed .handwritten-highlight {
-  display: none;
+  font-size: 2rem;
 }
 
 .sidebar--collapsed {
@@ -126,9 +113,6 @@
   height: 18px;
 }
 
-/* Tooltips handled natively via title attribute */
-
-/* Footer & Logout */
 .sidebar-footer {
   padding: 16px 12px;
   border-top: 1px solid rgba(0, 0, 0, 0.05);

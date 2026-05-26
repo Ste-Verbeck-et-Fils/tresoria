@@ -5,6 +5,9 @@ import Services from './pages/public/Services'
 import Contact from './pages/public/Contact'
 import Help from './pages/public/Help'
 import Layout from './pages/public/Layout'
+import Login from './pages/public/Login'
+import Register from './pages/public/Register'
+import ForgotPassword from './pages/public/ForgotPassword'
 import './App.css'
 
 function AppLayout () {
@@ -18,7 +21,9 @@ function AppLayout () {
           <Route path='/contact' element={<Contact />} />
           <Route path='/help' element={<Help />} />
           <Route path='/dashboard' element={<Layout />} />
-          <Route path='/login' element={<div style={{ padding: '100px', textAlign: 'center' }}><h2>Page de connexion en construction...</h2></div>} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+          <Route path='/forgot-password' element={<ForgotPassword />} />
         </Routes>
       </div>
     </main>

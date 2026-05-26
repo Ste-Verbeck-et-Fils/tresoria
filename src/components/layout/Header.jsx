@@ -26,6 +26,14 @@ const Header = ({
     }
   }, [isMobileMenuOpen])
 
+  const handleActionClick = () => {
+    if (onActionClick) {
+      onActionClick()
+    } else {
+      navigate('/login')
+    }
+  }
+
   const navLinks = links && links.length > 0
     ? links
     : [
@@ -39,7 +47,7 @@ const Header = ({
   return (
     <header className={`gsemmanuel-header ${className}`} {...props}>
       <div className='header-container'>
-        <div className='header-logo' onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+        <div className='header-logo header-logo-clickable' onClick={() => navigate('/')}>
           <div className='logo-icon-wrapper' />
           <h2 id='logo-title' className='handwritten-title'>
             Gs <span className='handwritten-highlight'>emmanuel</span>
@@ -65,7 +73,7 @@ const Header = ({
         </nav>
 
         <div className='header-actions'>
-          <Button variant='super' label={actionButtonLabel} onClick={onActionClick} />
+          <Button variant='super' label={actionButtonLabel} onClick={handleActionClick} />
         </div>
 
         <button
@@ -84,8 +92,8 @@ const Header = ({
 
       <div className={`header-nav-mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`} role='dialog' aria-modal='true' aria-label='Menu de navigation'>
         <div className='mobile-sidebar-header'>
-          <div className='header-logo header-logo--dark' onClick={() => { navigate('/'); setIsMobileMenuOpen(false) }} style={{ cursor: 'pointer' }}>
-            <div className='logo-icon-wrapper' style={{ color: 'var(--color-header-text)' }} />
+          <div className='header-logo header-logo--dark header-logo-clickable' onClick={() => { navigate('/'); setIsMobileMenuOpen(false) }}>
+            <div className='logo-icon-wrapper logo-icon-wrapper--dark' />
             <h2 className='handwritten-title'>
               Gs <span className='handwritten-highlight'>emmanuel</span>
             </h2>
@@ -109,7 +117,7 @@ const Header = ({
           ))}
 
           <div className='mobile-nav-action'>
-            <Button variant='super' label={actionButtonLabel} onClick={() => { if (onActionClick) onActionClick(); setIsMobileMenuOpen(false) }} style={{ width: '100%' }} />
+            <Button variant='super' label={actionButtonLabel} onClick={() => { handleActionClick(); setIsMobileMenuOpen(false) }} className='mobile-nav-action-btn' />
           </div>
         </nav>
       </div>

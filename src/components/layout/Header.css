@@ -301,3 +301,15 @@
     display: none;
   }
 }
+.header-logo-clickable {
+  cursor: pointer;
+}
+
+.logo-icon-wrapper--dark {
+  color: var(--color-header-text);
+}
+
+.mobile-nav-action-btn {
+  width: 100%;
+}
+

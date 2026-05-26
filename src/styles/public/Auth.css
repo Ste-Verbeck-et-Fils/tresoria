@@ -1,0 +1,113 @@
+.auth-page {
+  min-height: calc(100vh - var(--header-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: var(--color-light);
+}
+
+.auth-card {
+  background: var(--color-light-darker);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+}
+
+.auth-card h2 {
+  font-size: 2rem;
+  color: var(--color-text-primary);
+  margin-bottom: 10px;
+  font-family: var(--font-primary);
+}
+
+.auth-subtitle {
+  color: var(--color-text-muted);
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.auth-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+.auth-link {
+  color: var(--color-info);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.auth-message {
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.auth-message.error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+}
+
+.auth-message.success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+}
+
+.auth-feedback-wrapper {
+  margin-bottom: 20px;
+}
+
+.auth-remember-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.auth-submit-btn {
+  width: 100%;
+}
+
+.auth-submit-btn-mt {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.auth-footer-text {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.auth-footer-text-large {
+  text-align: center;
+  margin-top: 25px;
+}
+
+.auth-text-muted {
+  color: var(--color-text-muted);
+}

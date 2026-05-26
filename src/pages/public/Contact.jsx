@@ -86,7 +86,7 @@ const Contact = () => {
           {/* Right Side: Modern Form */}
           <div className='contact-right'>
             {status === 'success' && (
-              <div style={{ marginBottom: '24px' }}>
+              <div className='contact-feedback-wrapper'>
                 <Feedback
                   type='success'
                   title='Message envoyé'

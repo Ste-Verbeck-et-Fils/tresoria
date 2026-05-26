@@ -50,7 +50,7 @@ const About = () => {
           <div className='bento-card bento-card--tall'>
             <Map size={120} strokeWidth={1} className='bento-icon-bg' />
             <div className='bento-card-content'>
-              <div className='bento-icon-wrapper' style={{ color: 'var(--color-warning)' }}>
+              <div className='bento-icon-wrapper bento-icon-wrapper--warning'>
                 <Map size={28} />
               </div>
               <h2>Le Contexte</h2>
@@ -63,7 +63,7 @@ const About = () => {
           <div className='bento-card bento-card--small'>
             <Clock size={80} strokeWidth={1} className='bento-icon-bg' />
             <div className='bento-card-content'>
-              <div className='bento-icon-wrapper' style={{ color: 'var(--color-info)' }}>
+              <div className='bento-icon-wrapper bento-icon-wrapper--info'>
                 <Clock size={24} />
               </div>
               <h3>Gain de temps</h3>
@@ -74,7 +74,7 @@ const About = () => {
           <div className='bento-card bento-card--small'>
             <TrendingUp size={80} strokeWidth={1} className='bento-icon-bg' />
             <div className='bento-card-content'>
-              <div className='bento-icon-wrapper' style={{ color: 'var(--color-success)' }}>
+              <div className='bento-icon-wrapper bento-icon-wrapper--success'>
                 <TrendingUp size={24} />
               </div>
               <h3>Transparence</h3>

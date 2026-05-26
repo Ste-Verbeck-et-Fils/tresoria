@@ -330,3 +330,15 @@
      font-size: 0.7rem;
    }
  }
+.bento-icon-wrapper--warning {
+  color: var(--color-warning);
+}
+
+.bento-icon-wrapper--info {
+  color: var(--color-info);
+}
+
+.bento-icon-wrapper--success {
+  color: var(--color-success);
+}
+
