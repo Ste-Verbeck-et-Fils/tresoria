@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''
+import api from './api.js'
 
 export const normalizeProfile = (data = {}) => ({
   full_name: data?.full_name || '',
@@ -9,80 +9,27 @@ export const normalizeProfile = (data = {}) => ({
   statut: data?.statut || data?.status || '',
 })
 
-const getAuthHeaders = () => {
-  const token =
-    localStorage.getItem('authToken') ||
-    localStorage.getItem('token') ||
-    localStorage.getItem('access_token')
-
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
-
-const parseErrorMessage = async (response, fallbackMessage) => {
-  try {
-    const data = await response.json()
-    return data?.message || data?.error || fallbackMessage
-  } catch {
-    return fallbackMessage
-  }
-}
-
 export const getUserProfile = async () => {
-  const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      ...getAuthHeaders(),
-    },
-    credentials: 'include',
-  })
-
-  if (!response.ok) {
-    const error = new Error(await parseErrorMessage(response, 'Impossible de charger le profil.'))
-    error.status = response.status
-    throw error
-  }
-
-  return response.json()
+  const response = await api.get('/api/users/profile')
+  return response.data
 }
 
 export const updateUserProfile = async (payload) => {
-  const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      ...getAuthHeaders(),
-    },
-    credentials: 'include',
-    body: JSON.stringify(payload),
-  })
+  const response = await api.patch('/api/users/profile', payload)
+  return response.data
+}
 
-  if (!response.ok) {
-    const error = new Error(await parseErrorMessage(response, 'La mise a jour du profil a echoue.'))
-    error.status = response.status
-    throw error
-  }
-
-  return response.json()
+export const changeUserPassword = async (payload) => {
+  const response = await api.patch('/api/users/change-password', payload)
+  return response.data
 }
 
 export const updateUserProfileFormData = async (formData) => {
-  const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
-    method: 'PATCH',
+  const response = await api.patch('/api/users/profile', formData, {
     headers: {
-      Accept: 'application/json',
-      ...getAuthHeaders(),
-    },
-    credentials: 'include',
-    body: formData,
+      // Axios définira automatiquement le bon Content-Type multipart/form-data avec le boundary
+      'Content-Type': 'multipart/form-data'
+    }
   })
-
-  if (!response.ok) {
-    const error = new Error(await parseErrorMessage(response, 'La mise a jour de la photo a echoue.'))
-    error.status = response.status
-    throw error
-  }
-
-  return response.json()
+  return response.data
 }

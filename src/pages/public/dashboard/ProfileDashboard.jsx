@@ -4,7 +4,7 @@ import { UserCircle2, Phone, ShieldCheck, BadgeCheck, CircleCheckBig, Camera, Pe
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
 import Button from '../../../components/ui/Button'
-import { updateUserProfile, normalizeProfile } from '../../../services/profileService'
+import { updateUserProfile, normalizeProfile, changeUserPassword, updateUserProfileFormData } from '../../../services/profileService'
 import '../../../styles/public/ProfileDashboard.css'
 
 const DEFAULT_PROFILE = {
@@ -139,8 +139,11 @@ const ProfileDashboard = () => {
     // Pour l'instant, envoyer photo_url via PATCH si une URL est disponible.
     // Exemple attendu : PATCH /api/users/profile { photo_url: 'https://...' }
     try {
-      const updatedProfile = await updateUserProfile({ photo_url: photoPreviewUrl })
-      const normalizedProfile = normalizeProfile({ ...profile, ...updatedProfile })
+      const formData = new FormData()
+      formData.append('photo', selectedPhotoFile)
+
+      const updatedProfile = await updateUserProfileFormData(formData)
+      const normalizedProfile = normalizeProfile({ ...profile, ...updatedProfile.user })
       setSharedProfile(normalizedProfile)
 
       handleCancelPhotoSelection()
@@ -220,7 +223,9 @@ const ProfileDashboard = () => {
     setIsSavingPassword(true)
 
     try {
-      await updateUserProfile({ password: passwordForm.new_password })
+      await changeUserPassword({ 
+        password: passwordForm.new_password // Le backend s'attend peut-être à 'newPassword' ou 'password', je l'envoie comme 'password' ou 'new_password'
+      })
       setPasswordForm({
         new_password: '',
         confirm_password: '',
