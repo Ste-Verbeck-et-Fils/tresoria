@@ -1,10 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useOutletContext } from 'react-router-dom'
-import { UserCircle2, Phone, ShieldCheck, BadgeCheck, CircleCheckBig, Camera, PencilLine } from 'lucide-react'
+import { UserCircle2, ShieldCheck, Camera, PencilLine } from 'lucide-react'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
 import Button from '../../../components/ui/Button'
-import { updateUserProfile, normalizeProfile, changeUserPassword, updateUserProfileFormData } from '../../../services/profileService'
+import {
+  changeUserPassword,
+  normalizeProfile,
+  updateUserProfile,
+  updateUserProfileFormData,
+} from '../../../services/profileService'
 import '../../../styles/public/ProfileDashboard.css'
 
 const DEFAULT_PROFILE = {
@@ -14,6 +19,25 @@ const DEFAULT_PROFILE = {
   photo_url: '',
   role: '',
   statut: '',
+}
+
+const EMPTY_VALUE = 'Non renseigne'
+
+const splitFullName = (fullName = '') => {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean)
+
+  if (parts.length === 0) {
+    return { firstName: '', lastName: '' }
+  }
+
+  if (parts.length === 1) {
+    return { firstName: parts[0], lastName: '' }
+  }
+
+  return {
+    firstName: parts.slice(0, -1).join(' '),
+    lastName: parts[parts.length - 1],
+  }
 }
 
 const ProfileDashboard = () => {
@@ -29,6 +53,7 @@ const ProfileDashboard = () => {
   const [nameError, setNameError] = useState('')
 
   const [passwordForm, setPasswordForm] = useState({
+    current_password: '',
     new_password: '',
     confirm_password: '',
   })
@@ -36,6 +61,9 @@ const ProfileDashboard = () => {
 
   const [selectedPhotoFile, setSelectedPhotoFile] = useState(null)
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState('')
+  const displayedAvatar = photoPreviewUrl || profile.photo_url
+  const { firstName, lastName } = splitFullName(profile.full_name)
+  const isActiveProfile = profile?.statut?.toLowerCase() === 'actif'
 
   const [isSavingName, setIsSavingName] = useState(false)
   const [isSavingPassword, setIsSavingPassword] = useState(false)
@@ -72,22 +100,27 @@ const ProfileDashboard = () => {
   const validatePasswordForm = () => {
     const nextErrors = {}
 
-    if (!passwordForm.new_password && !passwordForm.confirm_password) {
+    if (!passwordForm.current_password && !passwordForm.new_password && !passwordForm.confirm_password) {
       setPasswordErrors({
+        current_password: 'Renseignez votre ancien mot de passe.',
         new_password: 'Renseignez un nouveau mot de passe.',
       })
       return false
     }
 
-    if (passwordForm.new_password.length < 8) {
+    if (!passwordForm.current_password) {
+      nextErrors.current_password = 'Renseignez votre ancien mot de passe.'
+    }
+
+    if (!passwordForm.new_password) {
+      nextErrors.new_password = 'Renseignez un nouveau mot de passe.'
+    } else if (passwordForm.new_password.length < 8) {
       nextErrors.new_password = 'Le nouveau mot de passe doit contenir au moins 8 caracteres.'
     }
 
     if (!passwordForm.confirm_password) {
       nextErrors.confirm_password = 'Merci de confirmer le nouveau mot de passe.'
-    }
-
-    if (passwordForm.new_password !== passwordForm.confirm_password) {
+    } else if (passwordForm.new_password !== passwordForm.confirm_password) {
       nextErrors.confirm_password = 'La confirmation du mot de passe ne correspond pas.'
     }
 
@@ -135,15 +168,12 @@ const ProfileDashboard = () => {
     setFeedback({ type: '', message: '' })
     setIsSavingPhoto(true)
 
-    // TODO: Brancher un endpoint d'upload fichier quand disponible.
-    // Pour l'instant, envoyer photo_url via PATCH si une URL est disponible.
-    // Exemple attendu : PATCH /api/users/profile { photo_url: 'https://...' }
     try {
       const formData = new FormData()
       formData.append('photo', selectedPhotoFile)
 
       const updatedProfile = await updateUserProfileFormData(formData)
-      const normalizedProfile = normalizeProfile({ ...profile, ...updatedProfile.user })
+      const normalizedProfile = normalizeProfile({ ...profile, ...updatedProfile })
       setSharedProfile(normalizedProfile)
 
       handleCancelPhotoSelection()
@@ -156,7 +186,9 @@ const ProfileDashboard = () => {
 
       setFeedback({
         type: 'error',
-        message: error.message || 'Impossible de mettre a jour la photo de profil.',
+        message: error.message?.includes('Aucune') && error.message?.includes('mettre')
+          ? 'Selectionnez une image valide avant de l enregistrer.'
+          : error.message || 'Impossible de mettre a jour la photo de profil.',
       })
     } finally {
       setIsSavingPhoto(false)
@@ -208,6 +240,7 @@ const ProfileDashboard = () => {
 
   const isPasswordActionDisabled =
     isSavingPassword ||
+    !passwordForm.current_password ||
     !passwordForm.new_password ||
     !passwordForm.confirm_password ||
     passwordForm.new_password !== passwordForm.confirm_password
@@ -223,10 +256,12 @@ const ProfileDashboard = () => {
     setIsSavingPassword(true)
 
     try {
-      await changeUserPassword({ 
-        password: passwordForm.new_password // Le backend s'attend peut-être à 'newPassword' ou 'password', je l'envoie comme 'password' ou 'new_password'
+      await changeUserPassword({
+        current_password: passwordForm.current_password,
+        new_password: passwordForm.new_password,
       })
       setPasswordForm({
+        current_password: '',
         new_password: '',
         confirm_password: '',
       })
@@ -266,80 +301,111 @@ const ProfileDashboard = () => {
     }
 
     return (
-      <div className='profile-dashboard__single-column'>
-        <article className='profile-card profile-card--single'>
-          <h2 className='profile-card__title'>Informations du compte</h2>
+      <>
+        <article className='profile-section-card'>
+          <div className='profile-section-card__header'>
+            <h2 className='profile-section-card__title'>Informations personnelles</h2>
+            {!isEditingName && (
+              <button
+                type='button'
+                className='profile-edit-button profile-edit-button--primary'
+                onClick={handleStartNameEdit}
+                aria-label='Modifier les informations personnelles'
+              >
+                Modifier
+                <PencilLine size={14} />
+              </button>
+            )}
+          </div>
 
-          <div className='profile-card__list'>
-            <div className='profile-card__item profile-card__item--editable profile-card__item--span-3'>
-              <span className='profile-card__label'>Nom complet</span>
+          {isEditingName && (
+            <div className='profile-name-editor'>
+              <Input
+                id='inline_full_name'
+                type='text'
+                label='Nom complet'
+                placeholder='Nom complet'
+                value={nameDraft}
+                onChange={(event) => setNameDraft(event.target.value)}
+                error={nameError}
+                disabled={isSavingName}
+              />
+              <div className='profile-name-editor__actions'>
+                <Button
+                  type='button'
+                  variant='ghost'
+                  label='Annuler'
+                  onClick={handleCancelNameEdit}
+                  disabled={isSavingName}
+                  className='profile-action-button profile-action-button--ghost'
+                />
+                <Button
+                  type='button'
+                  variant='super'
+                  label={isSavingName ? 'Validation...' : 'Valider'}
+                  onClick={handleSaveName}
+                  loading={isSavingName}
+                  className='profile-action-button profile-action-button--primary'
+                />
+              </div>
+            </div>
+          )}
 
-              {!isEditingName && (
-                <div className='profile-inline-edit'>
-                  <span className='profile-card__value profile-card__value--name'>{profile?.full_name || 'Non renseigne'}</span>
-                  <button type='button' className='profile-inline-edit__toggle' onClick={handleStartNameEdit} aria-label='Modifier le nom complet'>
-                    <PencilLine size={14} />
-                    Modifier
-                  </button>
-                </div>
-              )}
-              {isEditingName && (
-                <div className='profile-inline-edit profile-inline-edit--form'>
-                  <Input
-                    id='inline_full_name'
-                    type='text'
-                    label='Nom complet'
-                    placeholder='Nom complet'
-                    value={nameDraft}
-                    onChange={(event) => setNameDraft(event.target.value)}
-                    error={nameError}
-                    disabled={isSavingName}
-                  />
-                  <div className='profile-inline-edit__actions'>
-                    <Button
-                      type='button'
-                      variant='secondary'
-                      label='Annuler'
-                      onClick={handleCancelNameEdit}
-                      disabled={isSavingName}
-                    />
-                    <Button
-                      type='button'
-                      variant='super'
-                      label={isSavingName
-                        ? 'Validation...'
-                        : 'Valider'}
-                      onClick={handleSaveName}
-                      loading={isSavingName}
-                    />
-                  </div>
-                </div>
-              )}
+          <div className='profile-info-grid'>
+            <div className='profile-info-field'>
+              <span className='profile-info-field__label'>Prenom</span>
+              <span className='profile-info-field__value'>{firstName || EMPTY_VALUE}</span>
             </div>
-
-            <div className='profile-card__item'>
-              <span className='profile-card__label'>Telephone</span>
-              <span className='profile-card__value'>{profile?.phone || 'Non renseigne'}</span>
+            <div className='profile-info-field'>
+              <span className='profile-info-field__label'>Nom</span>
+              <span className='profile-info-field__value'>{lastName || EMPTY_VALUE}</span>
             </div>
-            <div className='profile-card__item'>
-              <span className='profile-card__label'>Telephone verifie</span>
-              <span className={`profile-badge ${profile?.phone_verify ? 'profile-badge--success' : 'profile-badge--warning'}`}>
-                {profile?.phone_verify ? 'Oui' : 'Non'}
-              </span>
+            <div className='profile-info-field'>
+              <span className='profile-info-field__label'>Telephone</span>
+              <span className='profile-info-field__value'>{profile?.phone || EMPTY_VALUE}</span>
             </div>
-            <div className='profile-card__item'>
-              <span className='profile-card__label'>Role</span>
-              <span className='profile-badge profile-badge--info'>{profile?.role || 'Non renseigne'}</span>
+            <div className='profile-info-field'>
+              <span className='profile-info-field__label'>Role</span>
+              <span className='profile-info-field__value'>{profile?.role || EMPTY_VALUE}</span>
             </div>
-            <div className='profile-card__item'>
-              <span className='profile-card__label'>Statut</span>
-              <span className={`profile-badge ${profile?.statut?.toLowerCase() === 'actif' ? 'profile-badge--success' : 'profile-badge--warning'}`}>
+            <div className='profile-info-field'>
+              <span className='profile-info-field__label'>Statut</span>
+              <span className={`profile-info-field__value ${isActiveProfile ? 'profile-info-field__value--success' : 'profile-info-field__value--warning'}`}>
                 {profile?.statut || 'Inactif'}
               </span>
             </div>
+            <div className='profile-info-field'>
+              <span className='profile-info-field__label'>Telephone verifie</span>
+              <span className={`profile-info-field__value ${profile?.phone_verify ? 'profile-info-field__value--success' : 'profile-info-field__value--warning'}`}>
+                {profile?.phone_verify ? 'Oui' : 'Non'}
+              </span>
+            </div>
+          </div>
+        </article>
 
-            <div className='profile-card__item profile-card__item--stacked'>
-              <span className='profile-card__label'>Nouveau mot de passe</span>
+        <article className='profile-section-card'>
+          <div className='profile-section-card__header'>
+            <h2 className='profile-section-card__title'>Securite</h2>
+           
+          </div>
+
+          <form className='profile-password-form' onSubmit={handleChangePassword}>
+            <div className='profile-password-form__field'>
+              <span className='profile-password-form__label'>Ancien mot de passe</span>
+              <Input
+                id='current_password'
+                type='password'
+                label='Ancien mot de passe'
+                placeholder='Ancien mot de passe'
+                value={passwordForm.current_password}
+                onChange={handlePasswordChange}
+                error={passwordErrors.current_password}
+                disabled={isSavingPassword}
+              />
+            </div>
+
+            <div className='profile-password-form__field'>
+              <span className='profile-password-form__label'>Nouveau mot de passe</span>
               <Input
                 id='new_password'
                 type='password'
@@ -352,8 +418,8 @@ const ProfileDashboard = () => {
               />
             </div>
 
-            <div className='profile-card__item profile-card__item--stacked'>
-              <span className='profile-card__label'>Confirmer le mot de passe</span>
+            <div className='profile-password-form__field'>
+              <span className='profile-password-form__label'>Confirmer le mot de passe</span>
               <Input
                 id='confirm_password'
                 type='password'
@@ -366,68 +432,47 @@ const ProfileDashboard = () => {
               />
             </div>
 
-            <div className='profile-card__password-action'>
+            <div className='profile-password-form__actions'>
               <Button
-                type='button'
+                type='submit'
                 variant='super'
                 label={isSavingPassword
                   ? 'Enregistrement...'
                   : 'Changer le mot de passe'}
-                onClick={handleChangePassword}
                 disabled={isPasswordActionDisabled}
                 loading={isSavingPassword}
+                className='profile-action-button profile-action-button--primary'
               />
             </div>
-          </div>
+          </form>
         </article>
-      </div>
+      </>
     )
   }
 
-  const displayedAvatar = photoPreviewUrl || profile.photo_url
-
   return (
     <section className='profile-dashboard'>
-      <div className='profile-hero'>
-        <div className='profile-hero__left'>
-          <button type='button' className='profile-avatar-wrap profile-avatar-wrap--button' onClick={handleOpenPhotoPicker} aria-label='Modifier la photo de profil'>
-            {displayedAvatar
-              ? <img className='profile-avatar' src={displayedAvatar} alt={profile?.full_name || 'Photo de profil'} />
-              : <UserCircle2 className='profile-avatar-fallback' />}
-            <span className='profile-avatar-status' />
-            <span className='profile-avatar-edit'>
-              <Camera size={12} />
-              Modifier
-            </span>
-          </button>
+      <article className='profile-summary-card'>
+        <button
+          type='button'
+          className='profile-avatar-button'
+          onClick={handleOpenPhotoPicker}
+          aria-label='Modifier la photo de profil'
+        >
+          {displayedAvatar
+            ? <img className='profile-avatar' src={displayedAvatar} alt={profile?.full_name || 'Photo de profil'} />
+            : <UserCircle2 className='profile-avatar profile-avatar--fallback' />}
+          <span className='profile-avatar-button__camera'>
+            <Camera size={13} />
+          </span>
+        </button>
 
-          <div className='profile-hero__identity'>
-            <h1 className='profile-dashboard__title'>{profile?.full_name || 'Mon profil'}</h1>
-            <p className='profile-dashboard__subtitle'>Gestion de votre compte utilisateur</p>
-            <div className='profile-hero__chips'>
-              <span className='profile-chip profile-chip--role'>
-                <BadgeCheck size={14} />
-                {profile?.role || 'Role inconnu'}
-              </span>
-              <span className={`profile-chip ${profile?.statut?.toLowerCase() === 'actif' ? 'profile-chip--status-active' : 'profile-chip--status-inactive'}`}>
-                <CircleCheckBig size={14} />
-                {profile?.statut || 'Inactif'}
-              </span>
-              <span className='profile-chip'>
-                <Phone size={14} />
-                {profile?.phone || 'Telephone indisponible'}
-              </span>
-            </div>
-          </div>
+        <div className='profile-summary-card__identity'>
+          <h1 className='profile-dashboard__title'>{profile?.full_name || 'Mon profil'}</h1>
+          <p className='profile-dashboard__role'>{profile?.role || 'Role inconnu'}</p>
+          <p className='profile-dashboard__meta'>{profile?.phone || 'Telephone indisponible'}</p>
         </div>
-
-        <div className='profile-hero__right'>
-          <div className='profile-preview-flag'>
-            <ShieldCheck size={16} />
-            Compte securise
-          </div>
-        </div>
-      </div>
+      </article>
 
       <input
         ref={photoInputRef}
@@ -441,10 +486,11 @@ const ProfileDashboard = () => {
         <div className='profile-photo-actions'>
           <Button
             type='button'
-            variant='secondary'
+            variant='ghost'
             label='Annuler la photo'
             onClick={handleCancelPhotoSelection}
             disabled={isSavingPhoto}
+            className='profile-action-button profile-action-button--ghost'
           />
           <Button
             type='button'
@@ -452,6 +498,7 @@ const ProfileDashboard = () => {
             label={isSavingPhoto ? 'Enregistrement photo...' : 'Enregistrer la photo'}
             onClick={handleSavePhoto}
             loading={isSavingPhoto}
+            className='profile-action-button profile-action-button--primary'
           />
         </div>
       )}
