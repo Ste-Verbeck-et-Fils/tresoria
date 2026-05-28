@@ -38,23 +38,6 @@ export const updateUserProfileFormData = async (formData) => {
   return response.data
 }
 
-export const changeUserPassword = async (payload) => {
-  const response = await fetch(`${API_BASE_URL}/api/users/change-password`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      ...getAuthHeaders(),
-    },
-    credentials: 'include',
-    body: JSON.stringify(payload),
-  })
 
-  if (!response.ok) {
-    const error = new Error(await parseErrorMessage(response, 'La modification du mot de passe a echoue.'))
-    error.status = response.status
-    throw error
-  }
 
-  return response.json()
-}
+

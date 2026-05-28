@@ -61,6 +61,12 @@ const Layout = () => {
     setIsSidebarExpanded(!isSidebarExpanded)
   }
 
+  const closeMobileSidebar = () => {
+    if (window.innerWidth <= 768) {
+      setIsSidebarExpanded(false)
+    }
+  }
+
   const links = [
     { label: 'Tableau de bord', href: '#', icon: <SwatchBook size={20} />, disabled: true },
     { label: 'Paiements', href: '#', icon: <CreditCard size={20} />, disabled: true },
@@ -80,14 +86,25 @@ const Layout = () => {
       <Sidebar
         isExpanded={isSidebarExpanded}
         onToggle={toggleSidebar}
+        onNavigate={closeMobileSidebar}
         links={links}
       />
       <div className='dashboard-main'>
-        <AdminHeader profile={sharedProfile} />
+        <AdminHeader
+          profile={sharedProfile}
+          isSidebarOpen={isSidebarExpanded}
+          onToggleSidebar={toggleSidebar}
+        />
         <div className='dashboard-content'>
           <Outlet context={{ sharedProfile, setSharedProfile, isProfileLoading, profileLoadError }} />
         </div>
       </div>
+      <button
+        type='button'
+        className={`dashboard-mobile-overlay ${isSidebarExpanded ? 'dashboard-mobile-overlay--visible' : ''}`}
+        aria-label='Fermer le menu'
+        onClick={closeMobileSidebar}
+      />
     </div>
   )
 }

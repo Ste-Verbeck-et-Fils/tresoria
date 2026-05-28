@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useOutletContext } from 'react-router-dom'
-import { UserCircle2, ShieldCheck, Camera, PencilLine } from 'lucide-react'
+import { UserCircle2, Camera, PencilLine } from 'lucide-react'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
 import Button from '../../../components/ui/Button'
@@ -386,7 +386,6 @@ const ProfileDashboard = () => {
         <article className='profile-section-card'>
           <div className='profile-section-card__header'>
             <h2 className='profile-section-card__title'>Securite</h2>
-           
           </div>
 
           <form className='profile-password-form' onSubmit={handleChangePassword}>

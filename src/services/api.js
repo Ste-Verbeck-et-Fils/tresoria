@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 // Création de l'instance Axios avec withCredentials activé par défaut
 // Cela permet au navigateur d'envoyer et de recevoir le cookie HttpOnly (refresh_token)
@@ -54,7 +54,7 @@ api.interceptors.response.use(
         }
       } catch (refreshError) {
         // Le refresh token a expiré ou est invalide, déconnexion forcée
-        console.error("Session expirée, veuillez vous reconnecter.", refreshError)
+        console.error('Session expirée, veuillez vous reconnecter.', refreshError)
         localStorage.removeItem('access_token')
         localStorage.removeItem('authToken')
         localStorage.removeItem('user') // Si stocké

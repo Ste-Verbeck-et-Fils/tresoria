@@ -1,42 +1,56 @@
 import React, { useEffect, useState } from 'react'
+import { Menu } from 'lucide-react'
 import './AdminHeader.css'
 import { getUserProfile } from '../../services/profileService'
 
-const AdminHeader = () => {
-  const [user, setUser] = useState(null)
+const getStoredUser = () => {
+  const storedUser = localStorage.getItem('user')
+
+  if (!storedUser) {
+    return null
+  }
+
+  try {
+    return JSON.parse(storedUser)
+  } catch {
+    return null
+  }
+}
+
+const AdminHeader = ({ profile, isSidebarOpen = false, onToggleSidebar }) => {
+  const [user, setUser] = useState(() => getStoredUser())
 
   useEffect(() => {
-    // 1. Récupérer depuis localStorage pour un affichage instantané
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser))
-      } catch (e) {}
-    }
-
-    // 2. Récupérer les données fraîches depuis le backend
     const fetchUser = async () => {
       try {
         const freshUser = await getUserProfile()
         setUser(freshUser)
-        // Mettre à jour le localStorage
         localStorage.setItem('user', JSON.stringify(freshUser))
       } catch (error) {
-        console.error('Impossible de charger les données utilisateur', error)
+        console.error('Impossible de charger les donnees utilisateur', error)
       }
     }
-    
+
     fetchUser()
   }, [])
 
-  const fullName = user?.full_name || 'Chargement...'
-  const role = user?.role || '...'
-  
-  // Utilise photo_url de Cloudinary ou génère un avatar par défaut via ui-avatars
-  const avatarUrl = user?.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'User')}&background=random&color=fff`
+  const displayedUser = profile || user
+  const fullName = displayedUser?.full_name || 'Chargement...'
+  const role = displayedUser?.role || '...'
+  const avatarUrl = displayedUser?.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayedUser?.full_name || 'User')}&background=random&color=fff`
 
   return (
     <header className='admin-header'>
+      <button
+        type='button'
+        className='admin-mobile-menu-button'
+        aria-label='Ouvrir le menu'
+        aria-expanded={isSidebarOpen}
+        onClick={onToggleSidebar}
+      >
+        <Menu size={22} />
+      </button>
+
       <div className='admin-header-right'>
         <div className='admin-profile'>
           <div className='admin-user-info'>
