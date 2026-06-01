@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, LogOut, X } from 'lucide-react'
 import './Sidebar.css'
 
@@ -7,6 +8,7 @@ const Sidebar = ({
   isExpanded = true,
   onToggle,
   onNavigate,
+  onLogout,
   className = '',
   ...props
 }) => {
@@ -26,9 +28,9 @@ const Sidebar = ({
 
       <nav className='sidebar-nav'>
         {links.map((link, idx) => (
-          <a
+          <Link
             key={idx}
-            href={link.href}
+            to={link.href}
             className={`sidebar-link ${link.active ? 'sidebar-link--active' : ''} ${link.disabled ? 'sidebar-link--disabled' : ''}`}
             title={!isExpanded ? link.label : ''}
             aria-disabled={link.disabled ? 'true' : undefined}
@@ -43,14 +45,14 @@ const Sidebar = ({
           >
             {link.icon && <span className='sidebar-icon'>{link.icon}</span>}
             {isExpanded && <span className='sidebar-label'>{link.label}</span>}
-          </a>
+          </Link>
         ))}
       </nav>
 
       <div className='sidebar-footer'>
-        <button className='sidebar-logout-btn' title={!isExpanded ? 'Déconnexion' : ''}>
+        <button className='sidebar-logout-btn' title={!isExpanded ? 'Deconnexion' : ''} onClick={onLogout}>
           <span className='logout-icon'><LogOut size={18} /></span>
-          {isExpanded && <span>Déconnexion</span>}
+          {isExpanded && <span>Deconnexion</span>}
         </button>
       </div>
     </aside>

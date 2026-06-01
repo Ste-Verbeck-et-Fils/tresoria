@@ -11,7 +11,21 @@ import ForgotPassword from './pages/public/ForgotPassword'
 import VerifyCode from './pages/public/VerifyCode'
 import ResetPassword from './pages/public/ResetPassword'
 import ProfileDashboard from './pages/public/dashboard/ProfileDashboard'
+import AuthenticatedModuleRoute from './modules/inscriptions/routes/AuthenticatedModuleRoute'
+import RoleProtectedRoute from './modules/inscriptions/routes/RoleProtectedRoute'
+import InscriptionsPage from './modules/inscriptions/pages/InscriptionsPage'
+import CreateInscriptionPage from './modules/inscriptions/pages/CreateInscriptionPage'
+import InscriptionDetailPage from './modules/inscriptions/pages/InscriptionDetailPage'
+import ClassesPage from './modules/classes/pages/ClassesPage'
+import ClasseDetailPage from './modules/classes/pages/ClasseDetailPage'
+import ClasseFormPage from './modules/classes/pages/ClasseFormPage'
+import AnneesScolairesPage from './modules/inscriptions/pages/AnneesScolairesPage'
+import ParentsPage from './modules/inscriptions/pages/ParentsPage'
+import StudentsPage from './modules/inscriptions/pages/StudentsPage'
+import AdressesPage from './modules/inscriptions/pages/AdressesPage'
+import { ADMIN_ROLES } from './modules/inscriptions/utils/data'
 import './App.css'
+import './modules/inscriptions/styles/inscriptions.css'
 
 function AppLayout () {
   return (
@@ -23,9 +37,26 @@ function AppLayout () {
           <Route path='/services' element={<Services />} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/help' element={<Help />} />
-          <Route path='/dashboard' element={<Layout />}>
-            <Route index element={<Navigate to='profile' replace />} />
-            <Route path='profile' element={<ProfileDashboard />} />
+          <Route element={<Layout />}>
+            <Route path='/dashboard'>
+              <Route index element={<Navigate to='profile' replace />} />
+              <Route path='profile' element={<ProfileDashboard />} />
+            </Route>
+            <Route element={<AuthenticatedModuleRoute />}>
+              <Route element={<RoleProtectedRoute allowedRoles={ADMIN_ROLES} />}>
+                <Route path='/inscriptions' element={<InscriptionsPage />} />
+                <Route path='/inscriptions/create' element={<CreateInscriptionPage />} />
+                <Route path='/inscriptions/:id' element={<InscriptionDetailPage />} />
+                <Route path='/classes' element={<ClassesPage />} />
+                <Route path='/classes/create' element={<ClasseFormPage mode='create' />} />
+                <Route path='/classes/:id' element={<ClasseDetailPage />} />
+                <Route path='/classes/:id/edit' element={<Navigate to='..' replace relative='path' />} />
+                <Route path='/annees-scolaires' element={<AnneesScolairesPage />} />
+              </Route>
+              <Route path='/parents' element={<ParentsPage />} />
+              <Route path='/students' element={<StudentsPage />} />
+              <Route path='/adresses' element={<AdressesPage />} />
+            </Route>
           </Route>
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />

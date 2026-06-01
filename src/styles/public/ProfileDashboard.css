@@ -3,10 +3,10 @@
   --profile-border-strong: #e4e8ef;
   --profile-surface: #ffffff;
   --profile-page: #f8f9fc;
-  --profile-heading: #0f3d33;
+  --profile-heading: #173f5f;
   --profile-muted: #6b7280;
-  --profile-orange: #f97316;
-  --profile-orange-hover: #ea580c;
+  --profile-accent: #173f5f;
+  --profile-accent-hover: #0f2f49;
 
   display: flex;
   flex-direction: column;
@@ -42,7 +42,7 @@
   height: 96px;
   flex: 0 0 96px;
   padding: 3px;
-  border: 2px solid #f2cc47;
+  border: 2px solid #a9bfd1;
   border-radius: 50%;
   background: var(--profile-surface);
   cursor: pointer;
@@ -155,14 +155,14 @@
 }
 
 .profile-edit-button--primary {
-  border-color: var(--profile-orange);
-  background: var(--profile-orange);
+  border-color: var(--profile-accent);
+  background: var(--profile-accent);
   color: #ffffff;
 }
 
 .profile-edit-button--primary:hover {
-  border-color: var(--profile-orange-hover);
-  background: var(--profile-orange-hover);
+  border-color: var(--profile-accent-hover);
+  background: var(--profile-accent-hover);
 }
 
 .profile-name-editor {
@@ -196,14 +196,14 @@
 }
 
 .profile-dashboard .profile-action-button--primary {
-  border: 1px solid var(--profile-orange);
-  background: var(--profile-orange);
+  border: 1px solid var(--profile-accent);
+  background: var(--profile-accent);
   color: #ffffff;
 }
 
 .profile-dashboard .profile-action-button--primary:hover:not(.tresoria-btn--disabled) {
-  border-color: var(--profile-orange-hover);
-  background: var(--profile-orange-hover);
+  border-color: var(--profile-accent-hover);
+  background: var(--profile-accent-hover);
   transform: none;
 }
 

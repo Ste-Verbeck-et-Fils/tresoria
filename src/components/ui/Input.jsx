@@ -12,6 +12,8 @@ const Input = ({
   disabled = false,
   error,
   onChange,
+  onSearch,
+  searchActionLabel = 'Rechercher',
   className = '',
   ...props
 }) => {
@@ -68,11 +70,17 @@ const Input = ({
           </label>
         )}
 
-        {/* Right element for searchbox (usually an arrow button/icon) */}
+        {/* Searchboxes keep their action visually separate from the text field. */}
         {variant === 'searchbox' && icon && (
-          <div className='input-icon-right-action'>
+          <button
+            type='button'
+            className='input-icon-right-action'
+            aria-label={searchActionLabel}
+            disabled={disabled}
+            onClick={() => onSearch?.(value)}
+          >
             {icon}
-          </div>
+          </button>
         )}
       </div>
 

@@ -73,7 +73,7 @@
 }
 
 .footer-socials a:hover {
-  background-color: var(--color-header-primary, #fbb034);
+  background-color: var(--color-header-primary, #173f5f);
   transform: translateY(-2px);
 }
 
@@ -94,7 +94,7 @@
   bottom: 0;
   width: 40px;
   height: 3px;
-  background-color: var(--color-header-primary, #fbb034);
+  background-color: var(--color-header-primary, #173f5f);
   border-radius: 2px;
 }
 
@@ -116,7 +116,7 @@
 }
 
 .footer-links a:hover {
-  color: var(--color-header-primary, #fbb034);
+  color: var(--color-header-primary, #173f5f);
 }
 
 .footer-contact-info {
@@ -135,7 +135,7 @@
 }
 
 .footer-contact-info svg {
-  color: var(--color-header-primary, #fbb034);
+  color: var(--color-header-primary, #173f5f);
   flex-shrink: 0;
   margin-top: 2px;
 }

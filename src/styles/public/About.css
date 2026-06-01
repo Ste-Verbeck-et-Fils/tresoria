@@ -278,7 +278,7 @@
    font-weight: 700;
    font-size: 0.95rem;
    margin-bottom: 4px;
-   color: var(--color-header-primary, #fbb034);
+   color: var(--color-header-primary, #173f5f);
  }
 
  .avatar-tooltip-desc {
