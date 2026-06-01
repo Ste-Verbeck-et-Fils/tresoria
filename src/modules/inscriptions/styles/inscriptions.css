@@ -78,6 +78,74 @@
   white-space: nowrap;
 }
 
+.active-annee-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--inscription-accent-border);
+  border-radius: 9px;
+  background: var(--inscription-accent-soft);
+}
+
+.active-annee-card__icon {
+  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--inscription-accent);
+  box-shadow: 0 5px 16px rgba(23, 63, 95, 0.08);
+}
+
+.active-annee-card__content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.active-annee-card__label {
+  margin: 0;
+  color: var(--inscription-accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.active-annee-card__details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+
+.active-annee-card h2,
+.active-annee-card__state,
+.active-annee-card__error {
+  margin: 0;
+}
+
+.active-annee-card h2 {
+  color: var(--inscription-accent);
+  font-size: 1.05rem;
+}
+
+.active-annee-card__details span:not(.inscription-status),
+.active-annee-card__state,
+.active-annee-card__error {
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.active-annee-card__error {
+  color: #b91c1c;
+}
+
 .inscription-table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -317,6 +385,18 @@
   transform: none;
 }
 
+.annee-close-action {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: var(--inscription-accent);
+}
+
+.annee-close-action:hover:not(.tresoria-btn--disabled) {
+  border-color: var(--inscription-accent-border);
+  background: var(--inscription-accent-soft);
+  transform: none;
+}
+
 .detail-page-stack {
   display: flex;
   flex-direction: column;
@@ -470,6 +550,11 @@
 
   .inscription-search {
     width: 100%;
+  }
+
+  .active-annee-card {
+    align-items: flex-start;
+    padding: 16px;
   }
 
   .inscription-form-grid,

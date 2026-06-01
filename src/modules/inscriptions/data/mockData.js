@@ -1,20 +1,3 @@
-export const mockAnneesScolaires = [
-  {
-    id: 1,
-    designation: '2025-2026',
-    frais: 350,
-    budget: 12500,
-    statut: 'ACTIF',
-  },
-  {
-    id: 2,
-    designation: '2024-2025',
-    frais: 320,
-    budget: 11000,
-    statut: 'CLOTURE',
-  },
-]
-
 export const mockParents = [
   {
     id: 1,
