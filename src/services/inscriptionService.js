@@ -75,10 +75,6 @@ export const createInscription = (payload) => (
     : getData(api.post('/api/inscriptions', payload))
 )
 
-export const getStudents = () => (
-  USE_STATIC_DATA ? getStaticData(mockStudents) : getData(api.get('/api/students'))
-)
-
 export const getAdresses = () => (
   USE_STATIC_DATA ? getStaticData(mockAdresses) : getData(api.get('/api/adresses'))
 )

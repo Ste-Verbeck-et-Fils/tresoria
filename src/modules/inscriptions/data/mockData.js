@@ -54,13 +54,22 @@ export const mockStudents = [
 
 export const mockAdresses = [
   {
+    id: 1,
+    student_id: 1,
+    commune: 'Lemba',
+    quartier: 'Salongo',
+    avenue: 'Universite',
+    numero: '18',
+    created_at: '2025-08-20T09:05:00.000Z',
+    updated_at: '2025-08-20T09:05:00.000Z',
+  },
+  {
     id: 2,
     student_id: 2,
     commune: 'Kampemba',
     quartier: 'Bel-Air',
     avenue: 'Des Ecoles',
     numero: '42',
-    student: mockStudents[1],
     created_at: '2025-08-22T10:10:00.000Z',
     updated_at: '2025-08-22T10:10:00.000Z',
   },

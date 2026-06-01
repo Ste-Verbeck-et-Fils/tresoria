@@ -566,6 +566,90 @@
   gap: 8px;
 }
 
+.student-create-form {
+  gap: 24px;
+}
+
+.student-create-form .input-wrapper,
+.student-create-form .inscription-select,
+.student-quick-parent .input-wrapper,
+.student-quick-parent .inscription-select {
+  box-sizing: border-box;
+  min-height: 56px;
+}
+
+.student-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.student-form-section + .student-form-section {
+  padding-top: 20px;
+  border-top: 1px solid #edf0f4;
+}
+
+.student-form-section h2,
+.student-quick-parent h3 {
+  margin: 0;
+  color: var(--inscription-accent);
+}
+
+.student-form-section h2 {
+  font-size: 1rem;
+}
+
+.student-parent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.student-parent-picker {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid #e5eaf0;
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.student-parent-picker .inscription-action {
+  align-self: flex-start;
+}
+
+.student-quick-parent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--inscription-accent-border);
+  border-radius: 8px;
+  background: var(--inscription-accent-soft);
+}
+
+.student-quick-parent h3 {
+  font-size: 0.95rem;
+}
+
+.student-quick-parent p {
+  margin: 5px 0 0;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.student-quick-parent__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.student-address-feedback {
+  margin-top: 18px;
+}
+
 .detail-page-stack {
   display: flex;
   flex-direction: column;
@@ -705,7 +789,8 @@
 @media (max-width: 900px) {
   .inscription-form-grid,
   .inscription-detail-grid,
-  .parent-address-form-grid {
+  .parent-address-form-grid,
+  .student-parent-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -729,7 +814,8 @@
 
   .inscription-form-grid,
   .inscription-detail-grid,
-  .parent-address-form-grid {
+  .parent-address-form-grid,
+  .student-parent-grid {
     grid-template-columns: 1fr;
   }
 
