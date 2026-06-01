@@ -1,11 +1,12 @@
 import React from 'react'
-import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
+import { ChevronLeft, ChevronRight, LogOut, X } from 'lucide-react'
 import './Sidebar.css'
 
 const Sidebar = ({
   links = [],
   isExpanded = true,
   onToggle,
+  onNavigate,
   className = '',
   ...props
 }) => {
@@ -18,6 +19,9 @@ const Sidebar = ({
         <button className='sidebar-toggle-btn' onClick={onToggle} aria-label='Toggle Sidebar'>
           {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
         </button>
+        <button className='sidebar-mobile-close' onClick={onToggle} aria-label='Fermer le menu'>
+          <X size={20} />
+        </button>
       </div>
 
       <nav className='sidebar-nav'>
@@ -25,8 +29,17 @@ const Sidebar = ({
           <a
             key={idx}
             href={link.href}
-            className={`sidebar-link ${link.active ? 'sidebar-link--active' : ''}`}
+            className={`sidebar-link ${link.active ? 'sidebar-link--active' : ''} ${link.disabled ? 'sidebar-link--disabled' : ''}`}
             title={!isExpanded ? link.label : ''}
+            aria-disabled={link.disabled ? 'true' : undefined}
+            onClick={(event) => {
+              if (link.disabled) {
+                event.preventDefault()
+                return
+              }
+
+              onNavigate?.()
+            }}
           >
             {link.icon && <span className='sidebar-icon'>{link.icon}</span>}
             {isExpanded && <span className='sidebar-label'>{link.label}</span>}

@@ -5,6 +5,7 @@ import Input from '../../components/ui/Input'
 import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
 import Feedback from '../../components/ui/Feedback'
+import { loginUser } from '../../services/authService'
 import '../../styles/public/Auth.css'
 
 const Login = () => {
@@ -21,6 +22,13 @@ const Login = () => {
     messageTimeoutRef.current = setTimeout(() => {
       setMessage({ type: '', text: '' })
     }, 5000)
+  }
+
+  const persistSession = (token, user) => {
+    localStorage.setItem('authToken', token)
+    localStorage.setItem('token', token)
+    localStorage.setItem('access_token', token)
+    localStorage.setItem('user', JSON.stringify(user || { phone: formData.phone }))
   }
 
   const handleChange = (e) => {
@@ -48,7 +56,7 @@ const Login = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current)
     setMessage({ type: '', text: '' })
@@ -56,20 +64,22 @@ const Login = () => {
     if (validate()) {
       setIsLoading(true)
 
-      // Mock API call
-      setTimeout(() => {
+      try {
+        const data = await loginUser({
+          phone: formData.phone,
+          password: formData.password,
+        })
+        
+        const token = data.token || data.access_token
+        persistSession(token, data.user)
+        
+        showMessage('success', 'Connexion réussie ! Redirection...')
+        setTimeout(() => navigate('/dashboard/profile', { replace: true }), 1500)
+      } catch (error) {
+        showMessage('error', error.message || 'Mot de passe ou numéro incorrect.')
+      } finally {
         setIsLoading(false)
-        if (formData.phone === '+243814717237' && formData.password === 'admin') {
-          showMessage('success', 'Connexion réussie ! Redirection...')
-          setTimeout(() => navigate('/dashboard'), 1500)
-        } else if (formData.phone === '+243814717237') {
-          showMessage('error', 'Mot de passe incorrect.')
-        } else {
-          // Accept any other valid phone format for testing
-          showMessage('success', 'Connexion réussie ! Redirection...')
-          setTimeout(() => navigate('/dashboard'), 1500)
-        }
-      }, 1000)
+      }
     }
   }
 

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import Home from './pages/public/Home'
 import About from './pages/public/About'
 import Services from './pages/public/Services'
@@ -10,6 +10,7 @@ import Register from './pages/public/Register'
 import ForgotPassword from './pages/public/ForgotPassword'
 import VerifyCode from './pages/public/VerifyCode'
 import ResetPassword from './pages/public/ResetPassword'
+import ProfileDashboard from './pages/public/dashboard/ProfileDashboard'
 import './App.css'
 
 function AppLayout () {
@@ -22,7 +23,10 @@ function AppLayout () {
           <Route path='/services' element={<Services />} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/help' element={<Help />} />
-          <Route path='/dashboard' element={<Layout />} />
+          <Route path='/dashboard' element={<Layout />}>
+            <Route index element={<Navigate to='profile' replace />} />
+            <Route path='profile' element={<ProfileDashboard />} />
+          </Route>
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />

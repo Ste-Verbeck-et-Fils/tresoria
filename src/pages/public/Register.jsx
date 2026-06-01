@@ -5,6 +5,7 @@ import Input from '../../components/ui/Input'
 import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
 import Feedback from '../../components/ui/Feedback'
+import { registerUser } from '../../services/authService'
 import '../../styles/public/Auth.css'
 
 const Register = () => {
@@ -64,7 +65,7 @@ const Register = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current)
     setMessage({ type: '', text: '' })
@@ -72,18 +73,21 @@ const Register = () => {
     if (validate()) {
       setIsLoading(true)
 
-      // Mock API call
-      setTimeout(() => {
+      try {
+        await registerUser({
+          full_name: formData.full_name,
+          phone: formData.phone,
+          password: formData.password,
+        })
+        
+        showMessage('success', 'Inscription réussie ! Redirection vers la connexion...')
+        setTimeout(() => navigate('/login'), 2000)
+      } catch (error) {
+        setErrors({ phone: error.message })
+        showMessage('error', error.message || 'Impossible de créer le compte.')
+      } finally {
         setIsLoading(false)
-        // Simulation: "+243814717237" est déjà utilisé
-        if (formData.phone === '+243814717237') {
-          setErrors({ phone: 'Ce numéro de téléphone est déjà utilisé' })
-          showMessage('error', 'Impossible de créer le compte, veuillez corriger les erreurs.')
-        } else {
-          showMessage('success', 'Inscription réussie ! Redirection vers la connexion...')
-          setTimeout(() => navigate('/login'), 2000)
-        }
-      }, 1000)
+      }
     }
   }
 

@@ -1,6 +1,7 @@
 .tresoria-sidebar {
   background-color: var(--color-light-darker, #fff);
   height: 100vh;
+  height: 100dvh;
   z-index: 100;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
   transition: width var(--transition-normal);
@@ -62,6 +63,10 @@
   transform: translateY(-50%) scale(1.1);
 }
 
+.sidebar-mobile-close {
+  display: none;
+}
+
 .sidebar-nav {
   padding: 16px 12px;
   display: flex;
@@ -75,6 +80,7 @@
   display: flex;
   align-items: center;
   padding: 10px 12px;
+  min-height: 42px;
   text-decoration: none;
   color: var(--color-text-muted);
   border-radius: var(--radius-md);
@@ -94,8 +100,18 @@
 }
 
 .sidebar-link--active {
-  background-color: var(--color-primary);
-  color: #fff;
+  background-color: rgba(0, 0, 0, 0.03);
+  color: var(--color-primary);
+}
+
+.sidebar-link--disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.sidebar-link--disabled:hover {
+  background: transparent;
+  color: var(--color-text-muted);
 }
 
 .sidebar-icon {
@@ -151,4 +167,150 @@
 
 .sidebar--expanded .logout-icon {
   margin-right: 12px;
+}
+
+@media (max-width: 1024px) {
+  .sidebar--expanded {
+    width: 216px;
+  }
+
+  .sidebar-nav {
+    padding: 14px 10px;
+  }
+
+  .sidebar-link {
+    padding: 10px;
+  }
+
+  #sidebar-title {
+    font-size: 1.7rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .tresoria-sidebar,
+  .sidebar--expanded,
+  .sidebar--collapsed {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(82vw, 320px);
+    height: 100vh;
+    height: 100dvh;
+    z-index: 120;
+    flex-direction: column;
+    align-items: stretch;
+    border-right: 1px solid rgba(15, 23, 42, 0.08);
+    border-top: none;
+    box-shadow: 18px 0 36px rgba(15, 23, 42, 0.18);
+    transition: transform var(--transition-normal), visibility var(--transition-normal);
+  }
+
+  .sidebar--collapsed {
+    transform: translateX(-105%);
+    visibility: hidden;
+  }
+
+  .sidebar--expanded {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .sidebar-header {
+    display: flex;
+    height: 58px;
+    justify-content: space-between;
+    padding: 0 16px;
+  }
+
+  .sidebar-toggle-btn {
+    display: none;
+  }
+
+  .sidebar-mobile-close {
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--color-dark);
+    cursor: pointer;
+  }
+
+  #sidebar-title {
+    font-size: 1.6rem;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 16px 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .sidebar-link {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 44px;
+    justify-content: flex-start;
+    padding: 10px 12px;
+    border-radius: 8px;
+  }
+
+  .sidebar-icon {
+    margin-right: 12px;
+  }
+
+  .sidebar-icon svg,
+  .logout-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .sidebar-footer {
+    padding: 14px 12px;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+  }
+
+  .sidebar-logout-btn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: flex-start;
+    padding: 10px 12px;
+    border-radius: 8px;
+  }
+
+  .sidebar--expanded .logout-icon {
+    margin-right: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .tresoria-sidebar,
+  .sidebar--expanded,
+  .sidebar--collapsed {
+    width: min(86vw, 304px);
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .sidebar-nav {
+    gap: 7px;
+    padding: 14px 10px;
+  }
+
+  .sidebar-link,
+  .sidebar-logout-btn {
+    width: 100%;
+    height: auto;
+    min-height: 42px;
+  }
 }
