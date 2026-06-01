@@ -52,7 +52,8 @@ const servicesData = [
 
 const Services = () => {
   return (
-    <><Header />
+    <div className='public-site-theme'>
+      <Header />
       <div className='services-page'>
         <div className='services-header'>
           <h1 className='section-title'>
@@ -73,7 +74,7 @@ const Services = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   )
 }
 

@@ -74,7 +74,7 @@ const ResetPassword = () => {
   }
 
   return (
-    <>
+    <div className='public-site-theme'>
       <Header />
       <div className='auth-page'>
         <div className='auth-card'>
@@ -136,7 +136,7 @@ const ResetPassword = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   )
 }
 

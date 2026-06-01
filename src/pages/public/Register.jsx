@@ -92,7 +92,7 @@ const Register = () => {
   }
 
   return (
-    <>
+    <div className='public-site-theme'>
       <Header />
       <div className='auth-page'>
         <div className='auth-card'>
@@ -162,7 +162,7 @@ const Register = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   )
 }
 

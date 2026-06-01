@@ -22,7 +22,8 @@ const About = () => {
   ]
   return (
 
-    <><Header onActionClick={() => navigate('/login')} />
+    <div className='public-site-theme'>
+      <Header onActionClick={() => navigate('/login')} />
       <div className='about-page'>
         <div className='about-header-wrapper'>
           <div className='about-header-glow' />
@@ -100,7 +101,7 @@ const About = () => {
         </section>
       </div>
       <Footer />
-    </>
+    </div>
   )
 }
 

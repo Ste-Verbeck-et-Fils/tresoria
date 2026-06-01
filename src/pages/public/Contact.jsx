@@ -37,7 +37,8 @@ const Contact = () => {
   }
 
   return (
-    <> <Header onActionClick={() => navigate('/login')} />
+    <div className='public-site-theme'>
+      <Header onActionClick={() => navigate('/login')} />
       <div className='contact-page'>
         <div className='contact-header'>
           <h1 className='section-title'>
@@ -135,7 +136,7 @@ const Contact = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   )
 }
 

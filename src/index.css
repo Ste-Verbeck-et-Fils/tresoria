@@ -4,8 +4,8 @@
     --color-header-text: #111111;
     --color-header-text-muted: #666666;
     --color-header-active-line: #111111;
-    --color-header-primary: #fbb034;
-    --color-header-primary-hover: #f39c12;
+    --color-header-primary: #173f5f;
+    --color-header-primary-hover: #0f2f49;
     --color-brush: #26B6FF;
     --radius-header: 16px;
     --header-height: 90px;
@@ -17,10 +17,9 @@
     --color-primary: #C6F53D;
 
     --color-primary-hover: #b4df36;
-    --color-secondary: #f39c12;
-    ;
+    --color-secondary: #173f5f;
 
-    --color-secondary-hover: #fbb034;
+    --color-secondary-hover: #0f2f49;
     --color-dark: #12141D;
 
     --color-dark-lighter: #1A1C24;

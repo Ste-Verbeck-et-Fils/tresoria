@@ -63,9 +63,14 @@ api.interceptors.response.use(
       }
     }
 
-    // Formater l'erreur pour la rendre plus lisible dans les services
+    // Conserver le contexte HTTP pour permettre aux pages d'afficher une erreur utile.
     const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message
-    return Promise.reject(new Error(errorMessage))
+    const apiError = new Error(errorMessage)
+    apiError.status = error.response?.status
+    apiError.code = error.response?.data?.code
+    apiError.details = error.response?.data
+
+    return Promise.reject(apiError)
   }
 )
 

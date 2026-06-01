@@ -2,8 +2,22 @@ import React, { useState, useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/layout/Sidebar'
 import AdminHeader from '../../components/layout/AdminHeader'
-import { SwatchBook, Users, CreditCard, FileText, UserRound, HelpCircle } from 'lucide-react'
+import {
+  BookOpenCheck,
+  CalendarDays,
+  CreditCard,
+  FileText,
+  GraduationCap,
+  HelpCircle,
+  MapPin,
+  School,
+  SwatchBook,
+  UserRound,
+  UsersRound,
+} from 'lucide-react'
+import { logoutUser } from '../../services/authService'
 import { getUserProfile, normalizeProfile } from '../../services/profileService'
+import { ADMIN_ROLES, normalizeRole } from '../../modules/inscriptions/utils/data'
 
 import '../../styles/public/layout.css'
 
@@ -67,10 +81,38 @@ const Layout = () => {
     }
   }
 
+  const isPathActive = (path) => location.pathname === path || location.pathname.startsWith(`${path}/`)
+  const isAdmin = ADMIN_ROLES.includes(normalizeRole(sharedProfile?.role))
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser()
+    } catch (error) {
+      console.error('Impossible de fermer la session cote serveur', error)
+    } finally {
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('token')
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('user')
+      navigate('/login', { replace: true })
+    }
+  }
+
+  const adminLinks = isAdmin
+    ? [
+        { label: 'Inscriptions', href: '/inscriptions', icon: <BookOpenCheck size={20} />, active: isPathActive('/inscriptions') },
+        { label: 'Classes', href: '/classes', icon: <School size={20} />, active: isPathActive('/classes') },
+        { label: 'Annees scolaires', href: '/annees-scolaires', icon: <CalendarDays size={20} />, active: isPathActive('/annees-scolaires') },
+      ]
+    : []
+
   const links = [
     { label: 'Tableau de bord', href: '#', icon: <SwatchBook size={20} />, disabled: true },
+    ...adminLinks,
+    { label: 'Eleves', href: '/students', icon: <GraduationCap size={20} />, active: isPathActive('/students') },
+    { label: 'Parents', href: '/parents', icon: <UsersRound size={20} />, active: isPathActive('/parents') },
+    { label: 'Adresses', href: '/adresses', icon: <MapPin size={20} />, active: isPathActive('/adresses') },
     { label: 'Paiements', href: '#', icon: <CreditCard size={20} />, disabled: true },
-    { label: 'Élèves', href: '#', icon: <Users size={20} />, disabled: true },
     { label: 'Rapports', href: '#', icon: <FileText size={20} />, disabled: true },
     {
       label: 'Profil',
@@ -87,6 +129,7 @@ const Layout = () => {
         isExpanded={isSidebarExpanded}
         onToggle={toggleSidebar}
         onNavigate={closeMobileSidebar}
+        onLogout={handleLogout}
         links={links}
       />
       <div className='dashboard-main'>
