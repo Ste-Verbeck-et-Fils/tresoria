@@ -22,7 +22,9 @@ import ClasseFormPage from './modules/classes/pages/ClasseFormPage'
 import AnneesScolairesPage from './modules/anneesScolaires/pages/AnneesScolairesPage'
 import CreateAnneeScolairePage from './modules/anneesScolaires/pages/CreateAnneeScolairePage'
 import AnneeScolaireDetailPage from './modules/anneesScolaires/pages/AnneeScolaireDetailPage'
-import ParentsPage from './modules/inscriptions/pages/ParentsPage'
+import ParentsPage from './modules/parents/pages/ParentsPage'
+import CreateParentPage from './modules/parents/pages/CreateParentPage'
+import ParentDetailPage from './modules/parents/pages/ParentDetailPage'
 import StudentsPage from './modules/inscriptions/pages/StudentsPage'
 import AdressesPage from './modules/inscriptions/pages/AdressesPage'
 import { ADMIN_ROLES } from './modules/inscriptions/utils/data'
@@ -59,6 +61,8 @@ function AppLayout () {
                 <Route path='/annees-scolaires/:id' element={<AnneeScolaireDetailPage />} />
               </Route>
               <Route path='/parents' element={<ParentsPage />} />
+              <Route path='/parents/create' element={<CreateParentPage />} />
+              <Route path='/parents/:id' element={<ParentDetailPage />} />
               <Route path='/students' element={<StudentsPage />} />
               <Route path='/adresses' element={<AdressesPage />} />
             </Route>

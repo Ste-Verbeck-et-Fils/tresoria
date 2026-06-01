@@ -9,12 +9,20 @@ import {
   getStudents,
 } from '../../../services/inscriptionService'
 import { getClasses } from '../../../services/classeService'
+import { getParents } from '../../../services/parentService'
 import SelectField from '../components/SelectField'
 import ModuleState from '../components/ModuleState'
-import { getDesignation, getStudentName, normalizeCollection, unwrapEntity } from '../utils/data'
+import {
+  getDesignation,
+  getParentName,
+  getStudentName,
+  normalizeCollection,
+  unwrapEntity,
+} from '../utils/data'
 
 const DEFAULT_FORM = {
   student_id: '',
+  parent_id: '',
   class_id: '',
   annee_scolaire_id: '',
 }
@@ -25,6 +33,7 @@ const CreateInscriptionPage = () => {
   const [errors, setErrors] = useState({})
   const [feedback, setFeedback] = useState('')
   const [students, setStudents] = useState([])
+  const [parents, setParents] = useState([])
   const [classes, setClasses] = useState([])
   const [anneesScolaires, setAnneesScolaires] = useState([])
   const [isLoadingOptions, setIsLoadingOptions] = useState(true)
@@ -36,13 +45,15 @@ const CreateInscriptionPage = () => {
     setOptionsError('')
 
     try {
-      const [studentsPayload, classesPayload, anneesPayload] = await Promise.all([
+      const [studentsPayload, parentsPayload, classesPayload, anneesPayload] = await Promise.all([
         getStudents(),
+        getParents(),
         getClasses(),
         getAnneesScolaires(),
       ])
 
       setStudents(normalizeCollection(studentsPayload))
+      setParents(normalizeCollection(parentsPayload))
       setClasses(normalizeCollection(classesPayload))
       setAnneesScolaires(normalizeCollection(anneesPayload))
     } catch (error) {
@@ -57,12 +68,14 @@ const CreateInscriptionPage = () => {
 
     Promise.all([
       getStudents(),
+      getParents(),
       getClasses(),
       getAnneesScolaires(),
     ])
-      .then(([studentsPayload, classesPayload, anneesPayload]) => {
+      .then(([studentsPayload, parentsPayload, classesPayload, anneesPayload]) => {
         if (!isCancelled) {
           setStudents(normalizeCollection(studentsPayload))
+          setParents(normalizeCollection(parentsPayload))
           setClasses(normalizeCollection(classesPayload))
           setAnneesScolaires(normalizeCollection(anneesPayload))
         }
@@ -124,6 +137,7 @@ const CreateInscriptionPage = () => {
     try {
       const payload = await createInscription({
         student_id: Number(form.student_id),
+        ...(form.parent_id ? { parent_id: Number(form.parent_id) } : {}),
         class_id: Number(form.class_id),
         annee_scolaire_id: Number(form.annee_scolaire_id),
       })
@@ -192,6 +206,19 @@ const CreateInscriptionPage = () => {
               }))}
               placeholder='Selectionner un eleve'
               error={errors.student_id}
+              disabled={isFormDisabled}
+              onChange={handleChange}
+            />
+
+            <SelectField
+              id='parent_id'
+              label='Parent responsable (optionnel)'
+              value={form.parent_id}
+              options={parents.map((parent) => ({
+                value: parent.id,
+                label: `${getParentName(parent)} - ${parent.phone || 'Telephone non renseigne'}`,
+              }))}
+              placeholder='Selectionner un parent'
               disabled={isFormDisabled}
               onChange={handleChange}
             />

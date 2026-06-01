@@ -1,34 +1,3 @@
-export const mockParents = [
-  {
-    id: 1,
-    full_name: 'Jean Mukendi',
-    phone: '+243810000001',
-    gender: 'MASCULIN',
-    profession: 'Commercant',
-  },
-  {
-    id: 2,
-    full_name: 'Esther Mukendi',
-    phone: '+243810000002',
-    gender: 'FEMININ',
-    profession: 'Enseignante',
-  },
-  {
-    id: 3,
-    full_name: 'Patrick Ilunga',
-    phone: '+243810000003',
-    gender: 'MASCULIN',
-    profession: 'Technicien',
-  },
-  {
-    id: 4,
-    full_name: 'Grace Ilunga',
-    phone: '+243810000004',
-    gender: 'FEMININ',
-    profession: 'Infirmiere',
-  },
-]
-
 export const mockStudents = [
   {
     id: 1,
@@ -85,15 +54,6 @@ export const mockStudents = [
 
 export const mockAdresses = [
   {
-    id: 1,
-    parent_id: 1,
-    commune: 'Lemba',
-    quartier: 'Salongo',
-    avenue: 'Universite',
-    numero: '18',
-    parent: mockParents[0],
-  },
-  {
     id: 2,
     student_id: 2,
     commune: 'Kampemba',
@@ -101,15 +61,8 @@ export const mockAdresses = [
     avenue: 'Des Ecoles',
     numero: '42',
     student: mockStudents[1],
-  },
-  {
-    id: 3,
-    parent_id: 4,
-    commune: 'Kampemba',
-    quartier: 'Bel-Air',
-    avenue: 'Des Ecoles',
-    numero: '42',
-    parent: mockParents[3],
+    created_at: '2025-08-22T10:10:00.000Z',
+    updated_at: '2025-08-22T10:10:00.000Z',
   },
 ]
 

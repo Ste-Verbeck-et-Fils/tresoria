@@ -100,4 +100,8 @@ export const getInscriptionStudent = (inscription) => inscription.student || ins
 
 export const getInscriptionClasse = (inscription) => inscription.classe || inscription.class
 
+export const getInscriptionParent = (inscription) => (
+  inscription.parent || (inscription.parent_id ? `Parent #${inscription.parent_id}` : null)
+)
+
 export const getInscriptionAnnee = (inscription) => inscription.annee_scolaire || inscription.anneeScolaire

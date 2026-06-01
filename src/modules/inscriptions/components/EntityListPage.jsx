@@ -18,11 +18,13 @@ const EntityListPage = ({
   getRowPath,
   searchPlaceholder = 'Rechercher',
   getSearchText,
+  searchItems,
   successMessage,
   beforePanel,
 }) => {
   const navigate = useNavigate()
   const [items, setItems] = useState([])
+  const [searchedItems, setSearchedItems] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
@@ -34,12 +36,46 @@ const EntityListPage = ({
     try {
       const payload = await loadItems()
       setItems(normalizeCollection(payload))
+      setSearchedItems(null)
     } catch (loadError) {
       setError(loadError.message || 'Impossible de charger les donnees.')
     } finally {
       setIsLoading(false)
     }
   }, [loadItems])
+
+  const handleSearch = useCallback(async () => {
+    if (!searchItems) {
+      return
+    }
+
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const normalizedSearch = search.trim()
+      const payload = normalizedSearch
+        ? await searchItems(normalizedSearch)
+        : await loadItems()
+      const normalizedItems = normalizeCollection(payload)
+
+      if (normalizedSearch) {
+        setSearchedItems(normalizedItems)
+      } else {
+        setItems(normalizedItems)
+        setSearchedItems(null)
+      }
+    } catch (searchError) {
+      setError(searchError.message || 'Impossible d effectuer la recherche.')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [loadItems, search, searchItems])
+
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value)
+    setSearchedItems(null)
+  }
 
   useEffect(() => {
     let isCancelled = false
@@ -68,19 +104,20 @@ const EntityListPage = ({
 
   const filteredItems = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase()
+    const sourceItems = searchedItems ?? items
 
     if (!normalizedSearch) {
-      return items
+      return sourceItems
     }
 
-    return items.filter((item) => {
+    return sourceItems.filter((item) => {
       const searchableValue = getSearchText
         ? getSearchText(item)
         : columns.map((column) => column.render(item)).join(' ')
 
       return String(searchableValue).toLowerCase().includes(normalizedSearch)
     })
-  }, [columns, getSearchText, items, search])
+  }, [columns, getSearchText, items, search, searchedItems])
 
   return (
     <section className='inscription-page'>
@@ -115,7 +152,14 @@ const EntityListPage = ({
             placeholder={searchPlaceholder}
             value={search}
             icon={<Search size={18} />}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={handleSearchChange}
+            onSearch={searchItems ? handleSearch : undefined}
+            onKeyDown={(event) => {
+              if (searchItems && event.key === 'Enter') {
+                event.preventDefault()
+                handleSearch()
+              }
+            }}
             className='inscription-search'
           />
           <span className='inscription-count'>{filteredItems.length} element(s)</span>
@@ -133,7 +177,7 @@ const EntityListPage = ({
             title='Echec du chargement'
             message={error}
             actionLabel='Reessayer'
-            onAction={load}
+            onAction={searchItems ? handleSearch : load}
           />
         )}
 

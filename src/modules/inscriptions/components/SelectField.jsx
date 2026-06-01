@@ -9,9 +9,10 @@ const SelectField = ({
   error,
   disabled = false,
   onChange,
+  className = '',
 }) => {
   return (
-    <div className='inscription-select-field'>
+    <div className={`inscription-select-field ${className}`}>
       <label htmlFor={id}>{label}</label>
       <select
         id={id}
