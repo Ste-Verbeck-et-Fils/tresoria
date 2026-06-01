@@ -2,7 +2,6 @@ import api from './api.js'
 import {
   mockAdresses,
   mockInscriptions,
-  mockParents,
   mockStudents,
 } from '../modules/inscriptions/data/mockData.js'
 
@@ -47,6 +46,7 @@ const createStaticInscription = (payload) => {
     student_id: payload.student_id,
     class_id: payload.class_id,
     annee_scolaire_id: payload.annee_scolaire_id,
+    parent_id: payload.parent_id || null,
     statut: 'ACTIF',
     created_at: now,
     updated_at: now,
@@ -73,10 +73,6 @@ export const createInscription = (payload) => (
   USE_STATIC_DATA
     ? createStaticInscription(payload)
     : getData(api.post('/api/inscriptions', payload))
-)
-
-export const getParents = () => (
-  USE_STATIC_DATA ? getStaticData(mockParents) : getData(api.get('/api/parents'))
 )
 
 export const getStudents = () => (

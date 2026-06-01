@@ -13,7 +13,9 @@ import {
   getDesignation,
   getInscriptionAnnee,
   getInscriptionClasse,
+  getInscriptionParent,
   getInscriptionStudent,
+  getParentName,
   getStudentName,
   unwrapEntity,
 } from '../utils/data'
@@ -66,6 +68,7 @@ const InscriptionDetailPage = () => {
 
   const student = inscription ? getInscriptionStudent(inscription) : null
   const classe = inscription ? getInscriptionClasse(inscription) : null
+  const parent = inscription ? getInscriptionParent(inscription) : null
   const anneeScolaire = inscription ? getInscriptionAnnee(inscription) : null
 
   return (
@@ -114,6 +117,7 @@ const InscriptionDetailPage = () => {
           <DetailSection title='Informations de l inscription'>
             <DetailField label='Reference' value={`#${inscription.id || id}`} />
             <DetailField label='Eleve' value={getStudentName(student)} />
+            <DetailField label='Parent responsable' value={getParentName(parent)} />
             <DetailField
               label='Classe'
               value={getDesignation(classe, `Classe #${inscription.class_id || '-'}`)}
