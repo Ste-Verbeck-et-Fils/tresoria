@@ -28,7 +28,7 @@ const faqData = [
 
 const Help = () => {
   return (
-    <main>
+    <main className='public-site-theme'>
       <Header />
       <div className='help-page'>
 

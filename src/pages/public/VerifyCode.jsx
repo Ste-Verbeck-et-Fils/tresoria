@@ -76,7 +76,7 @@ const VerifyCode = () => {
   }
 
   return (
-    <>
+    <div className='public-site-theme'>
       <Header />
       <div className='auth-page'>
         <div className='auth-card'>
@@ -141,7 +141,7 @@ const VerifyCode = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   )
 }
 

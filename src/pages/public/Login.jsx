@@ -84,7 +84,7 @@ const Login = () => {
   }
 
   return (
-    <>
+    <div className='public-site-theme'>
       <Header />
       <div className='auth-page'>
         <div className='auth-card'>
@@ -148,7 +148,7 @@ const Login = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   )
 }
 

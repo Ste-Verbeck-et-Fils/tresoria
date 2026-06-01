@@ -25,6 +25,7 @@ import StudentsPage from './modules/inscriptions/pages/StudentsPage'
 import AdressesPage from './modules/inscriptions/pages/AdressesPage'
 import { ADMIN_ROLES } from './modules/inscriptions/utils/data'
 import './App.css'
+import './styles/public/PublicTheme.css'
 import './modules/inscriptions/styles/inscriptions.css'
 
 function AppLayout () {

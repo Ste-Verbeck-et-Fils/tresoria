@@ -11,7 +11,8 @@ const Home = () => {
   const navigate = useNavigate()
 
   return (
-    <><Header />
+    <div className='public-site-theme'>
+      <Header />
       <div className='home-page'>
         <section className='hero-section'>
           <h1 className='hero-title'>
@@ -31,7 +32,7 @@ const Home = () => {
         <ServicesSection />
       </div>
       <Footer />
-    </>
+    </div>
   )
 }
 
