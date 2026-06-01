@@ -19,7 +19,9 @@ import InscriptionDetailPage from './modules/inscriptions/pages/InscriptionDetai
 import ClassesPage from './modules/classes/pages/ClassesPage'
 import ClasseDetailPage from './modules/classes/pages/ClasseDetailPage'
 import ClasseFormPage from './modules/classes/pages/ClasseFormPage'
-import AnneesScolairesPage from './modules/inscriptions/pages/AnneesScolairesPage'
+import AnneesScolairesPage from './modules/anneesScolaires/pages/AnneesScolairesPage'
+import CreateAnneeScolairePage from './modules/anneesScolaires/pages/CreateAnneeScolairePage'
+import AnneeScolaireDetailPage from './modules/anneesScolaires/pages/AnneeScolaireDetailPage'
 import ParentsPage from './modules/inscriptions/pages/ParentsPage'
 import StudentsPage from './modules/inscriptions/pages/StudentsPage'
 import AdressesPage from './modules/inscriptions/pages/AdressesPage'
@@ -53,6 +55,8 @@ function AppLayout () {
                 <Route path='/classes/:id' element={<ClasseDetailPage />} />
                 <Route path='/classes/:id/edit' element={<Navigate to='..' replace relative='path' />} />
                 <Route path='/annees-scolaires' element={<AnneesScolairesPage />} />
+                <Route path='/annees-scolaires/create' element={<CreateAnneeScolairePage />} />
+                <Route path='/annees-scolaires/:id' element={<AnneeScolaireDetailPage />} />
               </Route>
               <Route path='/parents' element={<ParentsPage />} />
               <Route path='/students' element={<StudentsPage />} />

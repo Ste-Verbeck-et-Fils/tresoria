@@ -1,11 +1,12 @@
 import api from './api.js'
 import {
   mockAdresses,
-  mockAnneesScolaires,
   mockInscriptions,
   mockParents,
   mockStudents,
 } from '../modules/inscriptions/data/mockData.js'
+
+export { getAnneesScolaires } from './anneeScolaireService.js'
 
 const getData = async (request) => {
   const response = await request
@@ -17,14 +18,11 @@ const STATIC_DELAY = 250
 
 const clone = (value) => JSON.parse(JSON.stringify(value))
 
-const getAnneeScolaire = (id) => mockAnneesScolaires.find((annee) => annee.id === Number(id))
-
 const getStudent = (id) => mockStudents.find((student) => student.id === Number(id))
 
 const enrichInscription = (inscription) => ({
   ...inscription,
   student: getStudent(inscription.student_id),
-  annee_scolaire: getAnneeScolaire(inscription.annee_scolaire_id),
 })
 
 const getStaticData = (value) => new Promise((resolve) => {
@@ -75,10 +73,6 @@ export const createInscription = (payload) => (
   USE_STATIC_DATA
     ? createStaticInscription(payload)
     : getData(api.post('/api/inscriptions', payload))
-)
-
-export const getAnneesScolaires = () => (
-  USE_STATIC_DATA ? getStaticData(mockAnneesScolaires) : getData(api.get('/api/annees-scolaires'))
 )
 
 export const getParents = () => (

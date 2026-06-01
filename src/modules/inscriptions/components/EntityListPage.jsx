@@ -19,6 +19,7 @@ const EntityListPage = ({
   searchPlaceholder = 'Rechercher',
   getSearchText,
   successMessage,
+  beforePanel,
 }) => {
   const navigate = useNavigate()
   const [items, setItems] = useState([])
@@ -102,6 +103,8 @@ const EntityListPage = ({
       </header>
 
       {successMessage && <Feedback type='success' message={successMessage} />}
+
+      {beforePanel}
 
       <div className='inscription-panel'>
         <div className='inscription-toolbar'>
