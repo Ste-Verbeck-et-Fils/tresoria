@@ -15,6 +15,7 @@ import AuthenticatedModuleRoute from './modules/inscriptions/routes/Authenticate
 import RoleProtectedRoute from './modules/inscriptions/routes/RoleProtectedRoute'
 import InscriptionsPage from './modules/inscriptions/pages/InscriptionsPage'
 import CreateInscriptionPage from './modules/inscriptions/pages/CreateInscriptionPage'
+import FullFlowInscriptionPage from './modules/inscriptions/pages/FullFlowInscriptionPage'
 import InscriptionDetailPage from './modules/inscriptions/pages/InscriptionDetailPage'
 import ClassesPage from './modules/classes/pages/ClassesPage'
 import ClasseDetailPage from './modules/classes/pages/ClasseDetailPage'
@@ -55,6 +56,7 @@ function AppLayout () {
               <Route element={<RoleProtectedRoute allowedRoles={ADMIN_ROLES} />}>
                 <Route path='/inscriptions' element={<InscriptionsPage />} />
                 <Route path='/inscriptions/create' element={<CreateInscriptionPage />} />
+                <Route path='/inscriptions/full-flow' element={<FullFlowInscriptionPage />} />
                 <Route path='/inscriptions/:id' element={<InscriptionDetailPage />} />
                 <Route path='/classes' element={<ClassesPage />} />
                 <Route path='/classes/create' element={<ClasseFormPage mode='create' />} />

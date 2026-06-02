@@ -5,7 +5,13 @@ export const normalizeAnneeScolaireForm = (annee = {}) => ({
 })
 
 export const unwrapAnneeScolaire = (payload) => (
-  payload?.annee_scolaire ?? payload?.anneeScolaire ?? payload?.data ?? payload ?? null
+  payload?.annee_scolaire ??
+  payload?.anneeScolaire ??
+  payload?.data?.annee_scolaire ??
+  payload?.data?.anneeScolaire ??
+  payload?.data ??
+  payload ??
+  null
 )
 
 export const validateAnneeScolaireForm = (form) => {

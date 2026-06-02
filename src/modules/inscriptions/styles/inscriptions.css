@@ -88,6 +88,222 @@
   background: var(--inscription-accent-soft);
 }
 
+.full-flow-callout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px;
+  border: 1px solid var(--inscription-accent-border);
+  border-radius: 9px;
+  background: var(--inscription-accent-soft);
+}
+
+.full-flow-callout h2,
+.full-flow-callout p,
+.full-flow-section h2,
+.full-flow-section p,
+.full-flow-parent-card h3,
+.full-flow-parent-card h4,
+.full-flow-parent-card p {
+  margin: 0;
+}
+
+.full-flow-callout h2,
+.full-flow-section h2,
+.full-flow-parent-card h3,
+.full-flow-parent-card h4 {
+  color: var(--inscription-accent);
+}
+
+.full-flow-callout h2 {
+  font-size: 1rem;
+}
+
+.full-flow-callout p,
+.full-flow-section p,
+.full-flow-parent-card p {
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.full-flow-eyebrow {
+  color: var(--inscription-accent) !important;
+  font-size: 0.7rem !important;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.full-flow-steps {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  list-style: none;
+}
+
+.full-flow-step {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 14px;
+  border: 1px solid #e5eaf0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
+.full-flow-step span {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f1f5f9;
+  font-weight: 800;
+}
+
+.full-flow-step--active {
+  border-color: var(--inscription-accent-border);
+  background: var(--inscription-accent-soft);
+  color: var(--inscription-accent);
+}
+
+.full-flow-step--active span,
+.full-flow-step--complete span {
+  background: var(--inscription-accent);
+  color: #ffffff;
+}
+
+.full-flow-step--complete {
+  color: var(--inscription-accent);
+}
+
+.full-flow-panel,
+.full-flow-step-stack,
+.full-flow-summary-stack,
+.full-flow-parent-create {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.full-flow-parent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.full-flow-parent-card,
+.full-flow-section {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid #e5eaf0;
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.full-flow-parent-card-selected {
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  border-color: var(--inscription-accent-border);
+  background: var(--inscription-accent-soft);
+}
+
+.full-flow-search-row,
+.full-flow-inline-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.full-flow-search-row .input-container {
+  flex: 1;
+}
+
+.full-flow-inline-actions {
+  justify-content: flex-end;
+}
+
+.full-flow-parent-results {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.full-flow-parent-result {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1px solid #d9e0ea;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #334155;
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.full-flow-parent-result:hover {
+  border-color: var(--inscription-accent-border);
+  background: var(--inscription-accent-soft);
+}
+
+.full-flow-form-grid,
+.full-flow-address-grid,
+.full-flow-school-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.full-flow-school-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.full-flow-checkbox {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 9px;
+  color: #475569;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.full-flow-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--inscription-accent);
+}
+
+.full-flow-address-panel {
+  border-color: var(--inscription-accent-border);
+  background: var(--inscription-accent-soft);
+}
+
+.full-flow-summary-stack .detail-section-card {
+  padding-bottom: 22px;
+  box-shadow: none;
+}
+
 .module-filter-panel h2,
 .module-filter-panel p {
   margin: 0;
@@ -978,7 +1194,9 @@
   .inscription-detail-grid,
   .parent-address-form-grid,
   .student-parent-grid,
-  .module-filter-panel__fields {
+  .module-filter-panel__fields,
+  .full-flow-form-grid,
+  .full-flow-address-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -986,7 +1204,9 @@
 @media (max-width: 640px) {
   .inscription-page-header,
   .inscription-toolbar,
-  .inscription-form-actions {
+  .inscription-form-actions,
+  .full-flow-callout,
+  .full-flow-parent-card-selected {
     align-items: stretch;
     flex-direction: column;
   }
@@ -1004,8 +1224,21 @@
   .inscription-detail-grid,
   .parent-address-form-grid,
   .student-parent-grid,
-  .module-filter-panel__fields {
+  .module-filter-panel__fields,
+  .full-flow-form-grid,
+  .full-flow-address-grid,
+  .full-flow-school-grid,
+  .full-flow-parent-grid {
     grid-template-columns: 1fr;
+  }
+
+  .full-flow-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .full-flow-search-row {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .inscription-panel,

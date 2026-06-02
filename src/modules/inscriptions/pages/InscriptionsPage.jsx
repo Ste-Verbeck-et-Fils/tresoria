@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import { getAnneesScolaires } from '../../../services/anneeScolaireService'
@@ -41,6 +41,7 @@ const columns = [
 
 const InscriptionsPage = () => {
   const location = useLocation()
+  const navigate = useNavigate()
   const [students, setStudents] = useState([])
   const [classes, setClasses] = useState([])
   const [anneesScolaires, setAnneesScolaires] = useState([])
@@ -190,6 +191,23 @@ const InscriptionsPage = () => {
     </section>
   )
 
+  const fullFlowCallout = (
+    <article className='full-flow-callout'>
+      <div>
+        <p className='full-flow-eyebrow'>Parcours guide</p>
+        <h2>Faire une inscription complete</h2>
+        <p>Creez l eleve et ses parents, puis finalisez son inscription depuis un assistant en plusieurs etapes.</p>
+      </div>
+      <Button
+        type='button'
+        variant='super'
+        label='Demarrer le parcours'
+        onClick={() => navigate('/inscriptions/full-flow')}
+        className='inscription-action inscription-action--primary'
+      />
+    </article>
+  )
+
   return (
     <EntityListPage
       title='Inscriptions'
@@ -210,7 +228,12 @@ const InscriptionsPage = () => {
         item.statut,
       ].join(' ')}
       successMessage={location.state?.successMessage}
-      beforePanel={filterPanel}
+      beforePanel={(
+        <>
+          {fullFlowCallout}
+          {filterPanel}
+        </>
+      )}
     />
   )
 }
