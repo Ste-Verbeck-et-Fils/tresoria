@@ -28,7 +28,9 @@ import ParentDetailPage from './modules/parents/pages/ParentDetailPage'
 import StudentsPage from './modules/students/pages/StudentsPage'
 import CreateStudentPage from './modules/students/pages/CreateStudentPage'
 import StudentDetailPage from './modules/students/pages/StudentDetailPage'
-import AdressesPage from './modules/inscriptions/pages/AdressesPage'
+import AdressesPage from './modules/adresses/pages/AdressesPage'
+import CreateAdressePage from './modules/adresses/pages/CreateAdressePage'
+import AdresseDetailPage from './modules/adresses/pages/AdresseDetailPage'
 import { ADMIN_ROLES } from './modules/inscriptions/utils/data'
 import './App.css'
 import './styles/public/PublicTheme.css'
@@ -69,6 +71,8 @@ function AppLayout () {
               <Route path='/students/create' element={<CreateStudentPage />} />
               <Route path='/students/:id' element={<StudentDetailPage />} />
               <Route path='/adresses' element={<AdressesPage />} />
+              <Route path='/adresses/create' element={<CreateAdressePage />} />
+              <Route path='/adresses/:id' element={<AdresseDetailPage />} />
             </Route>
           </Route>
           <Route path='/login' element={<Login />} />

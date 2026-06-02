@@ -2,8 +2,9 @@ import api from './api.js'
 import {
   createAdresse,
   deleteAdresse,
+  getStudentAdresses,
   updateAdresse,
-} from './parentService.js'
+} from './adresseService.js'
 
 const getData = async (request) => {
   const response = await request
@@ -20,10 +21,9 @@ export const updateStudent = (id, payload) => getData(api.patch(`/api/students/$
 
 export const deleteStudent = (id) => getData(api.delete(`/api/students/${id}`))
 
-export const getStudentAdresses = (studentId) => getData(api.get(`/api/adresses/student/${studentId}`))
-
 export {
   createAdresse,
   deleteAdresse,
+  getStudentAdresses,
   updateAdresse,
 }
