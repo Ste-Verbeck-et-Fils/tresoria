@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ArrowLeft, Plus, Search } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
@@ -27,7 +27,12 @@ import {
 } from '../utils/student'
 
 const CreateStudentPage = () => {
+  const location = useLocation()
   const navigate = useNavigate()
+  const returnTo = location.state?.returnTo
+  const returnState = returnTo
+    ? { inscriptionDraft: location.state?.inscriptionDraft }
+    : undefined
   const [form, setForm] = useState(normalizeStudentForm())
   const [adresseForm, setAdresseForm] = useState(normalizeAdresseForm())
   const [withAdresse, setWithAdresse] = useState(false)
@@ -154,6 +159,18 @@ const CreateStudentPage = () => {
         try {
           await createAdresse(getStudentAdressePayload(adresseForm, student.id))
         } catch (adresseError) {
+          if (returnTo) {
+            navigate(returnTo, {
+              replace: true,
+              state: {
+                ...returnState,
+                createdStudent: student,
+                warningMessage: adresseError.message || 'L eleve a ete cree, mais son adresse n a pas pu etre ajoutee.',
+              },
+            })
+            return
+          }
+
           navigate(`/students/${student.id}`, {
             replace: true,
             state: {
@@ -162,6 +179,18 @@ const CreateStudentPage = () => {
           })
           return
         }
+      }
+
+      if (returnTo && student?.id) {
+        navigate(returnTo, {
+          replace: true,
+          state: {
+            ...returnState,
+            createdStudent: student,
+            successMessage: 'Eleve cree et selectionne avec succes.',
+          },
+        })
+        return
       }
 
       navigate(student?.id ? `/students/${student.id}` : '/students', {
@@ -175,18 +204,20 @@ const CreateStudentPage = () => {
     }
   }
 
-  const parentOptions = parents.map((parent) => ({
+  const getParentOptions = (gender) => parents.filter((parent) => parent.gender === gender).map((parent) => ({
     value: parent.id,
     label: `${getParentName(parent)}${parent.phone ? ` - ${parent.phone}` : ''}`,
   }))
+  const pereOptions = getParentOptions('MASCULIN')
+  const mereOptions = getParentOptions('FEMININ')
 
   return (
     <section className='inscription-page'>
       <header className='inscription-page-header'>
         <div>
-          <Link to='/students' className='inscription-back-link'>
+          <Link to={returnTo || '/students'} state={returnState} className='inscription-back-link'>
             <ArrowLeft size={16} />
-            Retour aux eleves
+            {returnTo ? 'Retour a l inscription' : 'Retour aux eleves'}
           </Link>
           <h1>Nouvel eleve</h1>
           <p className='inscription-page-description'>
@@ -253,17 +284,18 @@ const CreateStudentPage = () => {
             />
             <div className='student-parent-grid'>
               <div className='student-parent-picker'>
-                <SelectField id='pere_id' label='Pere (optionnel)' value={form.pere_id} options={parentOptions} placeholder='Selectionner le pere' disabled={isSubmitting} onChange={handleChange} />
+                <SelectField id='pere_id' label='Pere (optionnel)' value={form.pere_id} options={pereOptions} placeholder='Selectionner le pere' disabled={isSubmitting} onChange={handleChange} />
                 <Button type='button' variant='ghost' label='Creer le pere' icon={<Plus size={15} />} disabled={isSubmitting} onClick={() => setQuickParentRole('pere_id')} className='inscription-action inscription-action--secondary' />
               </div>
               <div className='student-parent-picker'>
-                <SelectField id='mere_id' label='Mere (optionnel)' value={form.mere_id} options={parentOptions} placeholder='Selectionner la mere' error={errors.mere_id} disabled={isSubmitting} onChange={handleChange} />
+                <SelectField id='mere_id' label='Mere (optionnel)' value={form.mere_id} options={mereOptions} placeholder='Selectionner la mere' error={errors.mere_id} disabled={isSubmitting} onChange={handleChange} />
                 <Button type='button' variant='ghost' label='Creer la mere' icon={<Plus size={15} />} disabled={isSubmitting} onClick={() => setQuickParentRole('mere_id')} className='inscription-action inscription-action--secondary' />
               </div>
             </div>
 
             {quickParentRole && (
               <QuickParentForm
+                key={quickParentRole}
                 parentRole={quickParentRole}
                 onCancel={() => setQuickParentRole('')}
                 onCreated={handleQuickParentCreated}
@@ -300,7 +332,7 @@ const CreateStudentPage = () => {
           )}
 
           <div className='inscription-form-actions'>
-            <Button type='button' variant='ghost' label='Annuler' disabled={isSubmitting} onClick={() => navigate('/students')} className='inscription-action inscription-action--secondary' />
+            <Button type='button' variant='ghost' label='Annuler' disabled={isSubmitting} onClick={() => navigate(returnTo || '/students', { state: returnState })} className='inscription-action inscription-action--secondary' />
             <Button type='submit' variant='super' label={isSubmitting ? 'Enregistrement...' : 'Enregistrer'} loading={isSubmitting} className='inscription-action inscription-action--primary' />
           </div>
         </form>

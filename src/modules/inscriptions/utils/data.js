@@ -32,7 +32,7 @@ export const normalizeCollection = (payload) => {
   return []
 }
 
-export const unwrapEntity = (payload, key) => payload?.[key] || payload?.data || payload || {}
+export const unwrapEntity = (payload, key) => payload?.[key] || payload?.data?.[key] || payload?.data || payload || {}
 
 export const formatDate = (value) => {
   if (!value) {

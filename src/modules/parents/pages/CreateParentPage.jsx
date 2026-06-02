@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
@@ -18,7 +18,12 @@ import {
 } from '../utils/parent'
 
 const CreateParentPage = () => {
+  const location = useLocation()
   const navigate = useNavigate()
+  const returnTo = location.state?.returnTo
+  const returnState = returnTo
+    ? { inscriptionDraft: location.state?.inscriptionDraft }
+    : undefined
   const [form, setForm] = useState(normalizeParentForm())
   const [adresseForm, setAdresseForm] = useState(normalizeAdresseForm())
   const [withAdresse, setWithAdresse] = useState(false)
@@ -69,6 +74,18 @@ const CreateParentPage = () => {
         try {
           await createAdresse(getAdressePayload(adresseForm, parent.id))
         } catch (adresseError) {
+          if (returnTo) {
+            navigate(returnTo, {
+              replace: true,
+              state: {
+                ...returnState,
+                createdParent: parent,
+                warningMessage: adresseError.message || 'Le parent a ete cree, mais son adresse n a pas pu etre ajoutee.',
+              },
+            })
+            return
+          }
+
           navigate(`/parents/${parent.id}`, {
             replace: true,
             state: {
@@ -77,6 +94,18 @@ const CreateParentPage = () => {
           })
           return
         }
+      }
+
+      if (returnTo && parent?.id) {
+        navigate(returnTo, {
+          replace: true,
+          state: {
+            ...returnState,
+            createdParent: parent,
+            successMessage: 'Parent cree et selectionne avec succes.',
+          },
+        })
+        return
       }
 
       navigate(parent?.id ? `/parents/${parent.id}` : '/parents', {
@@ -94,9 +123,9 @@ const CreateParentPage = () => {
     <section className='inscription-page'>
       <header className='inscription-page-header'>
         <div>
-          <Link to='/parents' className='inscription-back-link'>
+          <Link to={returnTo || '/parents'} state={returnState} className='inscription-back-link'>
             <ArrowLeft size={16} />
-            Retour aux parents
+            {returnTo ? 'Retour a l inscription' : 'Retour aux parents'}
           </Link>
           <h1>Nouveau parent</h1>
           <p className='inscription-page-description'>
@@ -222,7 +251,7 @@ const CreateParentPage = () => {
             variant='ghost'
             label='Annuler'
             disabled={isSubmitting}
-            onClick={() => navigate('/parents')}
+            onClick={() => navigate(returnTo || '/parents', { state: returnState })}
             className='inscription-action inscription-action--secondary'
           />
           <Button

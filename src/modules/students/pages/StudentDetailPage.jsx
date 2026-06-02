@@ -214,10 +214,12 @@ const StudentDetailPage = () => {
 
   const pere = getStudentParent(student, 'pere', parents)
   const mere = getStudentParent(student, 'mere', parents)
-  const parentOptions = parents.map((parent) => ({
+  const getParentOptions = (gender) => parents.filter((parent) => parent.gender === gender).map((parent) => ({
     value: parent.id,
     label: `${getParentName(parent)}${parent.phone ? ` - ${parent.phone}` : ''}`,
   }))
+  const pereOptions = getParentOptions('MASCULIN')
+  const mereOptions = getParentOptions('FEMININ')
 
   return (
     <section className='inscription-page'>
@@ -302,8 +304,8 @@ const StudentDetailPage = () => {
                   <div className='inscription-detail-field inscription-detail-field--editing'><dt>Lieu de naissance</dt><dd><Input id='lieu_naissance' type='text' value={editForm.lieu_naissance} error={editErrors.lieu_naissance} disabled={isSaving} onChange={handleEditChange} /></dd></div>
                   <div className='inscription-detail-field inscription-detail-field--editing'><dt>Date de naissance</dt><dd><Input id='date_naissance' type='date' value={editForm.date_naissance} error={editErrors.date_naissance} disabled={isSaving} onChange={handleEditChange} /></dd></div>
                   <div className='inscription-detail-field inscription-detail-field--editing'><dt>Contact</dt><dd><Input id='contact' type='tel' value={editForm.contact} disabled={isSaving} onChange={handleEditChange} /></dd></div>
-                  <div className='inscription-detail-field inscription-detail-field--editing'><dt>Pere</dt><dd><SelectField id='pere_id' label='' value={editForm.pere_id} options={parentOptions} placeholder='Selectionner le pere' disabled={isSaving} onChange={handleEditChange} /></dd></div>
-                  <div className='inscription-detail-field inscription-detail-field--editing'><dt>Mere</dt><dd><SelectField id='mere_id' label='' value={editForm.mere_id} options={parentOptions} placeholder='Selectionner la mere' error={editErrors.mere_id} disabled={isSaving} onChange={handleEditChange} /></dd></div>
+                  <div className='inscription-detail-field inscription-detail-field--editing'><dt>Pere</dt><dd><SelectField id='pere_id' label='' value={editForm.pere_id} options={pereOptions} placeholder='Selectionner le pere' disabled={isSaving} onChange={handleEditChange} /></dd></div>
+                  <div className='inscription-detail-field inscription-detail-field--editing'><dt>Mere</dt><dd><SelectField id='mere_id' label='' value={editForm.mere_id} options={mereOptions} placeholder='Selectionner la mere' error={editErrors.mere_id} disabled={isSaving} onChange={handleEditChange} /></dd></div>
                   <div className='inscription-detail-field inscription-detail-field--editing'><dt>Province d origine</dt><dd><Input id='province_origine' type='text' value={editForm.province_origine} error={editErrors.province_origine} disabled={isSaving} onChange={handleEditChange} /></dd></div>
                   <div className='inscription-detail-field inscription-detail-field--editing'><dt>Territoire d origine</dt><dd><Input id='territoire_origine' type='text' value={editForm.territoire_origine} error={editErrors.territoire_origine} disabled={isSaving} onChange={handleEditChange} /></dd></div>
                   <div className='inscription-detail-field inscription-detail-field--editing'><dt>Collectivite d origine</dt><dd><Input id='collectivite_origine' type='text' value={editForm.collectivite_origine} error={editErrors.collectivite_origine} disabled={isSaving} onChange={handleEditChange} /></dd></div>
