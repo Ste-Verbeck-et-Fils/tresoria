@@ -63,7 +63,3 @@ export const createInscription = (payload) => (
     ? createStaticInscription(payload)
     : getData(api.post('/api/inscriptions', payload))
 )
-
-export const getAdresses = () => (
-  USE_STATIC_DATA ? getStaticData([]) : getData(api.get('/api/adresses'))
-)

@@ -78,6 +78,59 @@
   white-space: nowrap;
 }
 
+.adresse-filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--inscription-accent-border);
+  border-radius: 9px;
+  background: var(--inscription-accent-soft);
+}
+
+.adresse-filter-panel h2,
+.adresse-filter-panel p {
+  margin: 0;
+}
+
+.adresse-filter-panel h2 {
+  color: var(--inscription-accent);
+  font-size: 1rem;
+}
+
+.adresse-filter-panel p,
+.adresse-filter-panel__state {
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.adresse-filter-panel p {
+  margin-top: 5px;
+}
+
+.adresse-filter-panel__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 14px;
+}
+
+.adresse-filter-panel__clear {
+  margin-bottom: 1px;
+}
+
+.adresse-filter-panel__warning,
+.adresse-owner-warning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adresse-filter-panel__warning .tresoria-feedback,
+.adresse-owner-warning .tresoria-feedback {
+  flex: 1;
+}
+
 .active-annee-card {
   display: flex;
   align-items: center;
@@ -573,7 +626,9 @@
 .student-create-form .input-wrapper,
 .student-create-form .inscription-select,
 .student-quick-parent .input-wrapper,
-.student-quick-parent .inscription-select {
+.student-quick-parent .inscription-select,
+.adresse-create-form .input-wrapper,
+.adresse-create-form .inscription-select {
   box-sizing: border-box;
   min-height: 56px;
 }
@@ -806,7 +861,8 @@
   .inscription-form-grid,
   .inscription-detail-grid,
   .parent-address-form-grid,
-  .student-parent-grid {
+  .student-parent-grid,
+  .adresse-filter-panel__fields {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -831,7 +887,8 @@
   .inscription-form-grid,
   .inscription-detail-grid,
   .parent-address-form-grid,
-  .student-parent-grid {
+  .student-parent-grid,
+  .adresse-filter-panel__fields {
     grid-template-columns: 1fr;
   }
 

@@ -1,4 +1,10 @@
 import api from './api.js'
+export {
+  createAdresse,
+  deleteAdresse,
+  getParentAdresses,
+  updateAdresse,
+} from './adresseService.js'
 
 const getData = async (request) => {
   const response = await request
@@ -39,11 +45,3 @@ export const createParent = (payload) => getData(api.post('/api/parents', payloa
 export const updateParent = (id, payload) => getData(api.patch(`/api/parents/${id}`, payload))
 
 export const deleteParent = (id) => getData(api.delete(`/api/parents/${id}`))
-
-export const getParentAdresses = (parentId) => getData(api.get(`/api/adresses/parent/${parentId}`))
-
-export const createAdresse = (payload) => getData(api.post('/api/adresses', payload))
-
-export const updateAdresse = (id, payload) => getData(api.patch(`/api/adresses/${id}`, payload))
-
-export const deleteAdresse = (id) => getData(api.delete(`/api/adresses/${id}`))
