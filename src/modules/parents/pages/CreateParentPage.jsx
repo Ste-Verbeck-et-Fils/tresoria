@@ -142,6 +142,7 @@ const CreateParentPage = () => {
             value={form.gender}
             options={GENDER_OPTIONS}
             placeholder='Selectionner un genre'
+            error={errors.gender}
             disabled={isSubmitting}
             onChange={handleChange}
             className='parent-create-gender-field'
@@ -152,6 +153,7 @@ const CreateParentPage = () => {
             label='Profession'
             placeholder='Profession'
             value={form.profession}
+            error={errors.profession}
             disabled={isSubmitting}
             onChange={handleChange}
           />

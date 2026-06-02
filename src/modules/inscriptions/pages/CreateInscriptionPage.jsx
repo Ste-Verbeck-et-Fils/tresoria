@@ -6,10 +6,10 @@ import Feedback from '../../../components/ui/Feedback'
 import {
   createInscription,
   getAnneesScolaires,
-  getStudents,
 } from '../../../services/inscriptionService'
 import { getClasses } from '../../../services/classeService'
 import { getParents } from '../../../services/parentService'
+import { getStudents } from '../../../services/studentService'
 import SelectField from '../components/SelectField'
 import ModuleState from '../components/ModuleState'
 import {

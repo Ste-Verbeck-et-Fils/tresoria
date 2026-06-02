@@ -1,3 +1,9 @@
+import {
+  getParentAdressePayload,
+  normalizeAdresseForm,
+  validateAdresseForm,
+} from '../../inscriptions/utils/adresse'
+
 export const GENDER_OPTIONS = [
   { value: 'MASCULIN', label: 'Masculin' },
   { value: 'FEMININ', label: 'Feminin' },
@@ -10,12 +16,10 @@ export const normalizeParentForm = (parent = {}) => ({
   profession: parent.profession || '',
 })
 
-export const normalizeAdresseForm = (adresse = {}) => ({
-  commune: adresse.commune || '',
-  quartier: adresse.quartier || '',
-  avenue: adresse.avenue || '',
-  numero: adresse.numero || '',
-})
+export {
+  normalizeAdresseForm,
+  validateAdresseForm,
+}
 
 export const unwrapParent = (payload) => (
   payload?.parent ?? payload?.data?.parent ?? payload?.data ?? payload ?? null
@@ -32,26 +36,12 @@ export const validateParentForm = (form) => {
     errors.full_name = 'Le nom complet est obligatoire.'
   }
 
-  if (!form.phone.trim()) {
-    errors.phone = 'Le numero de telephone est obligatoire.'
+  if (!form.gender) {
+    errors.gender = 'Le genre est obligatoire.'
   }
 
-  return errors
-}
-
-export const validateAdresseForm = (form) => {
-  const errors = {}
-
-  if (!form.commune.trim()) {
-    errors.commune = 'La commune est obligatoire.'
-  }
-
-  if (!form.quartier.trim()) {
-    errors.quartier = 'Le quartier est obligatoire.'
-  }
-
-  if (!form.avenue.trim()) {
-    errors.avenue = 'L avenue est obligatoire.'
+  if (!form.profession.trim()) {
+    errors.profession = 'La profession est obligatoire.'
   }
 
   return errors
@@ -59,15 +49,9 @@ export const validateAdresseForm = (form) => {
 
 export const getParentPayload = (form) => ({
   full_name: form.full_name.trim(),
-  phone: form.phone.trim(),
-  gender: form.gender || null,
-  profession: form.profession.trim() || null,
+  phone: form.phone.trim() || null,
+  gender: form.gender,
+  profession: form.profession.trim(),
 })
 
-export const getAdressePayload = (form, parentId) => ({
-  parent_id: Number(parentId),
-  commune: form.commune.trim(),
-  quartier: form.quartier.trim(),
-  avenue: form.avenue.trim(),
-  numero: form.numero.trim() || null,
-})
+export const getAdressePayload = getParentAdressePayload

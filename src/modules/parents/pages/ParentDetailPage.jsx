@@ -390,13 +390,14 @@ const ParentDetailPage = () => {
                         value={editForm.gender}
                         disabled={isSaving}
                         onChange={handleEditChange}
-                        className='inscription-select'
+                        className={editErrors.gender ? 'inscription-select inscription-select--error' : 'inscription-select'}
                       >
                         <option value=''>Non renseigne</option>
                         {GENDER_OPTIONS.map((option) => (
                           <option key={option.value} value={option.value}>{option.label}</option>
                         ))}
                       </select>
+                      {editErrors.gender && <span className='inscription-field-error'>{editErrors.gender}</span>}
                     </dd>
                   </div>
                   <div className='inscription-detail-field inscription-detail-field--editing'>
@@ -406,6 +407,7 @@ const ParentDetailPage = () => {
                         id='profession'
                         type='text'
                         value={editForm.profession}
+                        error={editErrors.profession}
                         disabled={isSaving}
                         onChange={handleEditChange}
                       />

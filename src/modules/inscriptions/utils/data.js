@@ -25,6 +25,10 @@ export const normalizeCollection = (payload) => {
     }
   }
 
+  if (payload?.data && payload.data !== payload) {
+    return normalizeCollection(payload.data)
+  }
+
   return []
 }
 
@@ -96,7 +100,9 @@ export const getDesignation = (entity, fallback = 'Non renseigne') => {
   return entity.designation || entity.nom || fallback
 }
 
-export const getInscriptionStudent = (inscription) => inscription.student || inscription.eleve
+export const getInscriptionStudent = (inscription) => (
+  inscription.student || inscription.eleve || (inscription.student_id ? `Eleve #${inscription.student_id}` : null)
+)
 
 export const getInscriptionClasse = (inscription) => inscription.classe || inscription.class
 
