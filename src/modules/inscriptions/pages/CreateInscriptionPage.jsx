@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
-import {
-  createInscription,
-  getAnneesScolaires,
-} from '../../../services/inscriptionService'
+import { getAnneesScolaires } from '../../../services/anneeScolaireService'
 import { getClasses } from '../../../services/classeService'
+import { createInscription } from '../../../services/inscriptionService'
 import { getParents } from '../../../services/parentService'
 import { getStudents } from '../../../services/studentService'
-import SelectField from '../components/SelectField'
 import ModuleState from '../components/ModuleState'
+import SearchableSelectField from '../components/SearchableSelectField'
 import {
   getDesignation,
   getParentName,
@@ -27,9 +25,39 @@ const DEFAULT_FORM = {
   annee_scolaire_id: '',
 }
 
+const getInitialForm = (navigationState = {}) => {
+  const safeNavigationState = navigationState || {}
+  const form = {
+    ...DEFAULT_FORM,
+    ...safeNavigationState.inscriptionDraft,
+  }
+
+  if (safeNavigationState.createdStudent?.id) {
+    form.student_id = String(safeNavigationState.createdStudent.id)
+  }
+
+  if (safeNavigationState.createdParent?.id) {
+    form.parent_id = String(safeNavigationState.createdParent.id)
+  }
+
+  return form
+}
+
+const includeCreatedEntity = (items, createdEntity) => {
+  if (!createdEntity?.id) {
+    return items
+  }
+
+  return [
+    ...items.filter((item) => Number(item.id) !== Number(createdEntity.id)),
+    createdEntity,
+  ]
+}
+
 const CreateInscriptionPage = () => {
+  const location = useLocation()
   const navigate = useNavigate()
-  const [form, setForm] = useState(DEFAULT_FORM)
+  const [form, setForm] = useState(() => getInitialForm(location.state))
   const [errors, setErrors] = useState({})
   const [feedback, setFeedback] = useState('')
   const [students, setStudents] = useState([])
@@ -38,63 +66,107 @@ const CreateInscriptionPage = () => {
   const [anneesScolaires, setAnneesScolaires] = useState([])
   const [isLoadingOptions, setIsLoadingOptions] = useState(true)
   const [optionsError, setOptionsError] = useState('')
+  const [parentsError, setParentsError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const loadOptions = async () => {
+  const applyOptionsResults = useCallback((studentsResult, parentsResult, classesResult, anneesResult) => {
+    if (studentsResult.status === 'fulfilled') {
+      setStudents(normalizeCollection(studentsResult.value))
+    }
+
+    if (parentsResult.status === 'fulfilled') {
+      setParents(normalizeCollection(parentsResult.value))
+    }
+
+    if (classesResult.status === 'fulfilled') {
+      setClasses(normalizeCollection(classesResult.value))
+    }
+
+    if (anneesResult.status === 'fulfilled') {
+      setAnneesScolaires(normalizeCollection(anneesResult.value))
+    }
+
+    if (
+      studentsResult.status === 'rejected' ||
+      classesResult.status === 'rejected' ||
+      anneesResult.status === 'rejected'
+    ) {
+      setOptionsError('Impossible de charger les eleves, les classes ou les annees scolaires.')
+    }
+
+    if (parentsResult.status === 'rejected') {
+      setParentsError('Les parents responsables sont momentanement indisponibles.')
+    }
+  }, [])
+
+  const loadOptions = useCallback(async () => {
     setIsLoadingOptions(true)
     setOptionsError('')
+    setParentsError('')
 
-    try {
-      const [studentsPayload, parentsPayload, classesPayload, anneesPayload] = await Promise.all([
-        getStudents(),
-        getParents(),
-        getClasses(),
-        getAnneesScolaires(),
-      ])
-
-      setStudents(normalizeCollection(studentsPayload))
-      setParents(normalizeCollection(parentsPayload))
-      setClasses(normalizeCollection(classesPayload))
-      setAnneesScolaires(normalizeCollection(anneesPayload))
-    } catch (error) {
-      setOptionsError(error.message || 'Impossible de charger les donnees necessaires au formulaire.')
-    } finally {
-      setIsLoadingOptions(false)
-    }
-  }
-
-  useEffect(() => {
-    let isCancelled = false
-
-    Promise.all([
+    const results = await Promise.allSettled([
       getStudents(),
       getParents(),
       getClasses(),
       getAnneesScolaires(),
     ])
-      .then(([studentsPayload, parentsPayload, classesPayload, anneesPayload]) => {
-        if (!isCancelled) {
-          setStudents(normalizeCollection(studentsPayload))
-          setParents(normalizeCollection(parentsPayload))
-          setClasses(normalizeCollection(classesPayload))
-          setAnneesScolaires(normalizeCollection(anneesPayload))
-        }
-      })
-      .catch((error) => {
-        if (!isCancelled) {
-          setOptionsError(error.message || 'Impossible de charger les donnees necessaires au formulaire.')
-        }
-      })
-      .finally(() => {
-        if (!isCancelled) {
-          setIsLoadingOptions(false)
-        }
-      })
+
+    applyOptionsResults(...results)
+    setIsLoadingOptions(false)
+  }, [applyOptionsResults])
+
+  useEffect(() => {
+    let isCancelled = false
+
+    Promise.allSettled([
+      getStudents(),
+      getParents(),
+      getClasses(),
+      getAnneesScolaires(),
+    ]).then((results) => {
+      if (!isCancelled) {
+        applyOptionsResults(...results)
+        setIsLoadingOptions(false)
+      }
+    })
 
     return () => {
       isCancelled = true
     }
-  }, [])
+  }, [applyOptionsResults])
+
+  const studentOptions = useMemo(
+    () => includeCreatedEntity(students, location.state?.createdStudent).map((student) => ({
+      value: student.id,
+      label: getStudentName(student),
+      searchText: student.contact || '',
+    })),
+    [location.state?.createdStudent, students]
+  )
+  const parentOptions = useMemo(
+    () => includeCreatedEntity(parents, location.state?.createdParent).map((parent) => ({
+      value: parent.id,
+      label: `${getParentName(parent)}${parent.phone ? ` - ${parent.phone}` : ''}`,
+      searchText: parent.phone || '',
+    })),
+    [location.state?.createdParent, parents]
+  )
+  const classeOptions = useMemo(
+    () => classes.map((classe) => ({
+      value: classe.id,
+      label: getDesignation(classe, `Classe #${classe.id}`),
+      searchText: classe.responsable || '',
+    })),
+    [classes]
+  )
+  const anneeOptions = useMemo(
+    () => anneesScolaires.map((annee) => ({
+      value: annee.id,
+      label: getDesignation(annee, `Annee #${annee.id}`),
+      searchText: annee.statut || '',
+    })),
+    [anneesScolaires]
+  )
 
   const handleChange = (event) => {
     const { id, value } = event.target
@@ -103,6 +175,15 @@ const CreateInscriptionPage = () => {
     if (errors[id]) {
       setErrors((currentErrors) => ({ ...currentErrors, [id]: '' }))
     }
+  }
+
+  const openCreationPage = (path) => {
+    navigate(path, {
+      state: {
+        returnTo: '/inscriptions/create',
+        inscriptionDraft: form,
+      },
+    })
   }
 
   const validate = () => {
@@ -166,9 +247,14 @@ const CreateInscriptionPage = () => {
           </Link>
           <p className='inscription-page-kicker'>Module inscription</p>
           <h1>Nouvelle inscription</h1>
-          <p className='inscription-page-description'>Associez un eleve, une classe et une annee scolaire.</p>
+          <p className='inscription-page-description'>
+            Recherchez les informations necessaires puis inscrivez un eleve existant dans une classe.
+          </p>
         </div>
       </header>
+
+      {location.state?.successMessage && <Feedback type='success' message={location.state.successMessage} />}
+      {location.state?.warningMessage && <Feedback type='warning' message={location.state.warningMessage} />}
 
       {isLoadingOptions && (
         <div className='inscription-loading' role='status'>Chargement du formulaire...</div>
@@ -185,7 +271,7 @@ const CreateInscriptionPage = () => {
       )}
 
       {!isLoadingOptions && !optionsError && (
-        <form className='inscription-form-panel' onSubmit={handleSubmit}>
+        <form className='inscription-form-panel inscription-create-form' onSubmit={handleSubmit}>
           {feedback && (
             <Feedback
               type='error'
@@ -195,57 +281,60 @@ const CreateInscriptionPage = () => {
             />
           )}
 
+          {parentsError && (
+            <Feedback
+              type='warning'
+              message={`${parentsError} Vous pouvez poursuivre sans parent ou recharger la page.`}
+            />
+          )}
+
           <div className='inscription-form-grid'>
-            <SelectField
+            <SearchableSelectField
               id='student_id'
               label='Eleve'
               value={form.student_id}
-              options={students.map((student) => ({
-                value: student.id,
-                label: getStudentName(student),
-              }))}
-              placeholder='Selectionner un eleve'
+              options={studentOptions}
+              placeholder='Rechercher un eleve'
+              emptyMessage='Aucun eleve ne correspond a votre recherche.'
+              createLabel='Creer un nouvel eleve'
               error={errors.student_id}
               disabled={isFormDisabled}
               onChange={handleChange}
+              onCreate={() => openCreationPage('/students/create')}
             />
 
-            <SelectField
+            <SearchableSelectField
               id='parent_id'
               label='Parent responsable (optionnel)'
               value={form.parent_id}
-              options={parents.map((parent) => ({
-                value: parent.id,
-                label: `${getParentName(parent)} - ${parent.phone || 'Telephone non renseigne'}`,
-              }))}
-              placeholder='Selectionner un parent'
-              disabled={isFormDisabled}
+              options={parentOptions}
+              placeholder='Rechercher un parent'
+              emptyMessage='Aucun parent ne correspond a votre recherche.'
+              createLabel='Creer un nouveau parent'
+              disabled={isSubmitting}
               onChange={handleChange}
+              onCreate={() => openCreationPage('/parents/create')}
             />
 
-            <SelectField
+            <SearchableSelectField
               id='class_id'
               label='Classe'
               value={form.class_id}
-              options={classes.map((classe) => ({
-                value: classe.id,
-                label: getDesignation(classe, `Classe #${classe.id}`),
-              }))}
-              placeholder='Selectionner une classe'
+              options={classeOptions}
+              placeholder='Rechercher une classe'
+              emptyMessage='Aucune classe ne correspond a votre recherche.'
               error={errors.class_id}
               disabled={isFormDisabled}
               onChange={handleChange}
             />
 
-            <SelectField
+            <SearchableSelectField
               id='annee_scolaire_id'
               label='Annee scolaire'
               value={form.annee_scolaire_id}
-              options={anneesScolaires.map((annee) => ({
-                value: annee.id,
-                label: getDesignation(annee, `Annee #${annee.id}`),
-              }))}
-              placeholder='Selectionner une annee scolaire'
+              options={anneeOptions}
+              placeholder='Rechercher une annee scolaire'
+              emptyMessage='Aucune annee scolaire ne correspond a votre recherche.'
               error={errors.annee_scolaire_id}
               disabled={isFormDisabled}
               onChange={handleChange}

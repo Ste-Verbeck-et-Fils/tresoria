@@ -63,12 +63,18 @@ api.interceptors.response.use(
       }
     }
 
-    // Conserver le contexte HTTP pour permettre aux pages d'afficher une erreur utile.
-    const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message
+    // Afficher le message metier avant le code technique (ex: BAD_REQUEST).
+    const responseData = error.response?.data
+    const validationMessages = Array.isArray(responseData?.details)
+      ? responseData.details.map((detail) => detail?.message).filter(Boolean).join(' ')
+      : ''
+    const errorMessage = validationMessages
+      ? `${responseData?.message || 'Donnees invalides'} : ${validationMessages}`
+      : responseData?.message || responseData?.error || error.message
     const apiError = new Error(errorMessage)
     apiError.status = error.response?.status
-    apiError.code = error.response?.data?.code
-    apiError.details = error.response?.data
+    apiError.code = responseData?.code || responseData?.error
+    apiError.details = responseData
 
     return Promise.reject(apiError)
   }

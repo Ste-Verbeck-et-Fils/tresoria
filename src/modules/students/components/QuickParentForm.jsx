@@ -13,7 +13,11 @@ import {
 } from '../../parents/utils/parent'
 
 const QuickParentForm = ({ parentRole, onCancel, onCreated }) => {
-  const [form, setForm] = useState(normalizeParentForm())
+  const expectedGender = parentRole === 'pere_id' ? 'MASCULIN' : 'FEMININ'
+  const [form, setForm] = useState(() => ({
+    ...normalizeParentForm(),
+    gender: expectedGender,
+  }))
   const [errors, setErrors] = useState({})
   const [feedback, setFeedback] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -94,10 +98,10 @@ const QuickParentForm = ({ parentRole, onCancel, onCreated }) => {
           id='gender'
           label='Genre'
           value={form.gender}
-          options={GENDER_OPTIONS}
-          placeholder='Selectionner un genre'
+          options={GENDER_OPTIONS.filter((option) => option.value === expectedGender)}
+          placeholder='Genre du parent'
           error={errors.gender}
-          disabled={isSubmitting}
+          disabled
           onChange={handleChange}
         />
         <Input

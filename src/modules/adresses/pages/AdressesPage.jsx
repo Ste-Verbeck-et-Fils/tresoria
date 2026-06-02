@@ -121,13 +121,13 @@ const AdressesPage = () => {
   }
 
   const filterPanel = (
-    <section className='adresse-filter-panel'>
+    <section className='module-filter-panel'>
       <div>
         <h2>Filtrer par proprietaire</h2>
         <p>Affichez toutes les adresses ou limitez la liste a un parent ou a un eleve.</p>
       </div>
 
-      <div className='adresse-filter-panel__fields'>
+      <div className='module-filter-panel__fields'>
         <SelectField
           id='adresse-owner-type-filter'
           label='Type de proprietaire'
@@ -154,14 +154,14 @@ const AdressesPage = () => {
             variant='ghost'
             label='Effacer le filtre'
             onClick={clearFilter}
-            className='inscription-action inscription-action--secondary adresse-filter-panel__clear'
+            className='inscription-action inscription-action--secondary module-filter-panel__clear'
           />
         )}
       </div>
 
-      {isLoadingOwners && <p className='adresse-filter-panel__state'>Chargement des proprietaires...</p>}
+      {isLoadingOwners && <p className='module-filter-panel__state'>Chargement des proprietaires...</p>}
       {!isLoadingOwners && ownersError && (
-        <div className='adresse-filter-panel__warning'>
+        <div className='module-filter-panel__warning'>
           <Feedback type='warning' message={ownersError} />
           <Button
             type='button'
