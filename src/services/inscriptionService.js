@@ -23,6 +23,10 @@ export const getAnneeScolaireInscriptions = (anneeScolaireId) => (
 
 export const createInscription = (payload) => getData(api.post('/api/inscriptions', payload))
 
+export const createFullFlowInscription = (payload) => (
+  getData(api.post('/api/inscriptions/full-flow', payload))
+)
+
 export const updateInscriptionStatut = (id, statut) => (
   getData(api.patch(`/api/inscriptions/${id}/statut`, { statut }))
 )
