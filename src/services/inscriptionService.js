@@ -1,9 +1,5 @@
 import api from './api.js'
-import {
-  mockAdresses,
-  mockInscriptions,
-  mockStudents,
-} from '../modules/inscriptions/data/mockData.js'
+import { mockInscriptions } from '../modules/inscriptions/data/mockData.js'
 
 export { getAnneesScolaires } from './anneeScolaireService.js'
 
@@ -17,13 +13,6 @@ const STATIC_DELAY = 250
 
 const clone = (value) => JSON.parse(JSON.stringify(value))
 
-const getStudent = (id) => mockStudents.find((student) => student.id === Number(id))
-
-const enrichInscription = (inscription) => ({
-  ...inscription,
-  student: getStudent(inscription.student_id),
-})
-
 const getStaticData = (value) => new Promise((resolve) => {
   window.setTimeout(() => resolve(clone(value)), STATIC_DELAY)
 })
@@ -35,7 +24,7 @@ const getStaticInscription = (id) => {
     return Promise.reject(new Error('Inscription introuvable.'))
   }
 
-  return getStaticData(enrichInscription(inscription))
+  return getStaticData(inscription)
 }
 
 const createStaticInscription = (payload) => {
@@ -54,12 +43,12 @@ const createStaticInscription = (payload) => {
 
   mockInscriptions.push(inscription)
 
-  return getStaticData({ inscription: enrichInscription(inscription) })
+  return getStaticData({ inscription })
 }
 
 export const getInscriptions = () => (
   USE_STATIC_DATA
-    ? getStaticData(mockInscriptions.map(enrichInscription))
+    ? getStaticData(mockInscriptions)
     : getData(api.get('/api/inscriptions'))
 )
 
@@ -76,5 +65,5 @@ export const createInscription = (payload) => (
 )
 
 export const getAdresses = () => (
-  USE_STATIC_DATA ? getStaticData(mockAdresses) : getData(api.get('/api/adresses'))
+  USE_STATIC_DATA ? getStaticData([]) : getData(api.get('/api/adresses'))
 )

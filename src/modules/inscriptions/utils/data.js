@@ -25,6 +25,10 @@ export const normalizeCollection = (payload) => {
     }
   }
 
+  if (payload?.data && payload.data !== payload) {
+    return normalizeCollection(payload.data)
+  }
+
   return []
 }
 

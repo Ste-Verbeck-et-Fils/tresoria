@@ -12,12 +12,7 @@ import {
   validateParentForm,
 } from '../../parents/utils/parent'
 
-const QuickParentForm = ({
-  parentRole,
-  onCancel,
-  onCreated,
-  createParentRequest = createParent,
-}) => {
+const QuickParentForm = ({ parentRole, onCancel, onCreated }) => {
   const [form, setForm] = useState(normalizeParentForm())
   const [errors, setErrors] = useState({})
   const [feedback, setFeedback] = useState('')
@@ -45,8 +40,12 @@ const QuickParentForm = ({
     setIsSubmitting(true)
 
     try {
-      const payload = await createParentRequest(getParentPayload(form))
+      const payload = await createParent(getParentPayload(form))
       const parent = unwrapParent(payload)
+
+      if (!parent?.id) {
+        throw new Error('La reponse du serveur ne contient pas le parent cree.')
+      }
 
       onCreated(parent)
     } catch (error) {

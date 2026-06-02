@@ -640,6 +640,22 @@
   font-size: 0.82rem;
 }
 
+.student-quick-parent .inscription-select-field {
+  position: relative;
+}
+
+.student-quick-parent .inscription-select-field label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .student-quick-parent__actions {
   display: flex;
   justify-content: flex-end;

@@ -6,7 +6,12 @@ const getData = async (request) => {
 }
 
 const normalizeSearchResult = (payload) => {
-  const result = payload?.parents ?? payload?.parent ?? payload?.data ?? payload
+  const result = payload?.parents ??
+    payload?.parent ??
+    payload?.data?.parents ??
+    payload?.data?.parent ??
+    payload?.data ??
+    payload
 
   if (Array.isArray(result)) {
     return result

@@ -10,11 +10,11 @@ import DetailSummaryCard from '../../inscriptions/components/DetailSummaryCard'
 import ModuleState from '../../inscriptions/components/ModuleState'
 import { formatDate, getParentName, getStudentName, normalizeCollection } from '../../inscriptions/utils/data'
 import SelectField from '../../inscriptions/components/SelectField'
+import { getParents } from '../../../services/parentService'
 import {
   deleteStudent,
   getStudent,
   getStudentAdresses,
-  getStudentParents,
   updateStudent,
 } from '../../../services/studentService'
 import StudentAdresseManager from '../components/StudentAdresseManager'
@@ -35,7 +35,10 @@ const StudentDetailPage = () => {
   const [parents, setParents] = useState([])
   const [adresses, setAdresses] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingAdresses, setIsLoadingAdresses] = useState(true)
   const [loadError, setLoadError] = useState('')
+  const [parentsError, setParentsError] = useState('')
+  const [adressesError, setAdressesError] = useState('')
   const [feedback, setFeedback] = useState({ type: '', message: '' })
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -48,15 +51,8 @@ const StudentDetailPage = () => {
     setLoadError('')
 
     try {
-      const [studentPayload, adressesPayload, parentsPayload] = await Promise.all([
-        getStudent(id),
-        getStudentAdresses(id),
-        getStudentParents(),
-      ])
-
+      const studentPayload = await getStudent(id)
       setStudent(unwrapStudent(studentPayload))
-      setAdresses(normalizeCollection(adressesPayload))
-      setParents(normalizeCollection(parentsPayload))
     } catch (error) {
       setLoadError(error.message || 'Impossible de charger cet eleve.')
     } finally {
@@ -65,23 +61,37 @@ const StudentDetailPage = () => {
   }
 
   const loadAdresses = async () => {
-    const payload = await getStudentAdresses(id)
-    setAdresses(normalizeCollection(payload))
+    setIsLoadingAdresses(true)
+    setAdressesError('')
+
+    try {
+      const payload = await getStudentAdresses(id)
+      setAdresses(normalizeCollection(payload))
+    } catch (error) {
+      setAdressesError(error.message || 'Impossible de charger les adresses de cet eleve.')
+    } finally {
+      setIsLoadingAdresses(false)
+    }
+  }
+
+  const loadParents = async () => {
+    setParentsError('')
+
+    try {
+      const payload = await getParents()
+      setParents(normalizeCollection(payload))
+    } catch (error) {
+      setParentsError(error.message || 'Impossible de charger les parents de cet eleve.')
+    }
   }
 
   useEffect(() => {
     let isCancelled = false
 
-    Promise.all([
-      getStudent(id),
-      getStudentAdresses(id),
-      getStudentParents(),
-    ])
-      .then(([studentPayload, adressesPayload, parentsPayload]) => {
+    getStudent(id)
+      .then((studentPayload) => {
         if (!isCancelled) {
           setStudent(unwrapStudent(studentPayload))
-          setAdresses(normalizeCollection(adressesPayload))
-          setParents(normalizeCollection(parentsPayload))
         }
       })
       .catch((error) => {
@@ -92,6 +102,35 @@ const StudentDetailPage = () => {
       .finally(() => {
         if (!isCancelled) {
           setIsLoading(false)
+        }
+      })
+
+    getStudentAdresses(id)
+      .then((adressesPayload) => {
+        if (!isCancelled) {
+          setAdresses(normalizeCollection(adressesPayload))
+        }
+      })
+      .catch((error) => {
+        if (!isCancelled) {
+          setAdressesError(error.message || 'Impossible de charger les adresses de cet eleve.')
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) {
+          setIsLoadingAdresses(false)
+        }
+      })
+
+    getParents()
+      .then((parentsPayload) => {
+        if (!isCancelled) {
+          setParents(normalizeCollection(parentsPayload))
+        }
+      })
+      .catch((error) => {
+        if (!isCancelled) {
+          setParentsError(error.message || 'Impossible de charger les parents de cet eleve.')
         }
       })
 
@@ -206,6 +245,16 @@ const StudentDetailPage = () => {
         />
       )}
 
+      {!isLoading && parentsError && (
+        <ModuleState
+          type='warning'
+          title='Parents indisponibles'
+          message={parentsError}
+          actionLabel='Reessayer'
+          onAction={loadParents}
+        />
+      )}
+
       {isLoading && <div className='inscription-loading'>Chargement de l eleve...</div>}
 
       {!isLoading && loadError && (
@@ -282,12 +331,26 @@ const StudentDetailPage = () => {
                 )}
           </DetailSection>
 
-          <StudentAdresseManager
-            studentId={id}
-            adresses={adresses}
-            loadAdresses={loadAdresses}
-            disabled={isEditing || isDeleting}
-          />
+          {isLoadingAdresses && <div className='inscription-loading'>Chargement des adresses...</div>}
+
+          {!isLoadingAdresses && adressesError && (
+            <ModuleState
+              type='error'
+              title='Adresses indisponibles'
+              message={adressesError}
+              actionLabel='Reessayer'
+              onAction={loadAdresses}
+            />
+          )}
+
+          {!isLoadingAdresses && !adressesError && (
+            <StudentAdresseManager
+              studentId={id}
+              adresses={adresses}
+              loadAdresses={loadAdresses}
+              disabled={isEditing || isDeleting}
+            />
+          )}
 
           <DetailSection
             title='Actions sensibles'

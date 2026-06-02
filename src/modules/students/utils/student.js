@@ -60,6 +60,16 @@ export const validateStudentForm = (form) => {
     }
   })
 
+  if (form.date_naissance) {
+    const date = new Date(`${form.date_naissance}T00:00:00.000Z`)
+    const isValidDate = !Number.isNaN(date.getTime()) &&
+      date.toISOString().slice(0, 10) === form.date_naissance
+
+    if (!isValidDate) {
+      errors.date_naissance = 'La date de naissance est invalide.'
+    }
+  }
+
   if (form.pere_id && form.mere_id && Number(form.pere_id) === Number(form.mere_id)) {
     errors.mere_id = 'Le pere et la mere doivent etre differents.'
   }
@@ -88,5 +98,7 @@ export const getStudentParent = (student, parentType, parents = []) => {
   const relation = student?.[parentType]
   const relationId = student?.[`${parentType}_id`]
 
-  return relation || parents.find((parent) => parent.id === Number(relationId)) || null
+  return relation ||
+    parents.find((parent) => Number(parent.id) === Number(relationId)) ||
+    (relationId ? `Parent #${relationId}` : null)
 }

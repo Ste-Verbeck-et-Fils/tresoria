@@ -15,10 +15,8 @@ import {
 import {
   createAdresse,
   createStudent,
-  createStudentParent,
-  getStudentParents,
-  searchStudentParentsByPhone,
 } from '../../../services/studentService'
+import { getParents, searchParentsByPhone } from '../../../services/parentService'
 import QuickParentForm from '../components/QuickParentForm'
 import {
   getStudentPayload,
@@ -49,7 +47,7 @@ const CreateStudentPage = () => {
     setParentsError('')
 
     try {
-      const payload = await getStudentParents()
+      const payload = await getParents()
       setParents(normalizeCollection(payload))
     } catch (error) {
       setParentsError(error.message || 'Impossible de charger les parents.')
@@ -61,7 +59,7 @@ const CreateStudentPage = () => {
   useEffect(() => {
     let isCancelled = false
 
-    getStudentParents()
+    getParents()
       .then((payload) => {
         if (!isCancelled) {
           setParents(normalizeCollection(payload))
@@ -102,6 +100,11 @@ const CreateStudentPage = () => {
   }
 
   const handleQuickParentCreated = (parent) => {
+    if (!parent?.id) {
+      setFeedback('Impossible de selectionner le parent cree.')
+      return
+    }
+
     setParents((currentParents) => [
       ...currentParents.filter((item) => item.id !== parent.id),
       parent,
@@ -116,8 +119,8 @@ const CreateStudentPage = () => {
 
     try {
       const payload = parentPhoneSearch.trim()
-        ? await searchStudentParentsByPhone(parentPhoneSearch)
-        : await getStudentParents()
+        ? await searchParentsByPhone(parentPhoneSearch)
+        : await getParents()
 
       setParents(normalizeCollection(payload))
     } catch (error) {
@@ -194,9 +197,9 @@ const CreateStudentPage = () => {
 
       {isLoadingParents && <div className='inscription-loading'>Chargement des parents...</div>}
 
-      {!isLoadingParents && parentsError && (
+      {parentsError && (
         <ModuleState
-          type='error'
+          type='warning'
           title='Parents indisponibles'
           message={parentsError}
           actionLabel='Reessayer'
@@ -204,7 +207,7 @@ const CreateStudentPage = () => {
         />
       )}
 
-      {!isLoadingParents && !parentsError && (
+      {!isLoadingParents && (
         <form className='inscription-form-panel student-create-form' onSubmit={handleSubmit}>
           {feedback && (
             <Feedback
@@ -264,7 +267,6 @@ const CreateStudentPage = () => {
                 parentRole={quickParentRole}
                 onCancel={() => setQuickParentRole('')}
                 onCreated={handleQuickParentCreated}
-                createParentRequest={createStudentParent}
               />
             )}
           </section>
