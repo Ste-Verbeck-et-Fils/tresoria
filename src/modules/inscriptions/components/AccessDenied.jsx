@@ -7,7 +7,7 @@ const AccessDenied = () => {
       <ShieldAlert size={34} aria-hidden='true' />
       <div>
         <h1 id='access-denied-title'>Acces refuse</h1>
-        <p>Cette page est reservee aux administrateurs. Votre role ne permet pas de consulter ce contenu.</p>
+        <p>Votre role ne permet pas de consulter ce contenu.</p>
       </div>
     </section>
   )

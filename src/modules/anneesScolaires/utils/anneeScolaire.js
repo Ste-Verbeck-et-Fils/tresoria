@@ -4,11 +4,17 @@ export const normalizeAnneeScolaireForm = (annee = {}) => ({
   budget: annee.budget ?? '',
 })
 
+const firstItem = (value) => (Array.isArray(value) ? value[0] : null)
+
 export const unwrapAnneeScolaire = (payload) => (
   payload?.annee_scolaire ??
   payload?.anneeScolaire ??
+  payload?.annee ??
   payload?.data?.annee_scolaire ??
   payload?.data?.anneeScolaire ??
+  payload?.data?.annee ??
+  firstItem(payload?.annees) ??
+  firstItem(payload?.data?.annees) ??
   payload?.data ??
   payload ??
   null

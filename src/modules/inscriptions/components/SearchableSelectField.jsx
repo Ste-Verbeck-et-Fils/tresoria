@@ -34,6 +34,10 @@ const SearchableSelectField = ({
   const canCreate = Boolean(onCreate && createLabel && normalizedSearch && filteredOptions.length === 0)
 
   const selectOption = (option) => {
+    if (option.disabled) {
+      return
+    }
+
     setSearch('')
     setHasTyped(false)
     setIsOpen(false)
@@ -97,10 +101,13 @@ const SearchableSelectField = ({
             <button
               key={option.value}
               type='button'
+              disabled={option.disabled}
               onClick={() => selectOption(option)}
-              className={`inscription-searchable-field__option ${normalizeValue(option.value) === normalizeValue(value) ? 'inscription-searchable-field__option--selected' : ''}`}
+              title={option.disabledReason || undefined}
+              className={`inscription-searchable-field__option ${normalizeValue(option.value) === normalizeValue(value) ? 'inscription-searchable-field__option--selected' : ''} ${option.disabled ? 'inscription-searchable-field__option--disabled' : ''}`}
             >
-              {option.label}
+              <span>{option.label}</span>
+              {option.disabledReason && <small>{option.disabledReason}</small>}
             </button>
           ))}
 

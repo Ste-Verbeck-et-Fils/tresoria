@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { ArrowLeft, GraduationCap, PencilLine, Trash2 } from 'lucide-react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import {
   deleteInscription,
   getInscription,
+  getInscriptionSolde,
   updateInscriptionStatut,
 } from '../../../services/inscriptionService'
 import DetailField from '../components/DetailField'
@@ -23,17 +24,29 @@ import {
   getInscriptionStudent,
   getParentName,
   getStudentName,
+  normalizeRole,
   unwrapEntity,
+  ADMIN_ROLES,
 } from '../utils/data'
+import {
+  formatAmount,
+  getInscriptionFinancialSummary,
+  unwrapInscriptionSolde,
+} from '../utils/amounts'
 import { INSCRIPTION_STATUS_OPTIONS } from '../utils/inscription'
 
 const InscriptionDetailPage = () => {
   const { id } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
+  const context = useOutletContext()
+  const canManageInscription = ADMIN_ROLES.includes(normalizeRole(context.sharedProfile?.role))
   const [inscription, setInscription] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
+  const [solde, setSolde] = useState(() => location.state?.soldePreview || null)
+  const [isLoadingSolde, setIsLoadingSolde] = useState(false)
+  const [soldeError, setSoldeError] = useState('')
   const [feedback, setFeedback] = useState({ type: '', message: '' })
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -43,37 +56,57 @@ const InscriptionDetailPage = () => {
 
   const loadInscription = async () => {
     setIsLoading(true)
+    setIsLoadingSolde(true)
     setLoadError('')
+    setSoldeError('')
 
-    try {
-      const payload = await getInscription(id)
-      setInscription(unwrapEntity(payload, 'inscription'))
-    } catch (error) {
-      setLoadError(error.message || 'Impossible de charger cette inscription.')
-    } finally {
-      setIsLoading(false)
+    const [inscriptionResult, soldeResult] = await Promise.allSettled([
+      getInscription(id),
+      getInscriptionSolde(id),
+    ])
+
+    if (inscriptionResult.status === 'fulfilled') {
+      setInscription(unwrapEntity(inscriptionResult.value, 'inscription'))
+    } else {
+      setLoadError(inscriptionResult.reason?.message || 'Impossible de charger cette inscription.')
     }
+
+    if (soldeResult.status === 'fulfilled') {
+      setSolde(unwrapInscriptionSolde(soldeResult.value))
+    } else {
+      setSoldeError(soldeResult.reason?.message || 'Impossible de charger le solde de cette inscription.')
+    }
+
+    setIsLoading(false)
+    setIsLoadingSolde(false)
   }
 
   useEffect(() => {
     let isCancelled = false
 
-    getInscription(id)
-      .then((payload) => {
-        if (!isCancelled) {
-          setInscription(unwrapEntity(payload, 'inscription'))
-        }
-      })
-      .catch((error) => {
-        if (!isCancelled) {
-          setLoadError(error.message || 'Impossible de charger cette inscription.')
-        }
-      })
-      .finally(() => {
-        if (!isCancelled) {
-          setIsLoading(false)
-        }
-      })
+    Promise.allSettled([
+      getInscription(id),
+      getInscriptionSolde(id),
+    ]).then(([inscriptionResult, soldeResult]) => {
+      if (isCancelled) {
+        return
+      }
+
+      if (inscriptionResult.status === 'fulfilled') {
+        setInscription(unwrapEntity(inscriptionResult.value, 'inscription'))
+      } else {
+        setLoadError(inscriptionResult.reason?.message || 'Impossible de charger cette inscription.')
+      }
+
+      if (soldeResult.status === 'fulfilled') {
+        setSolde(unwrapInscriptionSolde(soldeResult.value))
+      } else {
+        setSoldeError(soldeResult.reason?.message || 'Impossible de charger le solde de cette inscription.')
+      }
+
+      setIsLoading(false)
+      setIsLoadingSolde(false)
+    })
 
     return () => {
       isCancelled = true
@@ -151,22 +184,29 @@ const InscriptionDetailPage = () => {
   const classe = inscription ? getInscriptionClasse(inscription) : null
   const parent = inscription ? getInscriptionParent(inscription) : null
   const anneeScolaire = inscription ? getInscriptionAnnee(inscription) : null
+  const financialSummary = inscription ? getInscriptionFinancialSummary(inscription, solde) : null
 
   return (
     <section className='inscription-page'>
       <header className='inscription-page-header'>
         <div>
-          <Link to='/inscriptions' className='inscription-back-link'>
+          <Link
+            to={canManageInscription ? '/inscriptions' : '/dashboard/profile'}
+            className='inscription-back-link'
+          >
             <ArrowLeft size={16} />
-            Retour aux inscriptions
+            {canManageInscription ? 'Retour aux inscriptions' : 'Retour au tableau de bord'}
           </Link>
           <p className='inscription-page-kicker'>Module inscription</p>
           <h1>Detail de l inscription #{id}</h1>
-          <p className='inscription-page-description'>Consultez cette inscription et mettez son statut a jour.</p>
+          <p className='inscription-page-description'>
+            Consultez les informations de l inscription et son solde financier.
+          </p>
         </div>
       </header>
 
       {location.state?.successMessage && <Feedback type='success' message={location.state.successMessage} />}
+      {location.state?.warningMessage && <Feedback type='warning' message={location.state.warningMessage} />}
 
       {feedback.message && (
         <Feedback
@@ -204,16 +244,20 @@ const InscriptionDetailPage = () => {
           <DetailSection
             title='Informations de l inscription'
             actions={(
-              isEditing
+              canManageInscription
                 ? (
-                  <>
-                    <Button type='button' variant='ghost' label='Annuler' disabled={isSaving} onClick={handleCancelEdit} className='inscription-action inscription-action--secondary' />
-                    <Button type='button' variant='super' label={isSaving ? 'Enregistrement...' : 'Enregistrer'} loading={isSaving} onClick={handleSaveStatut} className='inscription-action inscription-action--primary' />
-                  </>
+                    isEditing
+                      ? (
+                        <>
+                          <Button type='button' variant='ghost' label='Annuler' disabled={isSaving} onClick={handleCancelEdit} className='inscription-action inscription-action--secondary' />
+                          <Button type='button' variant='super' label={isSaving ? 'Enregistrement...' : 'Enregistrer'} loading={isSaving} onClick={handleSaveStatut} className='inscription-action inscription-action--primary' />
+                        </>
+                        )
+                      : (
+                        <Button type='button' variant='ghost' label='Modifier le statut' icon={<PencilLine size={16} />} disabled={isDeleting} onClick={handleStartEdit} className='inscription-action inscription-action--secondary' />
+                        )
                   )
-                : (
-                  <Button type='button' variant='ghost' label='Modifier le statut' icon={<PencilLine size={16} />} disabled={isDeleting} onClick={handleStartEdit} className='inscription-action inscription-action--secondary' />
-                  )
+                : null
             )}
           >
             <DetailField label='Reference' value={`#${inscription.id || id}`} />
@@ -245,10 +289,40 @@ const InscriptionDetailPage = () => {
               : <DetailField label='Statut' value={inscription.statut?.replace(/_/g, ' ')} />}
           </DetailSection>
 
+          <DetailSection title='Montants de l inscription'>
+            {financialSummary?.detteReportee > 0 && (
+              <div className='inscription-detail-field inscription-detail-field--wide inscription-debt-notice'>
+                <dt>Dette reportee</dt>
+                <dd>
+                  Une ancienne dette de {formatAmount(financialSummary.detteReportee)} a ete ajoutee au total a payer.
+                </dd>
+              </div>
+            )}
+
+            {isLoadingSolde && <DetailField label='Solde' value='Chargement du solde...' />}
+
+            {!isLoadingSolde && soldeError && (
+              <div className='inscription-detail-field inscription-detail-field--wide inscription-solde-error'>
+                <dt>Erreur solde</dt>
+                <dd>{soldeError}</dd>
+              </div>
+            )}
+
+            <DetailField label='Frais de l annee scolaire' value={formatAmount(financialSummary?.frais)} />
+            <DetailField label='Dette reportee' value={formatAmount(financialSummary?.detteReportee)} />
+            <DetailField label='Total a payer' value={formatAmount(financialSummary?.totalAPayer)} />
+            <DetailField label='Montant paye' value={formatAmount(financialSummary?.montantPaye)} />
+            <DetailField label='Reste a payer' value={formatAmount(financialSummary?.resteAPayer)} />
+          </DetailSection>
+
           <DetailSection
             title='Suivi de l inscription'
             actions={(
-              <Button type='button' variant='ghost' label={isDeleting ? 'Suppression...' : 'Supprimer'} icon={<Trash2 size={16} />} loading={isDeleting} disabled={isEditing} onClick={handleDelete} className='inscription-action classe-delete-action' />
+              canManageInscription
+                ? (
+                  <Button type='button' variant='ghost' label={isDeleting ? 'Suppression...' : 'Supprimer'} icon={<Trash2 size={16} />} loading={isDeleting} disabled={isEditing} onClick={handleDelete} className='inscription-action classe-delete-action' />
+                  )
+                : null
             )}
           >
             <DetailField label='Date de creation' value={formatDate(inscription.created_at)} />

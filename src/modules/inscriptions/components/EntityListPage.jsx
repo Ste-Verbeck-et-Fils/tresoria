@@ -21,6 +21,7 @@ const EntityListPage = ({
   searchItems,
   successMessage,
   beforePanel,
+  kicker = 'Module inscription',
 }) => {
   const navigate = useNavigate()
   const [items, setItems] = useState([])
@@ -80,7 +81,16 @@ const EntityListPage = ({
   useEffect(() => {
     let isCancelled = false
 
-    loadItems()
+    Promise.resolve()
+      .then(() => {
+        if (!isCancelled) {
+          setIsLoading(true)
+          setError('')
+          setSearchedItems(null)
+        }
+
+        return loadItems()
+      })
       .then((payload) => {
         if (!isCancelled) {
           setItems(normalizeCollection(payload))
@@ -123,7 +133,7 @@ const EntityListPage = ({
     <section className='inscription-page'>
       <header className='inscription-page-header'>
         <div>
-          <p className='inscription-page-kicker'>Module inscription</p>
+          <p className='inscription-page-kicker'>{kicker}</p>
           <h1>{title}</h1>
           {description && <p className='inscription-page-description'>{description}</p>}
         </div>
