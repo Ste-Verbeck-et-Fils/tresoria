@@ -9,6 +9,8 @@ export const getInscriptions = () => getData(api.get('/api/inscriptions'))
 
 export const getInscription = (id) => getData(api.get(`/api/inscriptions/${id}`))
 
+export const getInscriptionSolde = (id) => getData(api.get(`/api/inscriptions/${id}/solde`))
+
 export const getStudentInscriptions = (studentId) => (
   getData(api.get(`/api/inscriptions/student/${studentId}`))
 )
@@ -22,10 +24,6 @@ export const getAnneeScolaireInscriptions = (anneeScolaireId) => (
 )
 
 export const createInscription = (payload) => getData(api.post('/api/inscriptions', payload))
-
-export const createFullFlowInscription = (payload) => (
-  getData(api.post('/api/inscriptions/full-flow', payload))
-)
 
 export const updateInscriptionStatut = (id, statut) => (
   getData(api.patch(`/api/inscriptions/${id}/statut`, { statut }))

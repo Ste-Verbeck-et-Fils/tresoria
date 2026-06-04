@@ -17,6 +17,11 @@ import {
   normalizeCollection,
   unwrapEntity,
 } from '../utils/data'
+import {
+  formatAmount,
+  getInscriptionFinancialSummary,
+  getSoldePreviewFromSummary,
+} from '../utils/amounts'
 
 const DEFAULT_FORM = {
   student_id: '',
@@ -167,6 +172,14 @@ const CreateInscriptionPage = () => {
     })),
     [anneesScolaires]
   )
+  const selectedAnneeScolaire = useMemo(
+    () => anneesScolaires.find((annee) => String(annee.id) === String(form.annee_scolaire_id)),
+    [anneesScolaires, form.annee_scolaire_id]
+  )
+  const financialPreview = useMemo(
+    () => getInscriptionFinancialSummary({ annee_scolaire: selectedAnneeScolaire }),
+    [selectedAnneeScolaire]
+  )
 
   const handleChange = (event) => {
     const { id, value } = event.target
@@ -223,10 +236,18 @@ const CreateInscriptionPage = () => {
         annee_scolaire_id: Number(form.annee_scolaire_id),
       })
       const inscription = unwrapEntity(payload, 'inscription')
+      const createdSummary = getInscriptionFinancialSummary(inscription)
+      const warningMessage = createdSummary.detteReportee > 0
+        ? `Une dette reportee de ${formatAmount(createdSummary.detteReportee)} a ete ajoutee a cette inscription.`
+        : ''
 
       navigate(inscription.id ? `/inscriptions/${inscription.id}` : '/inscriptions', {
         replace: true,
-        state: { successMessage: 'Inscription creee avec succes.' },
+        state: {
+          successMessage: 'Inscription creee avec succes.',
+          warningMessage,
+          soldePreview: getSoldePreviewFromSummary(createdSummary),
+        },
       })
     } catch (error) {
       setFeedback(error.message || 'Impossible de creer l inscription.')
@@ -340,6 +361,41 @@ const CreateInscriptionPage = () => {
               onChange={handleChange}
             />
           </div>
+
+          <section className='inscription-amount-panel'>
+            <div>
+              <h2>Montants de l inscription</h2>
+              <p>
+                Les frais viennent de l annee scolaire selectionnee. Toute ancienne dette active sera
+                reportee automatiquement par le backend lors de l enregistrement.
+              </p>
+            </div>
+
+            <div className='inscription-amount-grid'>
+              <article className='inscription-amount-card'>
+                <span>Frais de l annee scolaire</span>
+                <strong>{formatAmount(financialPreview.frais)}</strong>
+              </article>
+
+              <article className='inscription-amount-card'>
+                <span>Dette reportee</span>
+                <strong>{formatAmount(financialPreview.detteReportee)}</strong>
+                <small>Verifiee sur les anciennes inscriptions actives de l eleve.</small>
+              </article>
+
+              <article className='inscription-amount-card inscription-amount-card--total'>
+                <span>Total a payer</span>
+                <strong>{formatAmount(financialPreview.totalAPayer)}</strong>
+              </article>
+            </div>
+
+            {form.student_id && selectedAnneeScolaire && (
+              <Feedback
+                type='info'
+                message='Si une dette restante existe pour cet eleve, elle sera ajoutee a la nouvelle inscription et visible dans le solde apres creation.'
+              />
+            )}
+          </section>
 
           <div className='inscription-form-actions'>
             <Button

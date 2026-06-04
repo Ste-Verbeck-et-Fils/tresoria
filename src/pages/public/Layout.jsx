@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import { logoutUser } from '../../services/authService'
 import { getUserProfile, normalizeProfile } from '../../services/profileService'
-import { ADMIN_ROLES, normalizeRole } from '../../modules/inscriptions/utils/data'
+import { ADMIN_ROLES, EXPENSE_ROLES, PAYMENT_ROLES, TREASURY_ROLES, normalizeRole } from '../../modules/inscriptions/utils/data'
 
 import '../../styles/public/layout.css'
 
@@ -82,7 +82,11 @@ const Layout = () => {
   }
 
   const isPathActive = (path) => location.pathname === path || location.pathname.startsWith(`${path}/`)
-  const isAdmin = ADMIN_ROLES.includes(normalizeRole(sharedProfile?.role))
+  const normalizedRole = normalizeRole(sharedProfile?.role)
+  const isAdmin = ADMIN_ROLES.includes(normalizedRole)
+  const canAccessPayments = PAYMENT_ROLES.includes(normalizedRole)
+  const canAccessExpenses = EXPENSE_ROLES.includes(normalizedRole)
+  const canAccessTreasury = TREASURY_ROLES.includes(normalizedRole)
 
   const handleLogout = async () => {
     try {
@@ -106,14 +110,37 @@ const Layout = () => {
       ]
     : []
 
+  const paymentLinks = canAccessPayments
+    ? [
+        { label: 'Paiements', href: '/paiements', icon: <CreditCard size={20} />, active: isPathActive('/paiements') },
+      ]
+    : []
+
+  const expenseLinks = canAccessExpenses
+    ? [
+        { label: 'Depenses', href: '/depenses', icon: <FileText size={20} />, active: isPathActive('/depenses') },
+      ]
+    : []
+
+  const dashboardLink = canAccessTreasury
+    ? { label: 'Tresorerie', href: '/tresorerie', icon: <SwatchBook size={20} />, active: location.pathname === '/tresorerie' }
+    : { label: 'Tableau de bord', href: '#', icon: <SwatchBook size={20} />, disabled: true }
+
+  const reportLinks = canAccessTreasury
+    ? [
+        { label: 'Rapport financier', href: '/tresorerie/rapport-annee', icon: <FileText size={20} />, active: isPathActive('/tresorerie/rapport-annee') },
+      ]
+    : []
+
   const links = [
-    { label: 'Tableau de bord', href: '#', icon: <SwatchBook size={20} />, disabled: true },
+    dashboardLink,
     ...adminLinks,
     { label: 'Eleves', href: '/students', icon: <GraduationCap size={20} />, active: isPathActive('/students') },
     { label: 'Parents', href: '/parents', icon: <UsersRound size={20} />, active: isPathActive('/parents') },
     { label: 'Adresses', href: '/adresses', icon: <MapPin size={20} />, active: isPathActive('/adresses') },
-    { label: 'Paiements', href: '#', icon: <CreditCard size={20} />, disabled: true },
-    { label: 'Rapports', href: '#', icon: <FileText size={20} />, disabled: true },
+    ...paymentLinks,
+    ...expenseLinks,
+    ...reportLinks,
     {
       label: 'Profil',
       href: '/dashboard/profile',

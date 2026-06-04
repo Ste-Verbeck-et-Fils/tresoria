@@ -88,222 +88,6 @@
   background: var(--inscription-accent-soft);
 }
 
-.full-flow-callout {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 18px 20px;
-  border: 1px solid var(--inscription-accent-border);
-  border-radius: 9px;
-  background: var(--inscription-accent-soft);
-}
-
-.full-flow-callout h2,
-.full-flow-callout p,
-.full-flow-section h2,
-.full-flow-section p,
-.full-flow-parent-card h3,
-.full-flow-parent-card h4,
-.full-flow-parent-card p {
-  margin: 0;
-}
-
-.full-flow-callout h2,
-.full-flow-section h2,
-.full-flow-parent-card h3,
-.full-flow-parent-card h4 {
-  color: var(--inscription-accent);
-}
-
-.full-flow-callout h2 {
-  font-size: 1rem;
-}
-
-.full-flow-callout p,
-.full-flow-section p,
-.full-flow-parent-card p {
-  margin-top: 5px;
-  color: #64748b;
-  font-size: 0.82rem;
-  line-height: 1.55;
-}
-
-.full-flow-eyebrow {
-  color: var(--inscription-accent) !important;
-  font-size: 0.7rem !important;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.full-flow-steps {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  list-style: none;
-}
-
-.full-flow-step {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 9px;
-  padding: 12px 14px;
-  border: 1px solid #e5eaf0;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #64748b;
-  font-size: 0.78rem;
-}
-
-.full-flow-step span {
-  display: inline-flex;
-  width: 24px;
-  height: 24px;
-  flex: 0 0 24px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: #f1f5f9;
-  font-weight: 800;
-}
-
-.full-flow-step--active {
-  border-color: var(--inscription-accent-border);
-  background: var(--inscription-accent-soft);
-  color: var(--inscription-accent);
-}
-
-.full-flow-step--active span,
-.full-flow-step--complete span {
-  background: var(--inscription-accent);
-  color: #ffffff;
-}
-
-.full-flow-step--complete {
-  color: var(--inscription-accent);
-}
-
-.full-flow-panel,
-.full-flow-step-stack,
-.full-flow-summary-stack,
-.full-flow-parent-create {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.full-flow-parent-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.full-flow-parent-card,
-.full-flow-section {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 16px;
-  padding: 18px;
-  border: 1px solid #e5eaf0;
-  border-radius: 8px;
-  background: #fbfcfe;
-}
-
-.full-flow-parent-card-selected {
-  align-items: center;
-  flex-direction: row;
-  justify-content: space-between;
-  border-color: var(--inscription-accent-border);
-  background: var(--inscription-accent-soft);
-}
-
-.full-flow-search-row,
-.full-flow-inline-actions {
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-}
-
-.full-flow-search-row .input-container {
-  flex: 1;
-}
-
-.full-flow-inline-actions {
-  justify-content: flex-end;
-}
-
-.full-flow-parent-results {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.full-flow-parent-result {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 11px 12px;
-  border: 1px solid #d9e0ea;
-  border-radius: 7px;
-  background: #ffffff;
-  color: #334155;
-  font-family: var(--font-primary);
-  font-size: 0.8rem;
-  text-align: left;
-  cursor: pointer;
-}
-
-.full-flow-parent-result:hover {
-  border-color: var(--inscription-accent-border);
-  background: var(--inscription-accent-soft);
-}
-
-.full-flow-form-grid,
-.full-flow-address-grid,
-.full-flow-school-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.full-flow-school-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.full-flow-checkbox {
-  display: inline-flex;
-  width: fit-content;
-  align-items: center;
-  gap: 9px;
-  color: #475569;
-  font-size: 0.84rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.full-flow-checkbox input {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--inscription-accent);
-}
-
-.full-flow-address-panel {
-  border-color: var(--inscription-accent-border);
-  background: var(--inscription-accent-soft);
-}
-
-.full-flow-summary-stack .detail-section-card {
-  padding-bottom: 22px;
-  box-shadow: none;
-}
-
 .module-filter-panel h2,
 .module-filter-panel p {
   margin: 0;
@@ -345,6 +129,46 @@
 .module-filter-panel__warning .tresoria-feedback,
 .adresse-owner-warning .tresoria-feedback {
   flex: 1;
+}
+
+.paiement-filter-panel__fields {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.paiement-filter-panel__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  grid-column: 1 / -1;
+}
+
+.tresorerie-filter-panel__fields {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+}
+
+.tresorerie-filter-panel__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.rapport-financier-group-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.rapport-financier-group-card {
+  min-width: 0;
+}
+
+.rapport-financier-empty {
+  margin: 0;
+  padding: 18px 0 24px;
+  color: #64748b;
+  font-size: 0.84rem;
 }
 
 .active-annee-card {
@@ -498,12 +322,26 @@
   color: #047857;
 }
 
+.inscription-status--valide,
+.inscription-status--validee,
+.inscription-status--confirme {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.inscription-status--en-attente {
+  background: #fef3c7;
+  color: #b45309;
+}
+
 .inscription-status--cloture,
 .inscription-status--inactif,
 .inscription-status--abandon,
 .inscription-status--renvoi,
 .inscription-status--abandonne,
-.inscription-status--renvoye {
+.inscription-status--renvoye,
+.inscription-status--annule,
+.inscription-status--annulee {
   background: #fee2e2;
   color: #b91c1c;
 }
@@ -568,6 +406,74 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
+}
+
+.inscription-amount-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--inscription-accent-border);
+  border-radius: 8px;
+  background: var(--inscription-accent-soft);
+}
+
+.inscription-amount-panel h2,
+.inscription-amount-panel p {
+  margin: 0;
+}
+
+.inscription-amount-panel h2 {
+  color: var(--inscription-accent);
+  font-size: 1rem;
+}
+
+.inscription-amount-panel p {
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.inscription-amount-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.inscription-amount-card {
+  display: flex;
+  min-height: 104px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  padding: 16px;
+  border: 1px solid #e5eaf0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.inscription-amount-card span,
+.inscription-amount-card small {
+  color: #64748b;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.inscription-amount-card strong {
+  color: var(--inscription-accent);
+  font-size: 1.18rem;
+}
+
+.inscription-amount-card--total {
+  border-color: var(--inscription-accent-border);
+  background: #f8fbfd;
+}
+
+.inscription-form-field--wide,
+.depense-annee-preview {
+  grid-column: 1 / -1;
 }
 
 .inscription-select-field {
@@ -688,7 +594,8 @@
 .inscription-searchable-field__create {
   display: flex;
   width: 100%;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
   gap: 7px;
   padding: 9px 10px;
   border: 0;
@@ -701,13 +608,28 @@
   cursor: pointer;
 }
 
+.inscription-searchable-field__option small {
+  color: #b91c1c;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 .inscription-searchable-field__option:hover,
 .inscription-searchable-field__option--selected {
   background: var(--inscription-accent-soft);
   color: var(--inscription-accent);
 }
 
+.inscription-searchable-field__option--disabled,
+.inscription-searchable-field__option--disabled:hover {
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
 .inscription-searchable-field__create {
+  align-items: center;
+  flex-direction: row;
   border-top: 1px solid #edf0f4;
   border-radius: 0;
   color: var(--inscription-accent);
@@ -1189,24 +1111,56 @@
   font-size: 0.9rem;
 }
 
+.inscription-detail-field--wide {
+  grid-column: 1 / -1;
+}
+
+.inscription-debt-notice,
+.inscription-solde-error {
+  padding: 14px 16px;
+  border-radius: 8px;
+}
+
+.inscription-debt-notice {
+  border: 1px solid #facc15;
+  background: #fefce8;
+}
+
+.inscription-debt-notice dd {
+  color: #854d0e;
+}
+
+.inscription-solde-error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+}
+
+.inscription-solde-error dd {
+  color: #b91c1c;
+}
+
 @media (max-width: 900px) {
   .inscription-form-grid,
   .inscription-detail-grid,
   .parent-address-form-grid,
   .student-parent-grid,
+  .inscription-amount-grid,
   .module-filter-panel__fields,
-  .full-flow-form-grid,
-  .full-flow-address-grid {
+  .paiement-filter-panel__fields,
+  .tresorerie-filter-panel__fields,
+  .rapport-financier-group-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tresorerie-filter-panel__actions {
+    grid-column: 1 / -1;
   }
 }
 
 @media (max-width: 640px) {
   .inscription-page-header,
   .inscription-toolbar,
-  .inscription-form-actions,
-  .full-flow-callout,
-  .full-flow-parent-card-selected {
+  .inscription-form-actions {
     align-items: stretch;
     flex-direction: column;
   }
@@ -1224,19 +1178,16 @@
   .inscription-detail-grid,
   .parent-address-form-grid,
   .student-parent-grid,
+  .inscription-amount-grid,
   .module-filter-panel__fields,
-  .full-flow-form-grid,
-  .full-flow-address-grid,
-  .full-flow-school-grid,
-  .full-flow-parent-grid {
+  .paiement-filter-panel__fields,
+  .tresorerie-filter-panel__fields,
+  .rapport-financier-group-grid {
     grid-template-columns: 1fr;
   }
 
-  .full-flow-steps {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .full-flow-search-row {
+  .paiement-filter-panel__actions,
+  .tresorerie-filter-panel__actions {
     align-items: stretch;
     flex-direction: column;
   }
