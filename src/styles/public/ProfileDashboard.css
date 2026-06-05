@@ -24,7 +24,7 @@
   width: 100%;
   background: var(--profile-surface);
   border: 1px solid var(--profile-border);
-  border-radius: 8px;
+  border-radius: var(--radius-container, 1.5rem);
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
 }
 

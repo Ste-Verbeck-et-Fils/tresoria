@@ -32,6 +32,10 @@ const getColumns = (parents, students) => [
 
 const AdressesPage = () => {
   const location = useLocation()
+  const userStr = localStorage.getItem('user')
+  const user = userStr ? JSON.parse(userStr) : {}
+  const isParent = user?.role === 'PARENT'
+
   const [parents, setParents] = useState([])
   const [students, setStudents] = useState([])
   const [ownerType, setOwnerType] = useState('')
@@ -184,8 +188,8 @@ const AdressesPage = () => {
       loadItems={loadAdresses}
       columns={columns}
       emptyMessage='Aucune adresse enregistree.'
-      createPath='/adresses/create'
-      createLabel='Nouvelle adresse'
+      createPath={isParent ? null : '/adresses/create'}
+      createLabel={isParent ? null : 'Nouvelle adresse'}
       getRowPath={(item) => `/adresses/${item.id}`}
       searchPlaceholder='Rechercher une adresse'
       getSearchText={(item) => [
@@ -194,7 +198,7 @@ const AdressesPage = () => {
         getAdresseText(item),
       ].join(' ')}
       successMessage={location.state?.successMessage}
-      beforePanel={filterPanel}
+      beforePanel={isParent ? null : filterPanel}
     />
   )
 }

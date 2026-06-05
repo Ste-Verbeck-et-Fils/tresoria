@@ -53,6 +53,10 @@ const AdresseDetailPage = () => {
   const [editForm, setEditForm] = useState(normalizeOwnedAdresseForm())
   const [editErrors, setEditErrors] = useState({})
 
+  const userStr = localStorage.getItem('user')
+  const user = userStr ? JSON.parse(userStr) : {}
+  const canEdit = ['ADMIN', 'SUPER_ADMIN'].includes(user?.role)
+
   const loadAdresse = useCallback(async () => {
     setIsLoading(true)
     setLoadError('')
@@ -254,9 +258,7 @@ const AdresseDetailPage = () => {
             Retour aux adresses
           </Link>
           <h1>Detail de l adresse #{id}</h1>
-          <p className='inscription-page-description'>
-            Consultez le proprietaire et mettez a jour la localisation de l adresse.
-          </p>
+          
         </div>
       </header>
 
@@ -294,26 +296,21 @@ const AdresseDetailPage = () => {
 
       {!isLoading && !loadError && adresse && (
         <div className='detail-page-stack'>
-          <DetailSummaryCard
-            icon={<MapPin size={34} aria-hidden='true' />}
-            title={`Adresse #${adresse.id}`}
-            subtitle={getAdresseOwnerName(adresse, parents, students)}
-            meta={getAdresseText(adresse)}
-          />
-
           <DetailSection
             title='Informations de l adresse'
             actions={(
-              isEditing
-                ? (
-                  <>
-                    <Button type='button' variant='ghost' label='Annuler' disabled={isSaving} onClick={handleCancelEdit} className='inscription-action inscription-action--secondary' />
-                    <Button type='button' variant='super' label={isSaving ? 'Enregistrement...' : 'Enregistrer'} loading={isSaving} onClick={handleSaveEdit} className='inscription-action inscription-action--primary' />
-                  </>
-                  )
-                : (
-                  <Button type='button' variant='ghost' label='Modifier' icon={<PencilLine size={16} />} disabled={isDeleting || isLoadingOwners || Boolean(ownersError)} onClick={handleStartEdit} className='inscription-action inscription-action--secondary' />
-                  )
+              canEdit && (
+                isEditing
+                  ? (
+                    <>
+                      <Button type='button' variant='ghost' label='Annuler' disabled={isSaving} onClick={handleCancelEdit} className='inscription-action inscription-action--secondary' />
+                      <Button type='button' variant='super' label={isSaving ? 'Enregistrement...' : 'Enregistrer'} loading={isSaving} onClick={handleSaveEdit} className='inscription-action inscription-action--primary' />
+                    </>
+                    )
+                  : (
+                    <Button type='button' variant='ghost' label='Modifier' icon={<PencilLine size={16} />} disabled={isDeleting || isLoadingOwners || Boolean(ownersError)} onClick={handleStartEdit} className='inscription-action inscription-action--secondary' />
+                    )
+              )
             )}
           >
             <DetailField label='Reference' value={`#${adresse.id}`} />
@@ -336,7 +333,6 @@ const AdresseDetailPage = () => {
                 )
               : (
                 <>
-                  <DetailField label='Type de proprietaire' value={getAdresseOwnerLabel(adresse)} />
                   <DetailField label='Proprietaire' value={getAdresseOwnerName(adresse, parents, students)} />
                   <DetailField label='Commune' value={adresse.commune} />
                   <DetailField label='Quartier' value={adresse.quartier} />
@@ -349,7 +345,9 @@ const AdresseDetailPage = () => {
           <DetailSection
             title='Suivi de l adresse'
             actions={(
-              <Button type='button' variant='ghost' label={isDeleting ? 'Suppression...' : 'Supprimer'} icon={<Trash2 size={16} />} loading={isDeleting} disabled={isEditing} onClick={handleDelete} className='inscription-action classe-delete-action' />
+              canEdit && (
+                <Button type='button' variant='ghost' label={isDeleting ? 'Suppression...' : 'Supprimer'} icon={<Trash2 size={16} />} loading={isDeleting} disabled={isEditing} onClick={handleDelete} className='inscription-action classe-delete-action' />
+              )
             )}
           >
             <DetailField label='Date de creation' value={formatDate(adresse.created_at)} />

@@ -1,20 +1,45 @@
-import React, { useState } from 'react'
-import { Send, Bot, User } from 'lucide-react'
+import React, { useState, useEffect, useRef } from 'react'
+import { Bot, User, Smile, Frown } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import api from '../../../services/api'
 import '../../../styles/public/dashboard.css'
 
+const getStoredUser = () => {
+  const storedUser = localStorage.getItem('user')
+  if (!storedUser) return null
+  try {
+    return JSON.parse(storedUser)
+  } catch {
+    return null
+  }
+}
+
 const AideDashboard = () => {
+  const navigate = useNavigate()
+  const [user, setUser] = useState(() => getStoredUser())
   const [messages, setMessages] = useState([
-    { id: 1, text: "Bonjour ! Je suis l'assistant IA de Tresoria. Comment puis-je vous aider aujourd'hui ?", sender: 'bot' }
+    { id: 1, text: "Bonjour ! Je suis l'assistant IA de Gs Emmanuel. Comment puis-je vous aider aujourd'hui ?", sender: 'bot', time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const messagesEndRef = useRef(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages, isLoading])
 
   const handleSend = async (e) => {
     e.preventDefault()
     if (!input.trim()) return
 
-    const userMessage = { id: Date.now(), text: input, sender: 'user' }
+    const now = new Date()
+    const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`
+
+    const userMessage = { id: Date.now(), text: input, sender: 'user', time: timeString }
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
@@ -32,12 +57,16 @@ const AideDashboard = () => {
         message: userMessage.text,
         history
       })
+
       const reply = response.data?.data?.reply || response.data?.reply || 'Une erreur est survenue.'
-      const botMessage = { id: Date.now() + 1, text: reply, sender: 'bot' }
+      const botTime = new Date()
+      const botTimeString = `${botTime.getHours().toString().padStart(2, '0')}:${botTime.getMinutes().toString().padStart(2, '0')}`
+
+      const botMessage = { id: Date.now() + 1, text: reply, sender: 'bot', time: botTimeString }
       setMessages(prev => [...prev, botMessage])
     } catch (error) {
-      const errorMessage = error.message || 'Désolé, je ne suis pas disponible pour le moment.'
-      setMessages(prev => [...prev, { id: Date.now() + 1, text: errorMessage, sender: 'bot', error: true }])
+      const errorMessage = error.response?.data?.message || error.message || 'Désolé, je ne suis pas disponible pour le moment.'
+      setMessages(prev => [...prev, { id: Date.now() + 1, text: errorMessage, sender: 'bot', error: true, time: timeString }])
     } finally {
       setIsLoading(false)
     }
@@ -45,56 +74,83 @@ const AideDashboard = () => {
 
   return (
     <div className='dashboard-page'>
-      <header className='dashboard-header'>
-        <h1>Aide (Assistant IA)</h1>
-        <p>Posez vos questions concernant l'application, je vous répondrai en fonction de vos droits d'accès.</p>
-      </header>
+      <div className='chat-app-container'>
+        <div className='chat-app-header'>
+          <h2>Assistant gsemmanuel</h2>
+        </div>
 
-      <div className='chat-container'>
-        <div className='chat-messages'>
-          {messages.map(msg => (
-            <div key={msg.id} className={`chat-message-row ${msg.sender === 'user' ? 'chat-message-row--user' : 'chat-message-row--bot'}`}>
-              {msg.sender === 'bot' && (
-                <div className='chat-avatar chat-avatar--bot'>
-                  <Bot size={20} />
+        <div className='chat-app-messages'>
+          {messages.map((msg, index) => {
+            const isUser = msg.sender === 'user'
+            return (
+              <div key={msg.id} className={`chat-app-row ${isUser ? 'chat-app-row-user' : 'chat-app-row-bot'}`}>
+                {!isUser && (
+                  <div className='chat-app-avatar chat-app-avatar-bot'>
+                    <Bot size={20} />
+                  </div>
+                )}
+
+                <div className='chat-app-content-wrapper'>
+                  <div className={`chat-app-meta ${isUser ? 'chat-app-meta-user' : 'chat-app-meta-bot'}`}>
+                    <span className='chat-app-time'>{msg.time}</span>
+                    <span className='chat-app-name'>{isUser ? (user?.full_name || 'Vous') : 'Assistant'}</span>
+                  </div>
+                  <div className={`chat-app-bubble ${isUser ? 'chat-app-bubble-user' : 'chat-app-bubble-bot'}`}>
+                    {msg.text}
+                  </div>
+                  {!isUser && !msg.error && index > 0 && (
+                    <div className='chat-app-reactions'>
+                      <Frown size={16} className='reaction-icon' />
+                      <Smile size={16} className='reaction-icon active' />
+                    </div>
+                  )}
                 </div>
-              )}
 
-              <div className={`chat-bubble ${msg.sender === 'user' ? 'chat-bubble--user' : 'chat-bubble--bot'}`}>
-                {msg.text}
+                {isUser && (
+                  <div className='chat-app-avatar chat-app-avatar-user'>
+                    {user?.photo_url ? (
+                      <img src={user.photo_url} alt={user.full_name || 'Utilisateur'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <User size={20} />
+                    )}
+                  </div>
+                )}
               </div>
+            )
+          })}
 
-              {msg.sender === 'user' && (
-                <div className='chat-avatar chat-avatar--user'>
-                  <User size={20} />
-                </div>
-              )}
-            </div>
-          ))}
           {isLoading && (
-            <div className='chat-message-row chat-message-row--bot'>
-              <div className='chat-avatar chat-avatar--bot'>
+            <div className='chat-app-row chat-app-row-bot'>
+              <div className='chat-app-avatar chat-app-avatar-bot'>
                 <Bot size={20} />
               </div>
-              <div className='chat-bubble chat-bubble--bot chat-bubble--loading'>
-                L'assistant réfléchit...
+              <div className='chat-app-content-wrapper'>
+                <div className='chat-app-meta chat-app-meta-bot'>
+                  <span className='chat-app-name'>Assistant</span>
+                </div>
+                <div className='chat-app-bubble chat-app-bubble-bot chat-app-typing'>
+                  <span></span><span></span><span></span>
+                </div>
               </div>
             </div>
           )}
+          <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={handleSend} className='chat-input-form'>
-          <input
-            type='text'
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder='Écrivez votre message...'
-            className='chat-input-field'
-            disabled={isLoading}
-          />
-          <button type='submit' disabled={isLoading || !input.trim()} className='chat-send-button'>
-            <Send size={20} />
-          </button>
+        <form onSubmit={handleSend} className='chat-app-input-area'>
+          <div className='chat-app-input-wrapper'>
+            <input
+              type='text'
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              placeholder='Posez votre question...'
+              className='chat-app-input'
+              disabled={isLoading}
+            />
+            <button type='submit' disabled={isLoading || !input.trim()} className='chat-app-send-btn'>
+              Envoyer
+            </button>
+          </div>
         </form>
       </div>
     </div>

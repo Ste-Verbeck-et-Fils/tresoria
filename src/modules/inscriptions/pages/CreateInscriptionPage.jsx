@@ -269,9 +269,7 @@ const CreateInscriptionPage = () => {
             Retour aux inscriptions
           </Link>
           <h1>Nouvelle inscription</h1>
-          <p className='inscription-page-description'>
-            Recherchez les informations necessaires puis inscrivez un eleve existant dans une classe.
-          </p>
+          
         </div>
       </header>
 

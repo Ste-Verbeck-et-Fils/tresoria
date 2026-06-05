@@ -157,9 +157,7 @@ const CreateAdressePage = () => {
             Retour aux adresses
           </Link>
           <h1>Nouvelle adresse</h1>
-          <p className='inscription-page-description'>
-            Rattachez l adresse a un seul proprietaire : un parent ou un eleve.
-          </p>
+          
         </div>
       </header>
 

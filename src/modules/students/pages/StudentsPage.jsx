@@ -14,16 +14,18 @@ const columns = [
 
 const StudentsPage = () => {
   const location = useLocation()
+  const userStr = localStorage.getItem('user')
+  const user = userStr ? JSON.parse(userStr) : {}
+  const isParent = user?.role === 'PARENT'
 
   return (
     <EntityListPage
       title='Eleves'
-      description='Consultez les eleves, leurs parents et leurs adresses.'
       loadItems={getStudents}
       columns={columns}
       emptyMessage='Aucun eleve enregistre.'
-      createPath='/students/create'
-      createLabel='Nouvel eleve'
+      createPath={isParent ? null : '/students/create'}
+      createLabel={isParent ? null : 'Nouvel eleve'}
       getRowPath={(item) => `/students/${item.id}`}
       searchPlaceholder='Rechercher un eleve'
       getSearchText={(item) => [

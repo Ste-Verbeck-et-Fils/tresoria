@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, MoreVertical, Eye, Pencil } from 'lucide-react'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
@@ -8,6 +8,41 @@ import { normalizeCollection } from '../utils/data'
 import ModuleState from './ModuleState'
 import Loader from '../../../components/ui/Loader'
 import { getSocket } from '../../../services/socketService'
+
+const DefaultRowActions = ({ item, getRowPath, hideEdit }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setIsOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const basePath = getRowPath(item)
+
+  return (
+    <div style={{ position: 'relative' }} ref={ref}>
+      <button onClick={() => setIsOpen(!isOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
+        <MoreVertical size={20} color="#6b7280" />
+      </button>
+      {isOpen && (
+        <div style={{ position: 'absolute', right: '100%', top: '0', background: 'white', border: '1px solid #e4e8ef', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '150px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <Link to={basePath} style={{ padding: '10px 16px', textDecoration: 'none', color: '#173f5f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Eye size={16} /> Détails
+          </Link>
+          {!hideEdit && (
+            <Link to={basePath} state={{ startEdit: true }} style={{ padding: '10px 16px', textDecoration: 'none', color: '#173f5f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px', borderTop: '1px solid #f3f4f6' }}>
+              <Pencil size={16} /> Modifier
+            </Link>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 
 const EntityListPage = ({
   title,
@@ -25,6 +60,7 @@ const EntityListPage = ({
   beforePanel,
   kicker,
   socketEvents,
+  rowActions,
 }) => {
   const navigate = useNavigate()
   const [items, setItems] = useState([])
@@ -32,6 +68,10 @@ const EntityListPage = ({
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
+
+  const userStr = localStorage.getItem('user')
+  const user = userStr ? JSON.parse(userStr) : {}
+  const hideEdit = user?.role === 'PARENT'
 
   const load = useCallback(async () => {
     setIsLoading(true)
@@ -176,13 +216,18 @@ const EntityListPage = ({
     })
   }, [columns, getSearchText, items, search, searchedItems])
 
+  useEffect(() => {
+    if (search.trim() && filteredItems.length === 1 && getRowPath) {
+      navigate(getRowPath(filteredItems[0]))
+    }
+  }, [search, filteredItems, getRowPath, navigate])
+
   return (
     <section className='inscription-page'>
       <header className='inscription-page-header'>
         <div>
           {kicker && <p className='inscription-page-kicker'>{kicker}</p>}
           <h1>{title}</h1>
-          {description && <p className='inscription-page-description'>{description}</p>}
         </div>
         {createPath && createLabel && (
           <Button
@@ -249,16 +294,18 @@ const EntityListPage = ({
               <thead>
                 <tr>
                   {columns.map((column) => <th key={column.label}>{column.label}</th>)}
-                  {getRowPath && <th className='inscription-table__action-heading'>Action</th>}
+                  {(getRowPath || rowActions) && <th className='inscription-table__action-heading'>Action</th>}
                 </tr>
               </thead>
               <tbody>
                 {filteredItems.map((item) => (
                   <tr key={item.id}>
                     {columns.map((column) => <td key={column.label}>{column.render(item)}</td>)}
-                    {getRowPath && (
+                    {(getRowPath || rowActions) && (
                       <td className='inscription-table__action'>
-                        <Link to={getRowPath(item)} className='inscription-detail-link'>Voir le detail</Link>
+                        {rowActions ? rowActions(item) : (
+                          getRowPath && <DefaultRowActions item={item} getRowPath={getRowPath} hideEdit={hideEdit} />
+                        )}
                       </td>
                     )}
                   </tr>

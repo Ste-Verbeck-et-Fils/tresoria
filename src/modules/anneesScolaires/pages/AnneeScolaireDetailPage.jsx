@@ -185,9 +185,7 @@ const AnneeScolaireDetailPage = () => {
             Retour aux annees scolaires
           </Link>
           <h1>Detail de l annee scolaire #{id}</h1>
-          <p className='inscription-page-description'>
-            Consultez les informations, modifiez les montants et cloturez l annee si necessaire.
-          </p>
+          
         </div>
       </header>
 

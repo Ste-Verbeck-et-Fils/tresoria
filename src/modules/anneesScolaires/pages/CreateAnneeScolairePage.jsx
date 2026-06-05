@@ -66,9 +66,7 @@ const CreateAnneeScolairePage = () => {
           </Link>
 
           <h1>Nouvelle annee scolaire</h1>
-          <p className='inscription-page-description'>
-            La nouvelle annee deviendra active et remplacera l annee active actuelle.
-          </p>
+          
         </div>
       </header>
 

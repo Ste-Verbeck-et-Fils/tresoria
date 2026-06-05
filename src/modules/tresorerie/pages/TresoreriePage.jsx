@@ -247,9 +247,7 @@ const TresoreriePage = () => {
       <header className='inscription-page-header'>
         <div>
           <h1>Tableau de bord tresorerie</h1>
-          <p className='inscription-page-description'>
-            Suivez les entrees comptabilisables, les sorties confirmees et le solde disponible.
-          </p>
+          
         </div>
       </header>
 

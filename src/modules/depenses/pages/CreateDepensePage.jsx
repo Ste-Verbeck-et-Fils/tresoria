@@ -147,9 +147,7 @@ const CreateDepensePage = () => {
             Retour aux depenses
           </Link>
           <h1>Nouvelle depense</h1>
-          <p className='inscription-page-description'>
-            Selectionnez une annee scolaire active puis enregistrez les informations de la depense.
-          </p>
+          
         </div>
       </header>
 

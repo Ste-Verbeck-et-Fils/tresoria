@@ -19,6 +19,7 @@ const StudentAdresseManager = ({
   adresses,
   loadAdresses,
   disabled = false,
+  readOnly = false,
 }) => {
   const [mode, setMode] = useState('')
   const [editingAdresseId, setEditingAdresseId] = useState(null)
@@ -124,7 +125,7 @@ const StudentAdresseManager = ({
     <article className='detail-section-card parent-address-section'>
       <header className='detail-section-card__header'>
         <h2>Adresses de l eleve</h2>
-        {!mode && (
+        {!mode && !readOnly && (
           <Button
             type='button'
             variant='ghost'
@@ -227,27 +228,29 @@ const StudentAdresseManager = ({
                 <h3>Adresse #{adresse.id}</h3>
                 <p>{[adresse.numero, adresse.avenue, adresse.quartier, adresse.commune].filter(Boolean).join(', ')}</p>
               </div>
-              <div className='parent-address-card__actions'>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  label='Modifier'
-                  icon={<PencilLine size={15} />}
-                  disabled={disabled || isPending}
-                  onClick={() => handleStartEdit(adresse)}
-                  className='inscription-action inscription-action--secondary'
-                />
-                <Button
-                  type='button'
-                  variant='ghost'
-                  label={deletingAdresseId === adresse.id ? 'Suppression...' : 'Supprimer'}
-                  icon={<Trash2 size={15} />}
-                  loading={deletingAdresseId === adresse.id}
-                  disabled={disabled}
-                  onClick={() => handleDelete(adresse)}
-                  className='inscription-action classe-delete-action'
-                />
-              </div>
+              {!readOnly && (
+                <div className='parent-address-card__actions'>
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    label='Modifier'
+                    icon={<PencilLine size={15} />}
+                    disabled={disabled || isPending}
+                    onClick={() => handleStartEdit(adresse)}
+                    className='inscription-action inscription-action--secondary'
+                  />
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    label={deletingAdresseId === adresse.id ? 'Suppression...' : 'Supprimer'}
+                    icon={<Trash2 size={15} />}
+                    loading={deletingAdresseId === adresse.id}
+                    disabled={disabled}
+                    onClick={() => handleDelete(adresse)}
+                    className='inscription-action classe-delete-action'
+                  />
+                </div>
+              )}
             </article>
           ))}
         </div>

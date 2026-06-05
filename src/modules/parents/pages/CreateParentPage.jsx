@@ -128,9 +128,7 @@ const CreateParentPage = () => {
             {returnTo ? 'Retour a l inscription' : 'Retour aux parents'}
           </Link>
           <h1>Nouveau parent</h1>
-          <p className='inscription-page-description'>
-            Creez le parent puis ajoutez son adresse maintenant ou plus tard depuis sa fiche.
-          </p>
+          
         </div>
       </header>
 

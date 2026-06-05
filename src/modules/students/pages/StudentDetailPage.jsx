@@ -48,6 +48,10 @@ const StudentDetailPage = () => {
   const [editForm, setEditForm] = useState(normalizeStudentForm())
   const [editErrors, setEditErrors] = useState({})
 
+  const userStr = localStorage.getItem('user')
+  const currentUser = userStr ? JSON.parse(userStr) : {}
+  const isParent = currentUser?.role === 'PARENT'
+
   const loadStudentData = async () => {
     setIsLoading(true)
     setLoadError('')
@@ -231,10 +235,6 @@ const StudentDetailPage = () => {
             <ArrowLeft size={16} />
             Retour aux eleves
           </Link>
-          <h1>Detail de l eleve #{id}</h1>
-          <p className='inscription-page-description'>
-            Consultez l eleve, ses parents et ses adresses puis mettez ses informations a jour.
-          </p>
         </div>
       </header>
 
@@ -282,18 +282,20 @@ const StudentDetailPage = () => {
 
           <DetailSection
             title='Informations de l eleve'
-            actions={(
-              isEditing
-                ? (
-                  <>
-                    <Button type='button' variant='ghost' label='Annuler' disabled={isSaving} onClick={handleCancelEdit} className='inscription-action inscription-action--secondary' />
-                    <Button type='button' variant='super' label={isSaving ? 'Enregistrement...' : 'Enregistrer'} loading={isSaving} onClick={handleSaveEdit} className='inscription-action inscription-action--primary' />
-                  </>
+            actions={
+              !isParent && (
+                isEditing
+                  ? (
+                    <>
+                      <Button type='button' variant='ghost' label='Annuler' disabled={isSaving} onClick={handleCancelEdit} className='inscription-action inscription-action--secondary' />
+                      <Button type='button' variant='super' label={isSaving ? 'Enregistrement...' : 'Enregistrer'} loading={isSaving} onClick={handleSaveEdit} className='inscription-action inscription-action--primary' />
+                    </>
                   )
-                : (
-                  <Button type='button' variant='ghost' label='Modifier' icon={<PencilLine size={16} />} disabled={isDeleting} onClick={handleStartEdit} className='inscription-action inscription-action--secondary' />
+                  : (
+                    <Button type='button' variant='ghost' label='Modifier' icon={<PencilLine size={16} />} disabled={isDeleting} onClick={handleStartEdit} className='inscription-action inscription-action--secondary' />
                   )
-            )}
+              )
+            }
           >
             <DetailField label='Reference' value={`#${student.id}`} />
             {isEditing
@@ -314,7 +316,7 @@ const StudentDetailPage = () => {
                   <div className='inscription-detail-field inscription-detail-field--editing'><dt>Groupement d origine</dt><dd><Input id='groupement_origine' type='text' value={editForm.groupement_origine} error={editErrors.groupement_origine} disabled={isSaving} onChange={handleEditChange} /></dd></div>
                   <div className='inscription-detail-field inscription-detail-field--editing'><dt>Localite d origine</dt><dd><Input id='localite_origine' type='text' value={editForm.localite_origine} error={editErrors.localite_origine} disabled={isSaving} onChange={handleEditChange} /></dd></div>
                 </>
-                )
+              )
               : (
                 <>
                   <DetailField label='Nom' value={student.nom} />
@@ -332,7 +334,7 @@ const StudentDetailPage = () => {
                   <DetailField label='Groupement d origine' value={student.groupement_origine} />
                   <DetailField label='Localite d origine' value={student.localite_origine} />
                 </>
-                )}
+              )}
           </DetailSection>
 
           {isLoadingAdresses && <Loader message='Chargement des adresses...' />}
@@ -353,17 +355,20 @@ const StudentDetailPage = () => {
               adresses={adresses}
               loadAdresses={loadAdresses}
               disabled={isEditing || isDeleting}
+              readOnly={isParent}
             />
           )}
 
-          <DetailSection
-            title='Actions sensibles'
-            actions={(
-              <Button type='button' variant='ghost' label={isDeleting ? 'Suppression...' : 'Supprimer'} icon={<Trash2 size={16} />} loading={isDeleting} disabled={isEditing} onClick={handleDelete} className='inscription-action classe-delete-action' />
-            )}
-          >
-            <DetailField label='Regle de suppression' value='La suppression peut etre refusee si l eleve possede une inscription.' />
-          </DetailSection>
+          {!isParent && (
+            <DetailSection
+              title='Actions sensibles'
+              actions={(
+                <Button type='button' variant='ghost' label={isDeleting ? 'Suppression...' : 'Supprimer'} icon={<Trash2 size={16} />} loading={isDeleting} disabled={isEditing} onClick={handleDelete} className='inscription-action classe-delete-action' />
+              )}
+            >
+              <DetailField label='Regle de suppression' value='La suppression peut etre refusee si l eleve possede une inscription.' />
+            </DetailSection>
+          )}
         </div>
       )}
     </section>

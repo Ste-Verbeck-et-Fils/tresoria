@@ -199,9 +199,7 @@ const InscriptionDetailPage = () => {
           </Link>
 
           <h1>Detail de l inscription #{id}</h1>
-          <p className='inscription-page-description'>
-            Consultez les informations de l inscription et son solde financier.
-          </p>
+          
         </div>
       </header>
 

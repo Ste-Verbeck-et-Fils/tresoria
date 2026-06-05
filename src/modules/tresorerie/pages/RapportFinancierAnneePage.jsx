@@ -152,9 +152,7 @@ const RapportFinancierAnneePage = () => {
             Retour a la tresorerie
           </Link>
           <h1>Rapport financier annuel</h1>
-          <p className='inscription-page-description'>
-            Consultez les entrees, sorties, soldes et groupements financiers d une annee scolaire.
-          </p>
+          
         </div>
       </header>
 

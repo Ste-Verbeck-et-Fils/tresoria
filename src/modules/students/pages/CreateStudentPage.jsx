@@ -219,9 +219,7 @@ const CreateStudentPage = () => {
         <div>
  
           <h1>Nouvel eleve</h1>
-          <p className='inscription-page-description'>
-            Renseignez l identite de l eleve, liez ses parents et ajoutez son adresse si necessaire.
-          </p>
+          
         </div>
       </header>
 

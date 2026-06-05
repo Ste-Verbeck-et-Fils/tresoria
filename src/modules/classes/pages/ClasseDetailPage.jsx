@@ -173,9 +173,7 @@ const ClasseDetailPage = () => {
           </Link>
 
           <h1>Detail de la classe #{id}</h1>
-          <p className='inscription-page-description'>
-            Consultez les informations de la classe et gerez sa mise a jour.
-          </p>
+          
         </div>
       </header>
 

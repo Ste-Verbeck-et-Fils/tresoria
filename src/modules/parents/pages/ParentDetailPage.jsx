@@ -279,9 +279,7 @@ const ParentDetailPage = () => {
             Retour aux parents
           </Link>
           <h1>Detail du parent #{id}</h1>
-          <p className='inscription-page-description'>
-            Consultez le parent, modifiez ses informations et gerez ses adresses.
-          </p>
+          
         </div>
       </header>
 

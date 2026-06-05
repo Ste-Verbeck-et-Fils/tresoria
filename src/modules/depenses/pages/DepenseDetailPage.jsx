@@ -263,9 +263,7 @@ const DepenseDetailPage = () => {
             Retour aux depenses
           </Link>
           <h1>Detail de la depense #{id}</h1>
-          <p className='inscription-page-description'>
-            Consultez la depense, modifiez ses informations ou annulez-la si necessaire.
-          </p>
+          
         </div>
       </header>
 

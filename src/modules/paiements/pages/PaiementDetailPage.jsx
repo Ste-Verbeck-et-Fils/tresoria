@@ -268,9 +268,7 @@ const PaiementDetailPage = () => {
             Retour aux paiements
           </Link>
           <h1>Detail du paiement #{id}</h1>
-          <p className='inscription-page-description'>
-            Consultez le paiement, son inscription et le solde financier correspondant.
-          </p>
+          
         </div>
       </header>
 

@@ -213,9 +213,7 @@ const CreatePaiementPage = () => {
             Retour aux paiements
           </Link>
           <h1>Nouveau paiement</h1>
-          <p className='inscription-page-description'>
-            Selectionnez une inscription ouverte, verifiez son solde, puis enregistrez le paiement.
-          </p>
+          
         </div>
       </header>
 
