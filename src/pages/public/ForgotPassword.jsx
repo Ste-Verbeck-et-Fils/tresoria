@@ -89,25 +89,25 @@ const ForgotPassword = () => {
             ? (
               <form className='auth-form' onSubmit={handleSubmit}>
                 <Input
-                  id={'phone'}
-                  type={'tel'}
-                  label={'Numéro de téléphone'}
+                  id='phone'
+                  type='tel'
+                  label='Numéro de téléphone'
                   value={phone}
                   onChange={handleChange}
                   error={error}
-                  placeholder={'Ex: +243814717237'}
+                  placeholder='Ex: +243814717237'
                   disabled={isLoading}
                 />
 
                 <Button
-                  type={'submit'}
-                  variant={'super'}
+                  type='submit'
+                  variant='super'
                   label={isLoading ? 'Envoi en cours...' : 'Envoyer la demande'}
-                  className={'auth-submit-btn-mt'}
+                  className='auth-submit-btn-mt'
                   disabled={isLoading}
                 />
               </form>
-            )
+              )
             : null}
 
           <div className='auth-footer-text-large'>

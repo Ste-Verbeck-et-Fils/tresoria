@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -172,7 +173,7 @@ const CreateAdressePage = () => {
           />
         )}
 
-        {isLoadingOwners && <div className='inscription-loading'>Chargement des proprietaires...</div>}
+        {isLoadingOwners && <Loader message='Chargement des proprietaires...' />}
         {!isLoadingOwners && ownersError && (
           <div className='adresse-owner-warning'>
             <Feedback type='warning' message={ownersError} />

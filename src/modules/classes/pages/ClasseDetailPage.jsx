@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
 import { ArrowLeft, PencilLine, School, Trash2 } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -199,7 +200,7 @@ const ClasseDetailPage = () => {
         />
       )}
 
-      {isLoading && <div className='inscription-loading'>Chargement de la classe...</div>}
+      {isLoading && <Loader message='Chargement de la classe...' />}
 
       {!isLoading && error && (
         <ModuleState

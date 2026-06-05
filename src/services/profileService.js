@@ -37,7 +37,3 @@ export const updateUserProfileFormData = async (formData) => {
   })
   return response.data
 }
-
-
-
-

@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import { logoutUser } from '../../services/authService'
 import { getUserProfile, normalizeProfile } from '../../services/profileService'
-import { ADMIN_ROLES, EXPENSE_ROLES, PAYMENT_ROLES, TREASURY_ROLES, normalizeRole } from '../../modules/inscriptions/utils/data'
+import { ADMIN_ROLES, EXPENSE_ROLES, PAYMENT_ROLES, TREASURY_ROLES, normalizeRole } from '../../utils/roles'
 
 import '../../styles/public/layout.css'
 
@@ -84,9 +84,16 @@ const Layout = () => {
   const isPathActive = (path) => location.pathname === path || location.pathname.startsWith(`${path}/`)
   const normalizedRole = normalizeRole(sharedProfile?.role)
   const isAdmin = ADMIN_ROLES.includes(normalizedRole)
-  const canAccessPayments = PAYMENT_ROLES.includes(normalizedRole)
-  const canAccessExpenses = EXPENSE_ROLES.includes(normalizedRole)
-  const canAccessTreasury = TREASURY_ROLES.includes(normalizedRole)
+  const isComptable = normalizedRole === 'COMPTABLE'
+  const isParent = normalizedRole === 'PARENT'
+
+  const canAccessInscriptions = isAdmin || isComptable
+  const canAccessClasses = isAdmin
+  const canAccessAnneesScolaires = isAdmin
+  const canAccessPaiements = isAdmin || isComptable
+  const canAccessDepenses = isAdmin || isComptable
+  const canAccessTresorerie = isAdmin || isComptable
+  const canAccessParents = isAdmin
 
   const handleLogout = async () => {
     try {
@@ -102,53 +109,52 @@ const Layout = () => {
     }
   }
 
-  const adminLinks = isAdmin
-    ? [
-        { label: 'Inscriptions', href: '/inscriptions', icon: <BookOpenCheck size={20} />, active: isPathActive('/inscriptions') },
-        { label: 'Classes', href: '/classes', icon: <School size={20} />, active: isPathActive('/classes') },
-        { label: 'Annees scolaires', href: '/annees-scolaires', icon: <CalendarDays size={20} />, active: isPathActive('/annees-scolaires') },
-      ]
-    : []
+  const links = []
 
-  const paymentLinks = canAccessPayments
-    ? [
-        { label: 'Paiements', href: '/paiements', icon: <CreditCard size={20} />, active: isPathActive('/paiements') },
-      ]
-    : []
+  if (canAccessTresorerie) {
+    links.push({ label: 'Tableau de bord', href: '/tresorerie', icon: <SwatchBook size={20} />, active: location.pathname === '/tresorerie' || location.pathname === '/dashboard' })
+  }
 
-  const expenseLinks = canAccessExpenses
-    ? [
-        { label: 'Depenses', href: '/depenses', icon: <FileText size={20} />, active: isPathActive('/depenses') },
-      ]
-    : []
+  if (canAccessInscriptions) {
+    links.push({ label: 'Inscriptions', href: '/inscriptions', icon: <BookOpenCheck size={20} />, active: isPathActive('/inscriptions') })
+  }
 
-  const dashboardLink = canAccessTreasury
-    ? { label: 'Tresorerie', href: '/tresorerie', icon: <SwatchBook size={20} />, active: location.pathname === '/tresorerie' }
-    : { label: 'Tableau de bord', href: '#', icon: <SwatchBook size={20} />, disabled: true }
+  if (canAccessClasses) {
+    links.push({ label: 'Classes', href: '/classes', icon: <School size={20} />, active: isPathActive('/classes') })
+  }
 
-  const reportLinks = canAccessTreasury
-    ? [
-        { label: 'Rapport financier', href: '/tresorerie/rapport-annee', icon: <FileText size={20} />, active: isPathActive('/tresorerie/rapport-annee') },
-      ]
-    : []
+  if (canAccessAnneesScolaires) {
+    links.push({ label: 'Annees scolaires', href: '/annees-scolaires', icon: <CalendarDays size={20} />, active: isPathActive('/annees-scolaires') })
+  }
 
-  const links = [
-    dashboardLink,
-    ...adminLinks,
-    { label: 'Eleves', href: '/students', icon: <GraduationCap size={20} />, active: isPathActive('/students') },
-    { label: 'Parents', href: '/parents', icon: <UsersRound size={20} />, active: isPathActive('/parents') },
-    { label: 'Adresses', href: '/adresses', icon: <MapPin size={20} />, active: isPathActive('/adresses') },
-    ...paymentLinks,
-    ...expenseLinks,
-    ...reportLinks,
-    {
-      label: 'Profil',
-      href: '/dashboard/profile',
-      icon: <UserRound size={20} />,
-      active: location.pathname === '/dashboard/profile',
-    },
-    { label: 'Aide', href: '#', icon: <HelpCircle size={20} />, disabled: true },
-  ]
+  if (isAdmin || isParent) {
+    links.push({ label: 'Eleves', href: '/students', icon: <GraduationCap size={20} />, active: isPathActive('/students') })
+  }
+
+  if (canAccessParents) {
+    links.push({ label: 'Parents', href: '/parents', icon: <UsersRound size={20} />, active: isPathActive('/parents') })
+  }
+
+  if (isAdmin || isParent || isComptable) {
+    links.push({ label: 'Adresses', href: '/adresses', icon: <MapPin size={20} />, active: isPathActive('/adresses') })
+  }
+
+  if (canAccessPaiements) {
+    links.push({ label: 'Paiements', href: '/paiements', icon: <CreditCard size={20} />, active: isPathActive('/paiements') })
+  }
+
+  if (canAccessDepenses) {
+    links.push({ label: 'Depenses', href: '/depenses', icon: <FileText size={20} />, active: isPathActive('/depenses') })
+  }
+
+  if (canAccessTresorerie) {
+    links.push({ label: 'Rapport financier', href: '/tresorerie/rapport-annee', icon: <FileText size={20} />, active: isPathActive('/tresorerie/rapport-annee') })
+  }
+
+  links.push(
+    { label: 'Profil', href: '/dashboard/profile', icon: <UserRound size={20} />, active: location.pathname === '/dashboard/profile' },
+    { label: 'Aide', href: '/dashboard/aide', icon: <HelpCircle size={20} />, active: isPathActive('/dashboard/aide') }
+  )
 
   return (
     <div className='dashboard-layout'>

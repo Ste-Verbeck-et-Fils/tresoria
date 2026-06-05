@@ -6,6 +6,8 @@ import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
 import { normalizeCollection } from '../utils/data'
 import ModuleState from './ModuleState'
+import Loader from '../../../components/ui/Loader'
+import { getSocket } from '../../../services/socketService'
 
 const EntityListPage = ({
   title,
@@ -22,6 +24,7 @@ const EntityListPage = ({
   successMessage,
   beforePanel,
   kicker = 'Module inscription',
+  socketEvents,
 }) => {
   const navigate = useNavigate()
   const [items, setItems] = useState([])
@@ -112,6 +115,50 @@ const EntityListPage = ({
     }
   }, [loadItems])
 
+  useEffect(() => {
+    if (!socketEvents) return
+
+    const socket = getSocket()
+
+    const handleCreated = (newItem) => {
+      setItems((prev) => {
+        if (prev.find((item) => item.id === newItem.id)) return prev
+        return [newItem, ...prev]
+      })
+      setSearchedItems((prev) => {
+        if (!prev) return prev
+        if (prev.find((item) => item.id === newItem.id)) return prev
+        return [newItem, ...prev]
+      })
+    }
+
+    const handleUpdated = (updatedItem) => {
+      setItems((prev) => prev.map((item) => (item.id === updatedItem.id ? updatedItem : item)))
+      setSearchedItems((prev) => {
+        if (!prev) return prev
+        return prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+      })
+    }
+
+    const handleDeleted = (deletedId) => {
+      setItems((prev) => prev.filter((item) => item.id !== deletedId))
+      setSearchedItems((prev) => {
+        if (!prev) return prev
+        return prev.filter((item) => item.id !== deletedId)
+      })
+    }
+
+    if (socketEvents.created) socket.on(socketEvents.created, handleCreated)
+    if (socketEvents.updated) socket.on(socketEvents.updated, handleUpdated)
+    if (socketEvents.deleted) socket.on(socketEvents.deleted, handleDeleted)
+
+    return () => {
+      if (socketEvents.created) socket.off(socketEvents.created, handleCreated)
+      if (socketEvents.updated) socket.off(socketEvents.updated, handleUpdated)
+      if (socketEvents.deleted) socket.off(socketEvents.deleted, handleDeleted)
+    }
+  }, [socketEvents])
+
   const filteredItems = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase()
     const sourceItems = searchedItems ?? items
@@ -176,9 +223,7 @@ const EntityListPage = ({
         </div>
 
         {isLoading && (
-          <div className='inscription-loading' role='status'>
-            Chargement en cours...
-          </div>
+          <Loader message='Chargement en cours...' />
         )}
 
         {!isLoading && error && (

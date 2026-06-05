@@ -11,6 +11,8 @@ import ForgotPassword from './pages/public/ForgotPassword'
 import VerifyCode from './pages/public/VerifyCode'
 import ResetPassword from './pages/public/ResetPassword'
 import ProfileDashboard from './pages/public/dashboard/ProfileDashboard'
+import AideDashboard from './pages/public/dashboard/AideDashboard'
+import NotificationsDashboard from './pages/public/dashboard/NotificationsDashboard'
 import AuthenticatedModuleRoute from './modules/inscriptions/routes/AuthenticatedModuleRoute'
 import RoleProtectedRoute from './modules/inscriptions/routes/RoleProtectedRoute'
 import InscriptionsPage from './modules/inscriptions/pages/InscriptionsPage'
@@ -39,7 +41,7 @@ import CreateDepensePage from './modules/depenses/pages/CreateDepensePage'
 import DepenseDetailPage from './modules/depenses/pages/DepenseDetailPage'
 import TresoreriePage from './modules/tresorerie/pages/TresoreriePage'
 import RapportFinancierAnneePage from './modules/tresorerie/pages/RapportFinancierAnneePage'
-import { ADMIN_ROLES, EXPENSE_ROLES, INSCRIPTION_SOLDE_ROLES, PAYMENT_ROLES, TREASURY_ROLES } from './modules/inscriptions/utils/data'
+import { ADMIN_ROLES, EXPENSE_ROLES, INSCRIPTION_SOLDE_ROLES, PAYMENT_ROLES, TREASURY_ROLES } from './utils/roles'
 import './App.css'
 import './styles/public/PublicTheme.css'
 import './modules/inscriptions/styles/inscriptions.css'
@@ -58,6 +60,8 @@ function AppLayout () {
             <Route path='/dashboard'>
               <Route index element={<Navigate to='profile' replace />} />
               <Route path='profile' element={<ProfileDashboard />} />
+              <Route path='aide' element={<AideDashboard />} />
+              <Route path='notifications' element={<NotificationsDashboard />} />
             </Route>
             <Route element={<AuthenticatedModuleRoute />}>
               <Route element={<RoleProtectedRoute allowedRoles={ADMIN_ROLES} />}>
@@ -88,15 +92,21 @@ function AppLayout () {
                 <Route path='/tresorerie' element={<TresoreriePage />} />
                 <Route path='/tresorerie/rapport-annee' element={<RapportFinancierAnneePage />} />
               </Route>
-              <Route path='/parents' element={<ParentsPage />} />
-              <Route path='/parents/create' element={<CreateParentPage />} />
-              <Route path='/parents/:id' element={<ParentDetailPage />} />
-              <Route path='/students' element={<StudentsPage />} />
-              <Route path='/students/create' element={<CreateStudentPage />} />
-              <Route path='/students/:id' element={<StudentDetailPage />} />
-              <Route path='/adresses' element={<AdressesPage />} />
-              <Route path='/adresses/create' element={<CreateAdressePage />} />
-              <Route path='/adresses/:id' element={<AdresseDetailPage />} />
+              <Route element={<RoleProtectedRoute allowedRoles={ADMIN_ROLES} />}>
+                <Route path='/parents' element={<ParentsPage />} />
+                <Route path='/parents/create' element={<CreateParentPage />} />
+                <Route path='/parents/:id' element={<ParentDetailPage />} />
+              </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={[...ADMIN_ROLES, 'PARENT']} />}>
+                <Route path='/students' element={<StudentsPage />} />
+                <Route path='/students/create' element={<CreateStudentPage />} />
+                <Route path='/students/:id' element={<StudentDetailPage />} />
+              </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={[...ADMIN_ROLES, 'PARENT', 'COMPTABLE']} />}>
+                <Route path='/adresses' element={<AdressesPage />} />
+                <Route path='/adresses/create' element={<CreateAdressePage />} />
+                <Route path='/adresses/:id' element={<AdresseDetailPage />} />
+              </Route>
             </Route>
           </Route>
           <Route path='/login' element={<Login />} />

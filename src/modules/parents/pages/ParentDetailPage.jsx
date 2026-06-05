@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
 import { ArrowLeft, MapPin, PencilLine, Plus, Trash2, UserRound } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -19,6 +20,7 @@ import {
   updateParent,
 } from '../../../services/parentService'
 import {
+
   GENDER_OPTIONS,
   getAdressePayload,
   getParentPayload,
@@ -294,7 +296,7 @@ const ParentDetailPage = () => {
         />
       )}
 
-      {isLoading && <div className='inscription-loading'>Chargement du parent...</div>}
+      {isLoading && <Loader message='Chargement du parent...' />}
 
       {!isLoading && loadError && (
         <ModuleState

@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, FileText } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -14,6 +15,7 @@ import {
   normalizeCollection,
 } from '../../inscriptions/utils/data'
 import {
+
   DEFAULT_DEPENSE_FORM,
   getAnneeScolaireOptionLabel,
   getDepensePayload,
@@ -152,7 +154,7 @@ const CreateDepensePage = () => {
         </div>
       </header>
 
-      {isLoadingOptions && <div className='inscription-loading'>Chargement du formulaire...</div>}
+      {isLoadingOptions && <Loader message='Chargement du formulaire...' />}
 
       {!isLoadingOptions && optionsError && (
         <ModuleState

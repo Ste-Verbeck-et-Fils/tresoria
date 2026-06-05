@@ -69,10 +69,10 @@ const Login = () => {
           phone: formData.phone,
           password: formData.password,
         })
-        
+
         const token = data.token || data.access_token
         persistSession(token, data.user)
-        
+
         showMessage('success', 'Connexion réussie ! Redirection...')
         setTimeout(() => navigate('/dashboard/profile', { replace: true }), 1500)
       } catch (error) {
@@ -106,20 +106,20 @@ const Login = () => {
 
           <form className='auth-form' onSubmit={handleSubmit}>
             <Input
-              id={'phone'}
-              type={'tel'}
-              label={'Numéro de téléphone'}
+              id='phone'
+              type='tel'
+              label='Numéro de téléphone'
               value={formData.phone}
               onChange={handleChange}
               error={errors.phone}
-              placeholder={'Ex: +243814717237'}
+              placeholder='Ex: +243814717237'
               disabled={isLoading}
             />
 
             <Input
-              id={'password'}
-              type={'password'}
-              label={'Mot de passe'}
+              id='password'
+              type='password'
+              label='Mot de passe'
               value={formData.password}
               onChange={handleChange}
               error={errors.password}
@@ -127,12 +127,11 @@ const Login = () => {
               disabled={isLoading}
             />
 
-
             <Button
-              type={'submit'}
-              variant={'super'}
+              type='submit'
+              variant='super'
               label={isLoading ? 'Connexion...' : 'Se connecter'}
-              className={'auth-submit-btn'}
+              className='auth-submit-btn'
               disabled={isLoading}
 
             />

@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
 import { Archive, ArrowLeft, CalendarRange, PencilLine, Trash2 } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -17,6 +18,7 @@ import ModuleState from '../../inscriptions/components/ModuleState'
 import StatusBadge from '../../inscriptions/components/StatusBadge'
 import { formatDate, formatNumber } from '../../inscriptions/utils/data'
 import {
+
   getAnneeScolairePayload,
   normalizeAnneeScolaireForm,
   unwrapAnneeScolaire,
@@ -199,7 +201,7 @@ const AnneeScolaireDetailPage = () => {
         />
       )}
 
-      {isLoading && <div className='inscription-loading'>Chargement de l annee scolaire...</div>}
+      {isLoading && <Loader message='Chargement de l annee scolaire...' />}
 
       {!isLoading && loadError && (
         <ModuleState

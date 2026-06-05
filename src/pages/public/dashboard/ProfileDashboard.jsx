@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useOutletContext } from 'react-router-dom'
 import { UserCircle2, Camera, PencilLine } from 'lucide-react'
@@ -284,7 +285,7 @@ const ProfileDashboard = () => {
 
   const renderContent = () => {
     if (isProfileLoading) {
-      return <div className='profile-dashboard__loading'>Chargement du profil...</div>
+      return <Loader message='Chargement du profil...' />
     }
 
     if (profileLoadError) {

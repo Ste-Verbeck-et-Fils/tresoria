@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
 import { ArrowLeft, GraduationCap, PencilLine, Trash2 } from 'lucide-react'
 import { Link, useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom'
@@ -24,10 +25,9 @@ import {
   getInscriptionStudent,
   getParentName,
   getStudentName,
-  normalizeRole,
   unwrapEntity,
-  ADMIN_ROLES,
 } from '../utils/data'
+import { ADMIN_ROLES, normalizeRole } from '../../../utils/roles'
 import {
   formatAmount,
   getInscriptionFinancialSummary,
@@ -216,7 +216,7 @@ const InscriptionDetailPage = () => {
         />
       )}
 
-      {isLoading && <div className='inscription-loading'>Chargement de l inscription...</div>}
+      {isLoading && <Loader message='Chargement de l inscription...' />}
 
       {!isLoading && loadError && (
         <ModuleState

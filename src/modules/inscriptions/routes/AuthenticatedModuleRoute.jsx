@@ -1,12 +1,13 @@
 import React from 'react'
 import { Navigate, Outlet, useOutletContext } from 'react-router-dom'
 import ModuleState from '../components/ModuleState'
+import Loader from '../../../components/ui/Loader'
 
 const AuthenticatedModuleRoute = () => {
   const context = useOutletContext()
 
   if (context.isProfileLoading) {
-    return <div className='inscription-loading'>Verification de votre session...</div>
+    return <Loader message='Verification de votre session...' />
   }
 
   if (context.profileLoadError) {

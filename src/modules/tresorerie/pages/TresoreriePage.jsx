@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
@@ -19,6 +20,7 @@ import {
   normalizeCollection,
 } from '../../inscriptions/utils/data'
 import {
+
   DEFAULT_TRESORERIE_FILTERS,
   getTresorerieFilterMode,
   getTresorerieScopeLabel,
@@ -327,7 +329,7 @@ const TresoreriePage = () => {
         )}
       </section>
 
-      {isLoading && <div className='inscription-loading'>Chargement de la tresorerie...</div>}
+      {isLoading && <Loader message='Chargement de la tresorerie...' />}
 
       {!isLoading && loadError && (
         <ModuleState

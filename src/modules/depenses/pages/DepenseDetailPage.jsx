@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, Ban, FileText, PencilLine, Trash2 } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -27,6 +28,7 @@ import {
 } from '../../inscriptions/utils/data'
 import { formatAmount } from '../../inscriptions/utils/amounts'
 import {
+
   getAnneeScolaireOptionLabel,
   getDepenseAnneeScolaire,
   getDepenseDate,
@@ -278,7 +280,7 @@ const DepenseDetailPage = () => {
         />
       )}
 
-      {isLoading && <div className='inscription-loading'>Chargement de la depense...</div>}
+      {isLoading && <Loader message='Chargement de la depense...' />}
 
       {!isLoading && loadError && (
         <ModuleState

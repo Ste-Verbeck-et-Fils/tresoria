@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, CreditCard } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -24,6 +25,7 @@ import {
   unwrapInscriptionSolde,
 } from '../../inscriptions/utils/amounts'
 import {
+
   getInscriptionOptionLabel,
   getPaiementPayload,
   isAnneeScolaireCloturee,
@@ -218,7 +220,7 @@ const CreatePaiementPage = () => {
         </div>
       </header>
 
-      {isLoadingOptions && <div className='inscription-loading'>Chargement du formulaire...</div>}
+      {isLoadingOptions && <Loader message='Chargement du formulaire...' />}
 
       {!isLoadingOptions && optionsError && (
         <ModuleState
@@ -289,7 +291,7 @@ const CreatePaiementPage = () => {
                 />
               </dl>
 
-              {isLoadingSolde && <div className='inscription-loading'>Chargement du solde...</div>}
+              {isLoadingSolde && <Loader message='Chargement du solde...' />}
               {!isLoadingSolde && soldeError && (
                 <Feedback type='warning' message={soldeError} />
               )}

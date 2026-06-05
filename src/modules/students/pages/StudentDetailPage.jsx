@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
 import { ArrowLeft, GraduationCap, PencilLine, Trash2 } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -19,6 +20,7 @@ import {
 } from '../../../services/studentService'
 import StudentAdresseManager from '../components/StudentAdresseManager'
 import {
+
   getStudentParent,
   getStudentPayload,
   normalizeStudentForm,
@@ -257,7 +259,7 @@ const StudentDetailPage = () => {
         />
       )}
 
-      {isLoading && <div className='inscription-loading'>Chargement de l eleve...</div>}
+      {isLoading && <Loader message='Chargement de l eleve...' />}
 
       {!isLoading && loadError && (
         <ModuleState
@@ -333,7 +335,7 @@ const StudentDetailPage = () => {
                 )}
           </DetailSection>
 
-          {isLoadingAdresses && <div className='inscription-loading'>Chargement des adresses...</div>}
+          {isLoadingAdresses && <Loader message='Chargement des adresses...' />}
 
           {!isLoadingAdresses && adressesError && (
             <ModuleState

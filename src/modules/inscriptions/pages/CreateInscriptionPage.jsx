@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -18,6 +19,7 @@ import {
   unwrapEntity,
 } from '../utils/data'
 import {
+
   formatAmount,
   getInscriptionFinancialSummary,
   getSoldePreviewFromSummary,
@@ -278,7 +280,7 @@ const CreateInscriptionPage = () => {
       {location.state?.warningMessage && <Feedback type='warning' message={location.state.warningMessage} />}
 
       {isLoadingOptions && (
-        <div className='inscription-loading' role='status'>Chargement du formulaire...</div>
+        <Loader message='Chargement du formulaire...' />
       )}
 
       {!isLoadingOptions && optionsError && (

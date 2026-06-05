@@ -79,7 +79,7 @@ const Register = () => {
           phone: formData.phone,
           password: formData.password,
         })
-        
+
         showMessage('success', 'Inscription réussie ! Redirection vers la connexion...')
         setTimeout(() => navigate('/login'), 2000)
       } catch (error) {

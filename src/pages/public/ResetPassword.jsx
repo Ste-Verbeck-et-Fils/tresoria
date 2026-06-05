@@ -40,7 +40,7 @@ const ResetPassword = () => {
       const hasLower = /[a-z]/.test(formData.password)
       const hasNumber = /\d/.test(formData.password)
       const hasSpecial = /[!@#$%^&*(),.?":{}|<>\-_]/.test(formData.password)
-      
+
       if (formData.password.length < 8 || !hasUpper || !hasLower || !hasNumber || !hasSpecial) {
         newErrors.password = 'Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial'
       }
@@ -100,9 +100,9 @@ const ResetPassword = () => {
 
           <form className='auth-form' onSubmit={handleSubmit}>
             <Input
-              id={'password'}
-              type={'password'}
-              label={'Nouveau mot de passe'}
+              id='password'
+              type='password'
+              label='Nouveau mot de passe'
               value={formData.password}
               onChange={handleChange}
               error={errors.password}
@@ -111,9 +111,9 @@ const ResetPassword = () => {
             />
 
             <Input
-              id={'confirmPassword'}
-              type={'password'}
-              label={'Confirmer le mot de passe'}
+              id='confirmPassword'
+              type='password'
+              label='Confirmer le mot de passe'
               value={formData.confirmPassword}
               onChange={handleChange}
               error={errors.confirmPassword}
@@ -122,10 +122,10 @@ const ResetPassword = () => {
             />
 
             <Button
-              type={'submit'}
-              variant={'super'}
+              type='submit'
+              variant='super'
               label={isLoading ? 'Enregistrement...' : 'Enregistrer'}
-              className={'auth-submit-btn-mt'}
+              className='auth-submit-btn-mt'
               disabled={isLoading}
             />
           </form>

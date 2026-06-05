@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
 import { CalendarCheck2 } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
@@ -56,7 +57,7 @@ const AnneesScolairesPage = () => {
       </div>
       <div className='active-annee-card__content'>
         <p className='active-annee-card__label'>Annee scolaire active</p>
-        {isLoadingActive && <p className='active-annee-card__state'>Chargement...</p>}
+        {isLoadingActive && <Loader message='Chargement...' />}
         {!isLoadingActive && activeError && <p className='active-annee-card__error'>{activeError}</p>}
         {!isLoadingActive && !activeError && activeAnnee?.id && (
           <div className='active-annee-card__details'>

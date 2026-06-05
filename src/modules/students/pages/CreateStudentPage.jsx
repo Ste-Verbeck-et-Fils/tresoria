@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
 import { ArrowLeft, Plus, Search } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -19,6 +20,7 @@ import {
 import { getParents, searchParentsByPhone } from '../../../services/parentService'
 import QuickParentForm from '../components/QuickParentForm'
 import {
+
   getStudentPayload,
   normalizeStudentForm,
   SEXE_OPTIONS,
@@ -226,7 +228,7 @@ const CreateStudentPage = () => {
         </div>
       </header>
 
-      {isLoadingParents && <div className='inscription-loading'>Chargement des parents...</div>}
+      {isLoadingParents && <Loader message='Chargement des parents...' />}
 
       {parentsError && (
         <ModuleState

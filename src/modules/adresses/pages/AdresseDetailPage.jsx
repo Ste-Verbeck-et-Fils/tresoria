@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, MapPin, PencilLine, Trash2 } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -24,6 +25,7 @@ import {
 import { getParents } from '../../../services/parentService'
 import { getStudents } from '../../../services/studentService'
 import {
+
   getAdresseOwnerLabel,
   getAdresseOwnerName,
   getAdresseOwnerType,
@@ -278,7 +280,7 @@ const AdresseDetailPage = () => {
         />
       )}
 
-      {isLoading && <div className='inscription-loading'>Chargement de l adresse...</div>}
+      {isLoading && <Loader message='Chargement de l adresse...' />}
 
       {!isLoading && loadError && (
         <ModuleState

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Menu } from 'lucide-react'
+import { Menu, Bell } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import './AdminHeader.css'
 import { getUserProfile } from '../../services/profileService'
 
@@ -51,7 +52,10 @@ const AdminHeader = ({ profile, isSidebarOpen = false, onToggleSidebar }) => {
         <Menu size={22} />
       </button>
 
-      <div className='admin-header-right'>
+      <div className='admin-header-right' style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <Link to='/dashboard/notifications' style={{ color: '#64748b', display: 'flex', alignItems: 'center' }}>
+          <Bell size={22} />
+        </Link>
         <div className='admin-profile'>
           <div className='admin-user-info'>
             <span className='admin-name'>{fullName}</span>

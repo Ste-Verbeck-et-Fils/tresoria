@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
 import { ArrowLeft, Ban, CreditCard, PencilLine, Trash2 } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -35,6 +36,7 @@ import {
   unwrapInscriptionSolde,
 } from '../../inscriptions/utils/amounts'
 import {
+
   getInscriptionOptionLabel,
   getPaiementDate,
   getPaiementInscription,
@@ -283,7 +285,7 @@ const PaiementDetailPage = () => {
         />
       )}
 
-      {isLoading && <div className='inscription-loading'>Chargement du paiement...</div>}
+      {isLoading && <Loader message='Chargement du paiement...' />}
 
       {!isLoading && loadError && (
         <ModuleState

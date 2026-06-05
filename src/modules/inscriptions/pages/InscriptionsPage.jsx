@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
@@ -25,6 +26,7 @@ import {
   normalizeCollection,
 } from '../utils/data'
 import {
+
   getInscriptionFilterLabel,
   getInscriptionFilterOptions,
   INSCRIPTION_FILTER_OPTIONS,
@@ -174,7 +176,7 @@ const InscriptionsPage = () => {
         )}
       </div>
 
-      {isLoadingOptions && <p className='module-filter-panel__state'>Chargement des filtres...</p>}
+      {isLoadingOptions && <Loader message='Chargement des filtres...' />}
       {!isLoadingOptions && optionsError && (
         <div className='module-filter-panel__warning'>
           <Feedback type='warning' message={optionsError} />

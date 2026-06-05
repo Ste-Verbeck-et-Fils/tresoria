@@ -107,12 +107,12 @@ const VerifyCode = () => {
           )}
 
           <form className='auth-form' onSubmit={handleSubmit}>
-            <div className="auth-code-container">
+            <div className='auth-code-container'>
               {code.map((data, index) => (
                 <input
                   key={index}
-                  type="number"
-                  className="auth-code-input"
+                  type='number'
+                  className='auth-code-input'
                   value={data}
                   onChange={(e) => handleChange(e, index)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
@@ -123,10 +123,10 @@ const VerifyCode = () => {
             </div>
 
             <Button
-              type={'submit'}
-              variant={'super'}
+              type='submit'
+              variant='super'
               label={isLoading ? 'Vérification...' : 'Vérifier le code'}
-              className={'auth-submit-btn-mt'}
+              className='auth-submit-btn-mt'
               disabled={isLoading}
             />
           </form>

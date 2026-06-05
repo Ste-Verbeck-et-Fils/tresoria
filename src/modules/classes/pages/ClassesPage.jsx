@@ -9,6 +9,14 @@ const columns = [
   { label: 'Designation', render: (item) => item.designation || 'Non renseigne' },
   { label: 'Capacite', render: (item) => formatNumber(item.capacite) },
   { label: 'Responsable', render: (item) => item.responsable || 'Non renseigne' },
+  {
+    label: 'Statut',
+    render: (item) => (
+      <span style={{ padding: '4px 8px', borderRadius: '12px', background: item.statut === 'ACTIF' ? '#e6f4ea' : '#f1f3f4', color: item.statut === 'ACTIF' ? '#1e8e3e' : '#5f6368', fontSize: '0.8rem', fontWeight: 600 }}>
+        {item.statut || 'ACTIF'}
+      </span>
+    )
+  },
 ]
 
 const ClassesPage = () => {

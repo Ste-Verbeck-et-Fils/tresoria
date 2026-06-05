@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
@@ -23,6 +24,7 @@ import {
 } from '../../inscriptions/utils/data'
 import { formatAmount } from '../../inscriptions/utils/amounts'
 import {
+
   DEFAULT_PAIEMENT_FILTERS,
   getPaiementFilterParams,
   getInscriptionOptionLabel,
@@ -363,7 +365,7 @@ const PaiementsPage = () => {
       {hasAppliedFilters && !filterError && (
         <Feedback type='info' message='Filtres appliques. Les resultats affiches viennent de la recherche serveur.' />
       )}
-      {isLoadingOptions && <p className='module-filter-panel__state'>Chargement des filtres...</p>}
+      {isLoadingOptions && <Loader message='Chargement des filtres...' />}
       {!isLoadingOptions && optionsError && (
         <div className='module-filter-panel__warning'>
           <Feedback type='warning' message={optionsError} />

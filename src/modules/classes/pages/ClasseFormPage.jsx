@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -15,12 +16,14 @@ const DEFAULT_FORM = {
   designation: '',
   capacite: '',
   responsable: '',
+  statut: 'ACTIF',
 }
 
 const normalizeForm = (classe = {}) => ({
   designation: classe.designation || '',
   capacite: classe.capacite ?? '',
   responsable: classe.responsable || '',
+  statut: classe.statut || 'ACTIF',
 })
 
 const ClasseFormPage = ({ mode }) => {
@@ -103,6 +106,7 @@ const ClasseFormPage = ({ mode }) => {
         designation: form.designation.trim(),
         capacite: form.capacite ? Number(form.capacite) : null,
         responsable: form.responsable.trim() || null,
+        statut: form.statut,
       }
       const response = isEditing
         ? await updateClasse(id, payload)
@@ -141,7 +145,7 @@ const ClasseFormPage = ({ mode }) => {
         </div>
       </header>
 
-      {isLoading && <div className='inscription-loading'>Chargement de la classe...</div>}
+      {isLoading && <Loader message='Chargement de la classe...' />}
 
       {!isLoading && loadError && (
         <ModuleState
@@ -195,6 +199,21 @@ const ClasseFormPage = ({ mode }) => {
               disabled={isSubmitting}
               onChange={handleChange}
             />
+            <div className='input-wrapper'>
+              <label htmlFor='statut' className='input-label'>Statut</label>
+              <select
+                id='statut'
+                value={form.statut}
+                disabled={isSubmitting}
+                onChange={handleChange}
+                className='input-field'
+                style={{ display: 'block', width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', backgroundColor: '#fff', fontSize: '1rem' }}
+              >
+                <option value='ACTIF'>ACTIF</option>
+                <option value='INACTIF'>INACTIF</option>
+                <option value='ARCHIVE'>ARCHIVE</option>
+              </select>
+            </div>
           </div>
 
           <div className='inscription-form-actions'>

@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
@@ -13,6 +14,7 @@ import {
 import { getParents } from '../../../services/parentService'
 import { getStudents } from '../../../services/studentService'
 import {
+
   getAdresseOwnerName,
   getAdresseText,
   getOwnerOptions,
@@ -159,7 +161,7 @@ const AdressesPage = () => {
         )}
       </div>
 
-      {isLoadingOwners && <p className='module-filter-panel__state'>Chargement des proprietaires...</p>}
+      {isLoadingOwners && <Loader message='Chargement des proprietaires...' />}
       {!isLoadingOwners && ownersError && (
         <div className='module-filter-panel__warning'>
           <Feedback type='warning' message={ownersError} />

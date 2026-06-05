@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
@@ -16,6 +17,7 @@ import {
 } from '../../inscriptions/utils/data'
 import { formatAmount } from '../../inscriptions/utils/amounts'
 import {
+
   DEFAULT_DEPENSE_FILTERS,
   getAnneeScolaireOptionLabel,
   getDepenseAnneeScolaire,
@@ -271,7 +273,7 @@ const DepensesPage = () => {
       {hasAppliedFilters && !filterError && (
         <Feedback type='info' message='Filtres appliques. Les resultats affiches viennent de la recherche serveur.' />
       )}
-      {isLoadingOptions && <p className='module-filter-panel__state'>Chargement des filtres...</p>}
+      {isLoadingOptions && <Loader message='Chargement des filtres...' />}
       {!isLoadingOptions && optionsError && (
         <div className='module-filter-panel__warning'>
           <Feedback type='warning' message={optionsError} />
@@ -302,6 +304,11 @@ const DepensesPage = () => {
       getSearchText={getDepenseSearchText}
       successMessage={location.state?.successMessage}
       beforePanel={filterPanel}
+      socketEvents={{
+        created: 'depense_created',
+        updated: 'depense_updated',
+        deleted: 'depense_deleted'
+      }}
     />
   )
 }

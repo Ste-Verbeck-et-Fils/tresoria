@@ -1,3 +1,4 @@
+import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, FileText } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -13,6 +14,7 @@ import {
   normalizeCollection,
 } from '../../inscriptions/utils/data'
 import {
+
   getRapportFinancierGroups,
   getRapportFinancierSummary,
 } from '../utils/tresorerie'
@@ -203,7 +205,7 @@ const RapportFinancierAnneePage = () => {
         )}
       </section>
 
-      {isLoadingRapport && <div className='inscription-loading'>Chargement du rapport financier...</div>}
+      {isLoadingRapport && <Loader message='Chargement du rapport financier...' />}
 
       {!isLoadingRapport && rapportError && (
         <ModuleState
