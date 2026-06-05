@@ -384,7 +384,6 @@ const PaiementsPage = () => {
   return (
     <EntityListPage
       title='Paiements'
-      kicker='Module paiement'
       description='Consultez les paiements, filtrez les resultats et suivez leur statut.'
       loadItems={loadPaiements}
       columns={columns}

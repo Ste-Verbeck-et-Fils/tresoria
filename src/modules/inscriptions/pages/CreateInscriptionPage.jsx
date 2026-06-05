@@ -268,7 +268,6 @@ const CreateInscriptionPage = () => {
             <ArrowLeft size={16} />
             Retour aux inscriptions
           </Link>
-          <p className='inscription-page-kicker'>Module inscription</p>
           <h1>Nouvelle inscription</h1>
           <p className='inscription-page-description'>
             Recherchez les informations necessaires puis inscrivez un eleve existant dans une classe.

@@ -23,7 +23,7 @@ const EntityListPage = ({
   searchItems,
   successMessage,
   beforePanel,
-  kicker = 'Module inscription',
+  kicker,
   socketEvents,
 }) => {
   const navigate = useNavigate()
@@ -180,7 +180,7 @@ const EntityListPage = ({
     <section className='inscription-page'>
       <header className='inscription-page-header'>
         <div>
-          <p className='inscription-page-kicker'>{kicker}</p>
+          {kicker && <p className='inscription-page-kicker'>{kicker}</p>}
           <h1>{title}</h1>
           {description && <p className='inscription-page-description'>{description}</p>}
         </div>

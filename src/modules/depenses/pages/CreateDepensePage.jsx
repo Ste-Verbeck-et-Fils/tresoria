@@ -146,7 +146,6 @@ const CreateDepensePage = () => {
             <ArrowLeft size={16} />
             Retour aux depenses
           </Link>
-          <p className='inscription-page-kicker'>Module depense</p>
           <h1>Nouvelle depense</h1>
           <p className='inscription-page-description'>
             Selectionnez une annee scolaire active puis enregistrez les informations de la depense.

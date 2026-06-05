@@ -20,11 +20,24 @@ const AideDashboard = () => {
     setIsLoading(true)
 
     try {
-      const response = await api.post('/api/aide', { message: userMessage.text })
-      const botMessage = { id: Date.now() + 1, text: response.data?.reply || 'Une erreur est survenue.', sender: 'bot' }
+      const history = messages
+        .filter(msg => !msg.error)
+        .slice(-8)
+        .map(msg => ({
+          role: msg.sender === 'user' ? 'user' : 'assistant',
+          content: msg.text
+        }))
+
+      const response = await api.post('/api/aide', {
+        message: userMessage.text,
+        history
+      })
+      const reply = response.data?.data?.reply || response.data?.reply || 'Une erreur est survenue.'
+      const botMessage = { id: Date.now() + 1, text: reply, sender: 'bot' }
       setMessages(prev => [...prev, botMessage])
     } catch (error) {
-      setMessages(prev => [...prev, { id: Date.now() + 1, text: 'Désolé, je ne suis pas disponible pour le moment.', sender: 'bot', error: true }])
+      const errorMessage = error.message || 'Désolé, je ne suis pas disponible pour le moment.'
+      setMessages(prev => [...prev, { id: Date.now() + 1, text: errorMessage, sender: 'bot', error: true }])
     } finally {
       setIsLoading(false)
     }

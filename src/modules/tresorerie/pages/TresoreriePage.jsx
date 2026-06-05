@@ -246,7 +246,6 @@ const TresoreriePage = () => {
     <section className='inscription-page'>
       <header className='inscription-page-header'>
         <div>
-          <p className='inscription-page-kicker'>Module tresorerie</p>
           <h1>Tableau de bord tresorerie</h1>
           <p className='inscription-page-description'>
             Suivez les entrees comptabilisables, les sorties confirmees et le solde disponible.

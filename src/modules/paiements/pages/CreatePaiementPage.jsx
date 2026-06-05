@@ -212,7 +212,6 @@ const CreatePaiementPage = () => {
             <ArrowLeft size={16} />
             Retour aux paiements
           </Link>
-          <p className='inscription-page-kicker'>Module paiement</p>
           <h1>Nouveau paiement</h1>
           <p className='inscription-page-description'>
             Selectionnez une inscription ouverte, verifiez son solde, puis enregistrez le paiement.

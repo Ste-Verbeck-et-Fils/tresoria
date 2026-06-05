@@ -292,7 +292,6 @@ const DepensesPage = () => {
   return (
     <EntityListPage
       title='Depenses'
-      kicker='Module depense'
       description='Consultez les depenses et suivez leur statut.'
       loadItems={loadDepenses}
       columns={columns}

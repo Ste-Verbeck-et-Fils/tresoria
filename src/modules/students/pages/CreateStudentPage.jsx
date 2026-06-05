@@ -217,10 +217,7 @@ const CreateStudentPage = () => {
     <section className='inscription-page'>
       <header className='inscription-page-header'>
         <div>
-          <Link to={returnTo || '/students'} state={returnState} className='inscription-back-link'>
-            <ArrowLeft size={16} />
-            {returnTo ? 'Retour a l inscription' : 'Retour aux eleves'}
-          </Link>
+ 
           <h1>Nouvel eleve</h1>
           <p className='inscription-page-description'>
             Renseignez l identite de l eleve, liez ses parents et ajoutez son adresse si necessaire.

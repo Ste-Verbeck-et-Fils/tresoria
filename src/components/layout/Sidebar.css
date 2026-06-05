@@ -96,12 +96,14 @@
 
 .sidebar-link:hover {
   background-color: rgba(0, 0, 0, 0.03);
-  color: var(--color-primary);
+  color: var(--color-secondary);
+  font-weight: 600;
 }
 
 .sidebar-link--active {
   background-color: rgba(0, 0, 0, 0.03);
-  color: var(--color-primary);
+  color: var(--color-secondary);
+  font-weight: 600;
 }
 
 .sidebar-link--disabled {

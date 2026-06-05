@@ -151,7 +151,6 @@ const RapportFinancierAnneePage = () => {
             <ArrowLeft size={16} />
             Retour a la tresorerie
           </Link>
-          <p className='inscription-page-kicker'>Module tresorerie</p>
           <h1>Rapport financier annuel</h1>
           <p className='inscription-page-description'>
             Consultez les entrees, sorties, soldes et groupements financiers d une annee scolaire.

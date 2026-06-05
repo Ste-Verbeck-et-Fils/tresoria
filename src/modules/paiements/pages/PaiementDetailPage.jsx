@@ -267,7 +267,6 @@ const PaiementDetailPage = () => {
             <ArrowLeft size={16} />
             Retour aux paiements
           </Link>
-          <p className='inscription-page-kicker'>Module paiement</p>
           <h1>Detail du paiement #{id}</h1>
           <p className='inscription-page-description'>
             Consultez le paiement, son inscription et le solde financier correspondant.

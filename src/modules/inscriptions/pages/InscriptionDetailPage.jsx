@@ -197,7 +197,7 @@ const InscriptionDetailPage = () => {
             <ArrowLeft size={16} />
             {canManageInscription ? 'Retour aux inscriptions' : 'Retour au tableau de bord'}
           </Link>
-          <p className='inscription-page-kicker'>Module inscription</p>
+
           <h1>Detail de l inscription #{id}</h1>
           <p className='inscription-page-description'>
             Consultez les informations de l inscription et son solde financier.

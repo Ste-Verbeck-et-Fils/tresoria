@@ -262,7 +262,6 @@ const DepenseDetailPage = () => {
             <ArrowLeft size={16} />
             Retour aux depenses
           </Link>
-          <p className='inscription-page-kicker'>Module depense</p>
           <h1>Detail de la depense #{id}</h1>
           <p className='inscription-page-description'>
             Consultez la depense, modifiez ses informations ou annulez-la si necessaire.
