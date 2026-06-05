@@ -18,6 +18,7 @@ import {
 import { logoutUser } from '../../services/authService'
 import { getUserProfile, normalizeProfile } from '../../services/profileService'
 import { ADMIN_ROLES, EXPENSE_ROLES, PAYMENT_ROLES, TREASURY_ROLES, normalizeRole } from '../../utils/roles'
+import Loader from '../../components/ui/Loader'
 
 import '../../styles/public/layout.css'
 
@@ -155,6 +156,14 @@ const Layout = () => {
     { label: 'Profil', href: '/dashboard/profile', icon: <UserRound size={20} />, active: location.pathname === '/dashboard/profile' },
     { label: 'Aide', href: '/dashboard/aide', icon: <HelpCircle size={20} />, active: isPathActive('/dashboard/aide') }
   )
+
+  if (isProfileLoading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc' }}>
+        <Loader message='Chargement de votre espace...' />
+      </div>
+    )
+  }
 
   return (
     <div className='dashboard-layout'>

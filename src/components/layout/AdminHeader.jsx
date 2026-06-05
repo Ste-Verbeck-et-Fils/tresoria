@@ -1,44 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Menu, Bell } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import './AdminHeader.css'
-import { getUserProfile } from '../../services/profileService'
-
-const getStoredUser = () => {
-  const storedUser = localStorage.getItem('user')
-
-  if (!storedUser) {
-    return null
-  }
-
-  try {
-    return JSON.parse(storedUser)
-  } catch {
-    return null
-  }
-}
 
 const AdminHeader = ({ profile, isSidebarOpen = false, onToggleSidebar }) => {
-  const [user, setUser] = useState(() => getStoredUser())
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const freshUser = await getUserProfile()
-        setUser(freshUser)
-        localStorage.setItem('user', JSON.stringify(freshUser))
-      } catch (error) {
-        console.error('Impossible de charger les donnees utilisateur', error)
-      }
-    }
-
-    fetchUser()
-  }, [])
-
-  const displayedUser = profile || user
-  const fullName = displayedUser?.full_name || 'Chargement...'
-  const role = displayedUser?.role || '...'
-  const avatarUrl = displayedUser?.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayedUser?.full_name || 'User')}&background=random&color=fff`
+  const fullName = profile?.full_name || 'Utilisateur'
+  const role = profile?.role || ''
+  const avatarUrl = profile?.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=random&color=fff`
 
   return (
     <header className='admin-header'>

@@ -23,7 +23,8 @@
 
 /* Nouveau design Chat IA - Ergonomie Image */
 .chat-app-container {
-  background: var(--color-light-darker); /* Blanc */
+  background: var(--color-light-darker);
+  /* Blanc */
   width: 100%;
   max-width: none;
   height: calc(100vh - 120px);
@@ -40,7 +41,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 24px 32px;
-  background: #FCFAFA; /* Tres leger gris/beige */
+  background: #FCFAFA;
+  /* Tres leger gris/beige */
   border-bottom: 1px solid rgba(0, 0, 0, 0.03);
 }
 
@@ -62,7 +64,7 @@
   justify-content: center;
   cursor: pointer;
   color: var(--color-text-muted);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
   transition: all 0.2s;
 }
 
@@ -104,7 +106,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
 
@@ -146,7 +148,7 @@
   border-radius: 18px;
   font-size: 0.95rem;
   line-height: 1.5;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
   word-break: break-word;
   white-space: pre-wrap;
 }
@@ -161,7 +163,7 @@
   background: var(--color-light-darker, #FFFFFF);
   color: var(--color-text-primary);
   border-top-left-radius: 4px;
-  border: 1px solid rgba(0,0,0,0.03);
+  border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
 .chat-app-reactions {
@@ -177,7 +179,8 @@
   transition: color 0.2s;
 }
 
-.reaction-icon:hover, .reaction-icon.active {
+.reaction-icon:hover,
+.reaction-icon.active {
   color: #FBB034;
 }
 
@@ -192,17 +195,31 @@
 .chat-app-typing span {
   width: 6px;
   height: 6px;
-  background-color: #F87171; /* point rose */
+  background-color: #F87171;
+  /* point rose */
   border-radius: 50%;
   animation: typing 1.4s infinite ease-in-out both;
 }
 
-.chat-app-typing span:nth-child(1) { animation-delay: -0.32s; }
-.chat-app-typing span:nth-child(2) { animation-delay: -0.16s; }
+.chat-app-typing span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.chat-app-typing span:nth-child(2) {
+  animation-delay: -0.16s;
+}
 
 @keyframes typing {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1); }
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
 }
 
 .chat-app-input-area {
@@ -218,7 +235,7 @@
   border-radius: 999px;
   padding: 8px 8px 8px 24px;
   gap: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
 .chat-app-input {
@@ -251,8 +268,8 @@
 }
 
 .chat-app-send-btn {
-  background: var(--color-primary);
-  color: var(--color-text-primary);
+  background: var(--color-secondary);
+  color: var(--color-light);
   border: none;
   padding: 12px 28px;
   border-radius: 999px;
