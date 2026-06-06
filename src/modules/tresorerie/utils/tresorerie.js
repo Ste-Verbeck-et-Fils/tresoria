@@ -242,7 +242,7 @@ export const validateTresorerieFilters = (filters = {}) => {
   return ''
 }
 
-const normalizeGroupEntries = (value, fallbackLabel = 'Non renseigne') => {
+const normalizeGroupEntries = (value, fallbackLabel = '-') => {
   if (!value) {
     return []
   }

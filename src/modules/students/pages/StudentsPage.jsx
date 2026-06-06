@@ -1,5 +1,6 @@
 import React from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
+import { CreditCard } from 'lucide-react'
 import EntityListPage from '../../inscriptions/components/EntityListPage'
 import { getStudents } from '../../../services/studentService'
 import { formatDate, getStudentName } from '../../inscriptions/utils/data'
@@ -7,9 +8,9 @@ import { formatDate, getStudentName } from '../../inscriptions/utils/data'
 const columns = [
   { label: 'Reference', render: (item) => `#${item.id}` },
   { label: 'Nom complet', render: (item) => getStudentName(item) },
-  { label: 'Sexe', render: (item) => item.sexe || 'Non renseigne' },
+  { label: 'Sexe', render: (item) => item.sexe || '-' },
   { label: 'Date de naissance', render: (item) => formatDate(item.date_naissance) },
-  { label: 'Contact', render: (item) => item.contact || 'Non renseigne' },
+  { label: 'Contact', render: (item) => item.contact || '-' },
 ]
 
 const StudentsPage = () => {
@@ -36,6 +37,11 @@ const StudentsPage = () => {
         item.sexe,
         item.contact,
       ].join(' ')}
+      extraActions={(item) => (
+        <Link to={`/students/${item.id}/paiements`} style={{ padding: '10px 16px', textDecoration: 'none', color: '#173f5f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px', borderTop: '1px solid #f3f4f6' }}>
+          <CreditCard size={16} /> Paiements
+        </Link>
+      )}
       successMessage={location.state?.successMessage}
     />
   )

@@ -9,6 +9,7 @@
   max-width: 1360px;
   margin: 0 auto;
   flex-direction: column;
+  min-height: calc(100vh - 145px);
   gap: 18px;
   color: #1f2937;
 }

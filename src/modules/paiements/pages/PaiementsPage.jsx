@@ -383,6 +383,7 @@ const PaiementsPage = () => {
 
   return (
     <EntityListPage
+      isLoadingDependencies={isLoadingOptions}
       title='Paiements'
       description='Consultez les paiements, filtrez les resultats et suivez leur statut.'
       loadItems={loadPaiements}

@@ -28,25 +28,25 @@ export const getAdresseOwnerName = (adresse = {}, parents = [], students = []) =
 
   if (adresse.parent_id) {
     const parent = parents.find((item) => Number(item.id) === Number(adresse.parent_id))
-    return parent ? getParentName(parent) : `Parent #${adresse.parent_id}`
+    return parent ? getParentName(parent) : '-'
   }
 
   if (adresse.student_id) {
     const student = students.find((item) => Number(item.id) === Number(adresse.student_id))
-    return student ? getStudentName(student) : `Eleve #${adresse.student_id}`
+    return student ? getStudentName(student) : '-'
   }
 
-  return 'Non renseigne'
+  return '-'
 }
 
 export const getAdresseOwnerLabel = (adresse = {}) => (
-  getAdresseOwnerType(adresse) === 'parent' ? 'Parent' : getAdresseOwnerType(adresse) === 'student' ? 'Eleve' : 'Non renseigne'
+  getAdresseOwnerType(adresse) === 'parent' ? 'Parent' : getAdresseOwnerType(adresse) === 'student' ? 'Eleve' : '-'
 )
 
 export const getAdresseText = (adresse = {}) => (
   [adresse.numero, adresse.avenue, adresse.quartier, adresse.commune]
     .filter(Boolean)
-    .join(', ') || 'Adresse non renseignee'
+    .join(', ') || '-'
 )
 
 export const getOwnerOptions = (ownerType, parents = [], students = []) => {

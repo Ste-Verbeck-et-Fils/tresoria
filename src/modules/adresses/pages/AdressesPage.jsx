@@ -24,10 +24,10 @@ import {
 const getColumns = (parents, students) => [
   { label: 'Reference', render: (item) => `#${item.id}` },
   { label: 'Associee a', render: (item) => getAdresseOwnerName(item, parents, students) },
-  { label: 'Commune', render: (item) => item.commune || 'Non renseigne' },
-  { label: 'Quartier', render: (item) => item.quartier || 'Non renseigne' },
-  { label: 'Avenue', render: (item) => item.avenue || 'Non renseigne' },
-  { label: 'Numero', render: (item) => item.numero || 'Non renseigne' },
+  { label: 'Commune', render: (item) => item.commune || '-' },
+  { label: 'Quartier', render: (item) => item.quartier || '-' },
+  { label: 'Avenue', render: (item) => item.avenue || '-' },
+  { label: 'Numero', render: (item) => item.numero || '-' },
 ]
 
 const AdressesPage = () => {
@@ -183,6 +183,7 @@ const AdressesPage = () => {
 
   return (
     <EntityListPage
+      isLoadingDependencies={isLoadingOwners}
       title='Adresses'
       description='Consultez et gerez les adresses rattachees aux parents et aux eleves.'
       loadItems={loadAdresses}

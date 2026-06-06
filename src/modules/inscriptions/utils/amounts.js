@@ -78,7 +78,7 @@ const pickAmount = (sources, keys) => {
 export const formatAmount = (value) => {
   const amount = toAmount(value)
 
-  return amount === null ? 'Non renseigne' : formatNumber(amount)
+  return amount === null ? '-' : formatNumber(amount)
 }
 
 export const getInscriptionFinancialSummary = (inscription = {}, soldePayload = null) => {

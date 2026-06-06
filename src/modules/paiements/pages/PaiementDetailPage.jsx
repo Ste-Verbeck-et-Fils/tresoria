@@ -300,7 +300,7 @@ const PaiementDetailPage = () => {
             icon={<CreditCard size={36} aria-hidden='true' />}
             title={`Paiement #${paiement.id || id}`}
             subtitle={formatAmount(getPaiementMontant(paiement))}
-            meta={inscription ? getInscriptionOptionLabel(inscription) : 'Inscription non renseignee'}
+            meta={inscription ? getInscriptionOptionLabel(inscription) : '-'}
             badge={<StatusBadge value={status} />}
           />
 

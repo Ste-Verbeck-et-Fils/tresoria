@@ -75,15 +75,15 @@ export const getPaiementMontant = (paiement) => paiement?.montant ?? paiement?.a
 
 export const getPaiementMotifLabel = (motif) => (
   MOTIF_PAIEMENT_OPTIONS.find((option) => option.value === motif)?.label ||
-  String(motif || 'Non renseigne').replace(/_/g, ' ')
+  String(motif || '-').replace(/_/g, ' ')
 )
 
 export const getPaiementModeLabel = (mode) => (
   MODE_PAIEMENT_OPTIONS.find((option) => option.value === mode)?.label ||
-  String(mode || 'Non renseigne').replace(/_/g, ' ')
+  String(mode || '-').replace(/_/g, ' ')
 )
 
-export const getPaiementStatus = (paiement) => paiement?.statut || paiement?.status || 'NON RENSEIGNE'
+export const getPaiementStatus = (paiement) => paiement?.statut || paiement?.status || '-'
 
 export const getPaiementDate = (paiement) => (
   paiement?.date_paiement ||

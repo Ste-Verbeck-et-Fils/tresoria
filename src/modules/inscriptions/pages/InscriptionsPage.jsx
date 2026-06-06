@@ -194,6 +194,7 @@ const InscriptionsPage = () => {
 
   return (
     <EntityListPage
+      isLoadingDependencies={isLoadingOptions}
       title='Inscriptions'
       description='Consultez, filtrez et administrez les inscriptions enregistrees.'
       loadItems={loadInscriptions}

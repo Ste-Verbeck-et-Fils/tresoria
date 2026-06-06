@@ -5,10 +5,10 @@ import { getParents, searchParentsByPhone } from '../../../services/parentServic
 
 const columns = [
   { label: 'Reference', render: (item) => `#${item.id}` },
-  { label: 'Nom complet', render: (item) => item.full_name || 'Non renseigne' },
-  { label: 'Telephone', render: (item) => item.phone || 'Non renseigne' },
-  { label: 'Genre', render: (item) => item.gender || 'Non renseigne' },
-  { label: 'Profession', render: (item) => item.profession || 'Non renseigne' },
+  { label: 'Nom complet', render: (item) => item.full_name || '-' },
+  { label: 'Telephone', render: (item) => item.phone || '-' },
+  { label: 'Genre', render: (item) => item.gender || '-' },
+  { label: 'Profession', render: (item) => item.profession || '-' },
 ]
 
 const ParentsPage = () => {

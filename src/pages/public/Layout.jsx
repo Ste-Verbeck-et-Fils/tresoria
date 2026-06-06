@@ -62,7 +62,8 @@ const Layout = () => {
     }
 
     fetchProfile()
-  }, [navigate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const handleResize = () => {

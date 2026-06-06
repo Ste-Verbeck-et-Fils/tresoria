@@ -30,6 +30,7 @@ import ParentDetailPage from './modules/parents/pages/ParentDetailPage'
 import StudentsPage from './modules/students/pages/StudentsPage'
 import CreateStudentPage from './modules/students/pages/CreateStudentPage'
 import StudentDetailPage from './modules/students/pages/StudentDetailPage'
+import StudentPaiementsPage from './modules/students/pages/StudentPaiementsPage'
 import AdressesPage from './modules/adresses/pages/AdressesPage'
 import CreateAdressePage from './modules/adresses/pages/CreateAdressePage'
 import AdresseDetailPage from './modules/adresses/pages/AdresseDetailPage'
@@ -101,6 +102,7 @@ function AppLayout () {
                 <Route path='/students' element={<StudentsPage />} />
                 <Route path='/students/create' element={<CreateStudentPage />} />
                 <Route path='/students/:id' element={<StudentDetailPage />} />
+                <Route path='/students/:id/paiements' element={<StudentPaiementsPage />} />
               </Route>
               <Route element={<RoleProtectedRoute allowedRoles={[...ADMIN_ROLES, 'PARENT', 'COMPTABLE']} />}>
                 <Route path='/adresses' element={<AdressesPage />} />

@@ -92,7 +92,7 @@ const AideDashboard = () => {
 
                 <div className='chat-app-content-wrapper'>
                   <div className={`chat-app-meta ${isUser ? 'chat-app-meta-user' : 'chat-app-meta-bot'}`}>
-                    <span className='chat-app-time'>{msg.time}</span>
+
                     <span className='chat-app-name'>{isUser ? (user?.full_name || 'Vous') : 'Assistant'}</span>
                   </div>
                   <div className={`chat-app-bubble ${isUser ? 'chat-app-bubble-user' : 'chat-app-bubble-bot'}`}>

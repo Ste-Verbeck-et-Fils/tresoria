@@ -9,7 +9,7 @@ import ModuleState from './ModuleState'
 import Loader from '../../../components/ui/Loader'
 import { getSocket } from '../../../services/socketService'
 
-const DefaultRowActions = ({ item, getRowPath, hideEdit }) => {
+const DefaultRowActions = ({ item, getRowPath, hideEdit, extraActions }) => {
   const [isOpen, setIsOpen] = useState(false)
   const ref = useRef(null)
 
@@ -33,6 +33,7 @@ const DefaultRowActions = ({ item, getRowPath, hideEdit }) => {
           <Link to={basePath} style={{ padding: '10px 16px', textDecoration: 'none', color: '#173f5f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Eye size={16} /> Détails
           </Link>
+          {extraActions && extraActions(item)}
           {!hideEdit && (
             <Link to={basePath} state={{ startEdit: true }} style={{ padding: '10px 16px', textDecoration: 'none', color: '#173f5f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px', borderTop: '1px solid #f3f4f6' }}>
               <Pencil size={16} /> Modifier
@@ -61,6 +62,8 @@ const EntityListPage = ({
   kicker,
   socketEvents,
   rowActions,
+  extraActions,
+  isLoadingDependencies = false,
 }) => {
   const navigate = useNavigate()
   const [items, setItems] = useState([])
@@ -68,6 +71,8 @@ const EntityListPage = ({
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   const userStr = localStorage.getItem('user')
   const user = userStr ? JSON.parse(userStr) : {}
@@ -119,6 +124,7 @@ const EntityListPage = ({
   const handleSearchChange = (event) => {
     setSearch(event.target.value)
     setSearchedItems(null)
+    setCurrentPage(1)
   }
 
   useEffect(() => {
@@ -216,14 +222,22 @@ const EntityListPage = ({
     })
   }, [columns, getSearchText, items, search, searchedItems])
 
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage))
+  
+  const paginatedItems = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage
+    return filteredItems.slice(startIndex, startIndex + itemsPerPage)
+  }, [filteredItems, currentPage, itemsPerPage])
+
+  // Fix current page if it exceeds total pages after filtering
   useEffect(() => {
-    if (search.trim() && filteredItems.length === 1 && getRowPath) {
-      navigate(getRowPath(filteredItems[0]))
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages)
     }
-  }, [search, filteredItems, getRowPath, navigate])
+  }, [totalPages, currentPage])
 
   return (
-    <section className='inscription-page'>
+    <section className='inscription-page' style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
       <header className='inscription-page-header'>
         <div>
           {kicker && <p className='inscription-page-kicker'>{kicker}</p>}
@@ -243,9 +257,9 @@ const EntityListPage = ({
 
       {successMessage && <Feedback type='success' message={successMessage} />}
 
-      {beforePanel}
+      {!(isLoading || isLoadingDependencies) && beforePanel}
 
-      <div className='inscription-panel'>
+      <div className='inscription-panel' style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
         <div className='inscription-toolbar'>
           <Input
             id={`${title.toLowerCase().replace(/\s+/g, '-')}-search`}
@@ -267,11 +281,11 @@ const EntityListPage = ({
           <span className='inscription-count'>{filteredItems.length} element(s)</span>
         </div>
 
-        {isLoading && (
+        {(isLoading || isLoadingDependencies) && (
           <Loader message='Chargement en cours...' />
         )}
 
-        {!isLoading && error && (
+        {!(isLoading || isLoadingDependencies) && error && (
           <ModuleState
             type='error'
             title='Echec du chargement'
@@ -281,16 +295,17 @@ const EntityListPage = ({
           />
         )}
 
-        {!isLoading && !error && filteredItems.length === 0 && (
+        {!(isLoading || isLoadingDependencies) && !error && filteredItems.length === 0 && (
           <ModuleState
             title='Aucun resultat'
             message={search ? 'Aucun element ne correspond a votre recherche.' : emptyMessage}
           />
         )}
 
-        {!isLoading && !error && filteredItems.length > 0 && (
-          <div className='inscription-table-wrapper'>
-            <table className='inscription-table'>
+        {!(isLoading || isLoadingDependencies) && !error && filteredItems.length > 0 && (
+          <>
+            <div className='inscription-table-wrapper' style={{ flex: 1, overflowY: 'auto' }}>
+              <table className='inscription-table'>
               <thead>
                 <tr>
                   {columns.map((column) => <th key={column.label}>{column.label}</th>)}
@@ -298,13 +313,13 @@ const EntityListPage = ({
                 </tr>
               </thead>
               <tbody>
-                {filteredItems.map((item) => (
+                {paginatedItems.map((item) => (
                   <tr key={item.id}>
                     {columns.map((column) => <td key={column.label}>{column.render(item)}</td>)}
                     {(getRowPath || rowActions) && (
                       <td className='inscription-table__action'>
                         {rowActions ? rowActions(item) : (
-                          getRowPath && <DefaultRowActions item={item} getRowPath={getRowPath} hideEdit={hideEdit} />
+                          getRowPath && <DefaultRowActions item={item} getRowPath={getRowPath} hideEdit={hideEdit} extraActions={extraActions} />
                         )}
                       </td>
                     )}
@@ -313,6 +328,30 @@ const EntityListPage = ({
               </tbody>
             </table>
           </div>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderTop: '1px solid #edf0f4' }}>
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+              Affichage de {((currentPage - 1) * itemsPerPage) + 1} à {Math.min(currentPage * itemsPerPage, filteredItems.length)} sur {filteredItems.length}
+            </span>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Button
+                variant='outline'
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                label='Precedent'
+              />
+              <span style={{ display: 'flex', alignItems: 'center', padding: '0 12px', fontSize: '0.85rem', color: '#334155', fontWeight: 'bold' }}>
+                {currentPage} / {totalPages}
+              </span>
+              <Button
+                variant='outline'
+                disabled={currentPage >= totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                label='Suivant'
+              />
+            </div>
+          </div>
+        </>
         )}
       </div>
     </section>

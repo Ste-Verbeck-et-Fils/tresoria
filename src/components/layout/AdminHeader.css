@@ -158,3 +158,9 @@
     max-width: 150px;
   }
 }
+
+@media (max-width: 350px) {
+  .admin-user-info {
+    display: none;
+  }
+}

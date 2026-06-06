@@ -277,7 +277,7 @@ const StudentDetailPage = () => {
             icon={<GraduationCap size={36} aria-hidden='true' />}
             title={getStudentName(student)}
             subtitle={`Eleve #${student.id}`}
-            meta={`${student.sexe || 'Sexe non renseigne'} - ${student.contact || 'Contact non renseigne'}`}
+            meta={`${student.sexe || '-'} - ${student.contact || '-'}`}
           />
 
           <DetailSection

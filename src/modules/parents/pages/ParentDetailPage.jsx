@@ -312,7 +312,7 @@ const ParentDetailPage = () => {
             icon={<UserRound size={34} aria-hidden='true' />}
             title={parent.full_name}
             subtitle={`Parent #${parent.id}`}
-            meta={parent.phone || 'Telephone non renseigne'}
+            meta={parent.phone || '-'}
           />
 
           <DetailSection
@@ -392,7 +392,7 @@ const ParentDetailPage = () => {
                         onChange={handleEditChange}
                         className={editErrors.gender ? 'inscription-select inscription-select--error' : 'inscription-select'}
                       >
-                        <option value=''>Non renseigne</option>
+                        <option value=''>-</option>
                         {GENDER_OPTIONS.map((option) => (
                           <option key={option.value} value={option.value}>{option.label}</option>
                         ))}

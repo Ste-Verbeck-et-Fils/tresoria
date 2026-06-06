@@ -89,7 +89,7 @@ export const getDepenseDate = (depense) => (
   depense?.createdAt
 )
 
-export const getDepenseStatus = (depense) => depense?.statut || depense?.status || 'NON RENSEIGNE'
+export const getDepenseStatus = (depense) => depense?.statut || depense?.status || '-'
 
 export const getDepenseCategorie = (depense) => depense?.categorie || depense?.category || depense?.motif
 

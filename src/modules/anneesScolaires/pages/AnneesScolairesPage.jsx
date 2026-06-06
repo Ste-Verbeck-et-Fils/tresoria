@@ -13,7 +13,7 @@ import { unwrapAnneeScolaire } from '../utils/anneeScolaire'
 
 const columns = [
   { label: 'Reference', render: (item) => `#${item.id}` },
-  { label: 'Designation', render: (item) => item.designation || 'Non renseigne' },
+  { label: 'Designation', render: (item) => item.designation || '-' },
   { label: 'Frais', render: (item) => formatNumber(item.frais) },
   { label: 'Budget', render: (item) => formatNumber(item.budget) },
   { label: 'Statut', render: (item) => <StatusBadge value={item.statut} /> },

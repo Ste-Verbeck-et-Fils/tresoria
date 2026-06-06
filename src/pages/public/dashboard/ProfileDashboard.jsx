@@ -22,7 +22,7 @@ const DEFAULT_PROFILE = {
   statut: '',
 }
 
-const EMPTY_VALUE = 'Non renseigne'
+const EMPTY_VALUE = '-'
 
 const splitFullName = (fullName = '') => {
   const parts = fullName.trim().split(/\s+/).filter(Boolean)
@@ -309,7 +309,7 @@ const ProfileDashboard = () => {
             {!isEditingName && (
               <button
                 type='button'
-                className='profile-edit-button profile-edit-button--primary'
+                className='profile-edit-button profile-edit-button--primary profile-edit-button--desktop'
                 onClick={handleStartNameEdit}
                 aria-label='Modifier les informations personnelles'
               >
@@ -382,6 +382,20 @@ const ProfileDashboard = () => {
               </span>
             </div>
           </div>
+
+          {!isEditingName && (
+            <div className='profile-edit-button-mobile-wrapper'>
+              <button
+                type='button'
+                className='profile-edit-button profile-edit-button--primary profile-edit-button--mobile'
+                onClick={handleStartNameEdit}
+                aria-label='Modifier les informations personnelles'
+              >
+                Modifier
+                <PencilLine size={14} />
+              </button>
+            </div>
+          )}
         </article>
 
         <article className='profile-section-card'>

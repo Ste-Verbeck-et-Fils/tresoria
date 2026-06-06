@@ -216,7 +216,7 @@ const ClasseDetailPage = () => {
             icon={<School size={34} aria-hidden='true' />}
             title={classe.designation}
             subtitle={`Classe #${classe.id}`}
-            meta={classe.responsable || 'Responsable non renseigne'}
+            meta={classe.responsable || '-'}
           />
 
           <DetailSection

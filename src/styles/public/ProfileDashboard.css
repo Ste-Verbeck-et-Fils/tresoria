@@ -1,12 +1,13 @@
 .profile-dashboard {
-  --profile-border: #edf0f4;
-  --profile-border-strong: #e4e8ef;
-  --profile-surface: #ffffff;
-  --profile-page: #f8f9fc;
-  --profile-heading: #173f5f;
-  --profile-muted: #6b7280;
-  --profile-accent: #173f5f;
-  --profile-accent-hover: #0f2f49;
+  --profile-border: var(--color-border, #edf0f4);
+  --profile-border-strong: var(--color-border-strong, #e4e8ef);
+  --profile-surface: var(--color-light-darker);
+  --profile-page: var(--color-light);
+  --profile-heading: var(--color-secondary);
+  --profile-muted: var(--color-text-muted);
+  --profile-accent: var(--color-secondary);
+  --profile-accent-hover: var(--color-secondary-hover);
+
 
   display: flex;
   flex-direction: column;
@@ -59,12 +60,12 @@
   display: block;
   border-radius: 50%;
   object-fit: cover;
-  background: #f3f4f6;
+  background: var(--color-light);
 }
 
 .profile-avatar--fallback {
-  color: #94a3b8;
-  background: #f8fafc;
+  color: var(--color-text-muted);
+  background: var(--color-light);
 }
 
 .profile-avatar-button__camera {
@@ -79,7 +80,7 @@
   border: 2px solid var(--profile-surface);
   border-radius: 50%;
   background: var(--profile-heading);
-  color: #ffffff;
+  color: var(--color-text-inverse);
   box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
 }
 
@@ -102,13 +103,13 @@
 .profile-dashboard__role,
 .profile-dashboard__meta {
   margin: 0;
-  color: #22242c;
+  color: var(--color-text-primary);
   font-size: 0.88rem;
   line-height: 1.35;
 }
 
 .profile-dashboard__meta {
-  color: #333741;
+  color: var(--color-text-primary);
 }
 
 .profile-section-card {
@@ -144,8 +145,8 @@
   padding: 8px 14px;
   border: 1px solid var(--profile-border-strong);
   border-radius: 8px;
-  background: #ffffff;
-  color: #111827;
+  background: var(--profile-surface);
+  color: var(--color-text-primary);
   font-family: var(--font-primary);
   font-size: 0.8rem;
   font-weight: 700;
@@ -157,12 +158,20 @@
 .profile-edit-button--primary {
   border-color: var(--profile-accent);
   background: var(--profile-accent);
-  color: #ffffff;
+  color: var(--color-text-inverse);
 }
 
 .profile-edit-button--primary:hover {
   border-color: var(--profile-accent-hover);
   background: var(--profile-accent-hover);
+}
+
+.profile-edit-button--mobile {
+  display: none;
+}
+
+.profile-edit-button-mobile-wrapper {
+  margin-top: 24px;
 }
 
 .profile-name-editor {
@@ -174,7 +183,7 @@
   margin: -4px 0 24px;
   border: 1px solid var(--profile-border);
   border-radius: 8px;
-  background: #fbfcfe;
+  background: var(--profile-surface);
 }
 
 .profile-name-editor__actions {
@@ -198,7 +207,7 @@
 .profile-dashboard .profile-action-button--primary {
   border: 1px solid var(--profile-accent);
   background: var(--profile-accent);
-  color: #ffffff;
+  color: var(--color-text-inverse);
 }
 
 .profile-dashboard .profile-action-button--primary:hover:not(.tresoria-btn--disabled) {
@@ -209,13 +218,13 @@
 
 .profile-dashboard .profile-action-button--ghost {
   border: 1px solid var(--profile-border-strong);
-  background: #ffffff;
-  color: #475467;
+  background: var(--profile-surface);
+  color: var(--color-text-primary);
 }
 
 .profile-dashboard .profile-action-button--ghost:hover:not(.tresoria-btn--disabled) {
-  border-color: #cfd6e1;
-  background: #f8fafc;
+  border-color: var(--profile-border-strong);
+  background: var(--color-light);
 }
 
 .profile-info-grid {
@@ -241,7 +250,7 @@
 }
 
 .profile-info-field__value {
-  color: #1f2430;
+  color: var(--color-text-primary);
   font-size: 0.94rem;
   font-weight: 600;
   line-height: 1.35;
@@ -249,11 +258,11 @@
 }
 
 .profile-info-field__value--success {
-  color: #059669;
+  color: var(--color-success);
 }
 
 .profile-info-field__value--warning {
-  color: #d97706;
+  color: var(--color-warning);
 }
 
 .profile-security-badge {
@@ -265,7 +274,7 @@
   padding: 7px 13px;
   border-radius: 999px;
   background: var(--color-info-bg);
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 0.82rem;
   font-weight: 700;
   white-space: nowrap;
@@ -287,9 +296,9 @@
 
 .profile-password-form .input-wrapper {
   min-height: 50px;
-  border-color: #d9e0ea;
+  border-color: var(--profile-border);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--profile-surface);
 }
 
 .profile-password-form .tresoria-input {
@@ -297,7 +306,7 @@
 }
 
 .profile-password-form .floating-label {
-  color: #667085;
+  color: var(--color-text-muted);
 }
 
 .profile-password-form__actions {
@@ -308,10 +317,14 @@
 }
 
 .profile-password-form__actions .tresoria-btn {
-  width: 100%;
-  max-width: 268px;
-  min-width: 220px;
-  min-height: 48px;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  min-height: 34px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  line-height: 1;
+  border-radius: 8px;
 }
 
 .profile-photo-input-hidden {
@@ -437,6 +450,14 @@
     width: 100%;
   }
 
+  .profile-edit-button--desktop {
+    display: none;
+  }
+
+  .profile-edit-button--mobile {
+    display: inline-flex;
+  }
+
   .profile-info-grid,
   .profile-password-form,
   .profile-name-editor {
@@ -455,6 +476,7 @@
     width: 100%;
     min-width: 0;
     max-width: none;
+    min-height: 34px;
   }
 }
 

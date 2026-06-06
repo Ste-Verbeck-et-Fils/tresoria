@@ -42,7 +42,7 @@ const GroupTable = ({ title, emptyMessage, items }) => (
                 <tr key={item.label}>
                   <td>{item.label}</td>
                   <td>{formatAmount(item.montant)}</td>
-                  <td>{item.count ?? 'Non renseigne'}</td>
+                  <td>{item.count ?? '-'}</td>
                 </tr>
               ))}
             </tbody>

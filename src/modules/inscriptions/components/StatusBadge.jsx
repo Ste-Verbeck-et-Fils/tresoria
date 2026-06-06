@@ -1,7 +1,7 @@
 import React from 'react'
 
 const StatusBadge = ({ value }) => {
-  const status = value || 'NON RENSEIGNE'
+  const status = value || '-'
   const normalizedStatus = status.toLowerCase().replace(/_/g, '-')
 
   return (

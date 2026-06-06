@@ -37,7 +37,7 @@ export const unwrapEntity = (payload, key) => payload?.[key] || payload?.data?.[
 
 export const formatDate = (value) => {
   if (!value) {
-    return 'Non renseigne'
+    return '-'
   }
 
   const date = new Date(value)
@@ -51,7 +51,7 @@ export const formatDate = (value) => {
 
 export const formatNumber = (value) => {
   if (value === null || value === undefined || value === '') {
-    return 'Non renseigne'
+    return '-'
   }
 
   const number = Number(value)
@@ -65,7 +65,7 @@ export const formatNumber = (value) => {
 
 export const getStudentName = (student) => {
   if (!student) {
-    return 'Eleve non renseigne'
+    return '-'
   }
 
   if (typeof student === 'string') {
@@ -74,22 +74,22 @@ export const getStudentName = (student) => {
 
   return [student.nom, student.postnom, student.prenom].filter(Boolean).join(' ') ||
     student.full_name ||
-    `Eleve #${student.id || '-'}`
+    '-'
 }
 
 export const getParentName = (parent) => {
   if (!parent) {
-    return 'Non renseigne'
+    return '-'
   }
 
   if (typeof parent === 'string') {
     return parent
   }
 
-  return parent.full_name || parent.nom || `Parent #${parent.id || '-'}`
+  return parent.full_name || parent.nom || '-'
 }
 
-export const getDesignation = (entity, fallback = 'Non renseigne') => {
+export const getDesignation = (entity, fallback = '-') => {
   if (!entity) {
     return fallback
   }

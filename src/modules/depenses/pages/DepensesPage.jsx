@@ -40,9 +40,9 @@ const columns = [
     label: 'Annee scolaire',
     render: (item) => getDesignation(getDepenseAnneeScolaire(item), `Annee #${item.annee_scolaire_id || '-'}`),
   },
-  { label: 'Categorie', render: (item) => getDepenseCategorie(item) || 'Non renseigne' },
-  { label: 'Beneficiaire', render: (item) => getDepenseBeneficiaire(item) || 'Non renseigne' },
-  { label: 'Mode', render: (item) => getDepenseModePaiement(item) || 'Non renseigne' },
+  { label: 'Categorie', render: (item) => getDepenseCategorie(item) || '-' },
+  { label: 'Beneficiaire', render: (item) => getDepenseBeneficiaire(item) || '-' },
+  { label: 'Mode', render: (item) => getDepenseModePaiement(item) || '-' },
   { label: 'Montant', render: (item) => formatAmount(getDepenseMontant(item)) },
   { label: 'Statut', render: (item) => <StatusBadge value={getDepenseStatus(item)} /> },
   { label: 'Date', render: (item) => formatDate(getDepenseDate(item)) },
@@ -291,6 +291,7 @@ const DepensesPage = () => {
 
   return (
     <EntityListPage
+      isLoadingDependencies={isLoadingOptions}
       title='Depenses'
       description='Consultez les depenses et suivez leur statut.'
       loadItems={loadDepenses}

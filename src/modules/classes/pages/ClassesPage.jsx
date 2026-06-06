@@ -6,9 +6,9 @@ import { formatNumber } from '../../inscriptions/utils/data'
 
 const columns = [
   { label: 'Reference', render: (item) => `#${item.id}` },
-  { label: 'Designation', render: (item) => item.designation || 'Non renseigne' },
+  { label: 'Designation', render: (item) => item.designation || '-' },
   { label: 'Capacite', render: (item) => formatNumber(item.capacite) },
-  { label: 'Responsable', render: (item) => item.responsable || 'Non renseigne' },
+  { label: 'Responsable', render: (item) => item.responsable || '-' },
   {
     label: 'Statut',
     render: (item) => (
