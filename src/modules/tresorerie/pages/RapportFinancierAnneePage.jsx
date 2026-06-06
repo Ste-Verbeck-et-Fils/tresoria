@@ -61,6 +61,8 @@ const RapportFinancierAnneePage = () => {
   const [anneesError, setAnneesError] = useState('')
   const [rapportError, setRapportError] = useState('')
   const [filterError, setFilterError] = useState('')
+  const [isForbidden, setIsForbidden] = useState(false)
+  const [forbiddenMessage, setForbiddenMessage] = useState('')
 
   const loadAnnees = useCallback(async () => {
     setIsLoadingAnnees(true)
@@ -85,12 +87,20 @@ const RapportFinancierAnneePage = () => {
     setIsLoadingRapport(true)
     setRapportError('')
     setFilterError('')
+    setIsForbidden(false)
+    setForbiddenMessage('')
 
     try {
       const payload = await getRapportFinancierAnneeScolaire(selectedAnneeId)
       setRapport(payload)
     } catch (error) {
-      setRapportError(error.message || 'Impossible de charger le rapport financier.')
+      if (error.status === 403 || error.response?.status === 403) {
+        setIsForbidden(true)
+        setForbiddenMessage(error.message || 'Accès refusé.')
+        setRapport(null)
+      } else {
+        setRapportError(error.message || 'Impossible de charger le rapport financier.')
+      }
     } finally {
       setIsLoadingRapport(false)
     }
@@ -141,6 +151,7 @@ const RapportFinancierAnneePage = () => {
     setRapport(null)
     setRapportError('')
     setFilterError('')
+    setIsForbidden(false)
   }
 
   return (
@@ -204,7 +215,15 @@ const RapportFinancierAnneePage = () => {
 
       {isLoadingRapport && <Loader message='Chargement du rapport financier...' />}
 
-      {!isLoadingRapport && rapportError && (
+      {!isLoadingRapport && isForbidden && (
+        <ModuleState
+          type='error'
+          title='Accès réservé'
+          message={forbiddenMessage || 'Vous n avez pas les permissions nécessaires pour accéder à ce rapport.'}
+        />
+      )}
+
+      {!isLoadingRapport && !isForbidden && rapportError && (
         <ModuleState
           type='error'
           title='Echec du chargement'
@@ -214,14 +233,14 @@ const RapportFinancierAnneePage = () => {
         />
       )}
 
-      {!isLoadingRapport && !rapportError && !rapport && (
+      {!isLoadingRapport && !isForbidden && !rapportError && !rapport && (
         <ModuleState
           title='Aucun rapport affiche'
           message='Selectionnez une annee scolaire puis lancez la recherche.'
         />
       )}
 
-      {!isLoadingRapport && !rapportError && rapport && (
+      {!isLoadingRapport && !isForbidden && !rapportError && rapport && (
         <div className='detail-page-stack'>
           <section className='inscription-amount-panel'>
             <div>

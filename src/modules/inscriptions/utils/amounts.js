@@ -76,9 +76,19 @@ const pickAmount = (sources, keys) => {
 }
 
 export const formatAmount = (value) => {
-  const amount = toAmount(value)
+  if (value === null || value === undefined || value === '') {
+    return '-'
+  }
 
-  return amount === null ? '-' : formatNumber(amount)
+  const amount = Number(value)
+
+  if (Number.isNaN(amount)) {
+    return '-'
+  }
+
+  return new Intl.NumberFormat('fr-FR', {
+    maximumFractionDigits: 0
+  }).format(amount)
 }
 
 export const getInscriptionFinancialSummary = (inscription = {}, soldePayload = null) => {

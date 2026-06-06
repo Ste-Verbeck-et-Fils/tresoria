@@ -49,6 +49,15 @@ export const formatDate = (value) => {
   return new Intl.DateTimeFormat('fr-FR').format(date)
 }
 
+export const formatDateForApi = (value) => {
+  if (!value) return undefined
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return undefined
+
+  return date.toISOString().slice(0, 10)
+}
+
 export const formatNumber = (value) => {
   if (value === null || value === undefined || value === '') {
     return '-'

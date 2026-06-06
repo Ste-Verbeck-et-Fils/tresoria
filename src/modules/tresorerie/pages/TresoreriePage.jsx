@@ -18,6 +18,7 @@ import { formatAmount } from '../../inscriptions/utils/amounts'
 import {
   getDesignation,
   normalizeCollection,
+  formatDateForApi,
 } from '../../inscriptions/utils/data'
 import {
 
@@ -40,14 +41,16 @@ const TresoreriePage = () => {
   const [resumeError, setResumeError] = useState('')
   const [optionsError, setOptionsError] = useState('')
   const [filterError, setFilterError] = useState('')
+  const [isForbidden, setIsForbidden] = useState(false)
+  const [forbiddenMessage, setForbiddenMessage] = useState('')
 
   const loadCurrentTresorerie = useCallback(() => {
     const mode = getTresorerieFilterMode(appliedFilters)
 
     if (mode === 'periode') {
       return getTresoreriePeriode({
-        start_date: appliedFilters.start_date,
-        end_date: appliedFilters.end_date,
+        start_date: formatDateForApi(appliedFilters.start_date),
+        end_date: formatDateForApi(appliedFilters.end_date),
       })
     }
 
@@ -62,11 +65,29 @@ const TresoreriePage = () => {
     setIsLoading(true)
     setLoadError('')
     setResumeError('')
+    setIsForbidden(false)
+    setForbiddenMessage('')
 
     const [tresorerieResult, resumeResult] = await Promise.allSettled([
       loadCurrentTresorerie(),
       getTresorerieResume(),
     ])
+
+    let hasForbidden = false
+
+    if (tresorerieResult.status === 'rejected' && tresorerieResult.reason?.status === 403) {
+      hasForbidden = true
+      setForbiddenMessage(tresorerieResult.reason.message || 'Accès refusé.')
+    } else if (resumeResult.status === 'rejected' && resumeResult.reason?.status === 403) {
+      hasForbidden = true
+      setForbiddenMessage(resumeResult.reason.message || 'Accès refusé.')
+    }
+
+    if (hasForbidden) {
+      setIsForbidden(true)
+      setIsLoading(false)
+      return
+    }
 
     if (tresorerieResult.status === 'fulfilled') {
       setTresorerie(tresorerieResult.value)
@@ -100,11 +121,32 @@ const TresoreriePage = () => {
   useEffect(() => {
     let isCancelled = false
 
+    setIsLoading(true)
+    setIsForbidden(false)
+    setLoadError('')
+    setResumeError('')
+
     Promise.allSettled([
       loadCurrentTresorerie(),
       getTresorerieResume(),
     ]).then(([tresorerieResult, resumeResult]) => {
       if (isCancelled) {
+        return
+      }
+
+      let hasForbidden = false
+
+      if (tresorerieResult.status === 'rejected' && tresorerieResult.reason?.status === 403) {
+        hasForbidden = true
+        setForbiddenMessage(tresorerieResult.reason.message || 'Accès refusé.')
+      } else if (resumeResult.status === 'rejected' && resumeResult.reason?.status === 403) {
+        hasForbidden = true
+        setForbiddenMessage(resumeResult.reason.message || 'Accès refusé.')
+      }
+
+      if (hasForbidden) {
+        setIsForbidden(true)
+        setIsLoading(false)
         return
       }
 
@@ -212,6 +254,9 @@ const TresoreriePage = () => {
     setFilterError('')
     setLoadError('')
     setResumeError('')
+    setIsForbidden(false)
+    setTresorerie(null) // Clear data on new search
+    setResume(null)
     setIsLoading(true)
     setAppliedFilters({ ...draftFilters })
   }
@@ -222,6 +267,9 @@ const TresoreriePage = () => {
     setFilterError('')
     setLoadError('')
     setResumeError('')
+    setIsForbidden(false)
+    setTresorerie(null)
+    setResume(null)
     setIsLoading(true)
   }
 
@@ -328,7 +376,15 @@ const TresoreriePage = () => {
 
       {isLoading && <Loader message='Chargement de la tresorerie...' />}
 
-      {!isLoading && loadError && (
+      {!isLoading && isForbidden && (
+        <ModuleState
+          type='error'
+          title='Accès réservé'
+          message={forbiddenMessage || 'Vous n avez pas les permissions nécessaires pour accéder à cette ressource.'}
+        />
+      )}
+
+      {!isLoading && !isForbidden && loadError && (
         <ModuleState
           type='error'
           title='Echec du chargement'
@@ -338,7 +394,7 @@ const TresoreriePage = () => {
         />
       )}
 
-      {!isLoading && !loadError && (
+      {!isLoading && !isForbidden && !loadError && (
         <div className='detail-page-stack'>
           <section className='inscription-amount-panel'>
             <div>
@@ -350,7 +406,7 @@ const TresoreriePage = () => {
           </section>
 
           <DetailSection title='Resume global'>
-            {resumeError && (
+            {resumeError && !isForbidden && (
               <div className='inscription-detail-field inscription-detail-field--wide inscription-solde-error'>
                 <dt>Erreur resume</dt>
                 <dd>{resumeError}</dd>

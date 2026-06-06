@@ -1,5 +1,6 @@
 import {
   formatDate,
+  formatDateForApi,
   getDesignation,
   unwrapEntity,
 } from '../../inscriptions/utils/data'
@@ -152,13 +153,23 @@ export const getDepenseSearchText = (depense) => {
   ].join(' ')
 }
 
-export const getDepenseFilterParams = (filters = {}) => (
-  Object.fromEntries(
+export const getDepenseFilterParams = (filters = {}) => {
+  const params = Object.fromEntries(
     Object.entries(filters)
       .map(([key, value]) => [key, typeof value === 'string' ? value.trim() : value])
       .filter(([, value]) => value !== null && value !== undefined && value !== '')
   )
-)
+
+  if (params.date_debut) {
+    params.date_debut = formatDateForApi(params.date_debut)
+  }
+
+  if (params.date_fin) {
+    params.date_fin = formatDateForApi(params.date_fin)
+  }
+
+  return Object.fromEntries(Object.entries(params).filter(([, value]) => value !== undefined))
+}
 
 export const hasActiveDepenseFilters = (filters = {}) => (
   Object.values(getDepenseFilterParams(filters)).length > 0
