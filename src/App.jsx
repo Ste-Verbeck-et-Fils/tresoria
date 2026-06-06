@@ -31,6 +31,7 @@ import StudentsPage from './modules/students/pages/StudentsPage'
 import CreateStudentPage from './modules/students/pages/CreateStudentPage'
 import StudentDetailPage from './modules/students/pages/StudentDetailPage'
 import StudentPaiementsPage from './modules/students/pages/StudentPaiementsPage'
+import ParentPaymentPage from './modules/students/pages/ParentPaymentPage'
 import AdressesPage from './modules/adresses/pages/AdressesPage'
 import CreateAdressePage from './modules/adresses/pages/CreateAdressePage'
 import AdresseDetailPage from './modules/adresses/pages/AdresseDetailPage'
@@ -81,8 +82,10 @@ function AppLayout () {
               </Route>
               <Route element={<RoleProtectedRoute allowedRoles={PAYMENT_ROLES} />}>
                 <Route path='/paiements' element={<PaiementsPage />} />
-                <Route path='/paiements/create' element={<CreatePaiementPage />} />
                 <Route path='/paiements/:id' element={<PaiementDetailPage />} />
+              </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={PAYMENT_ROLES} />}>
+                <Route path='/paiements/create' element={<CreatePaiementPage />} />
               </Route>
               <Route element={<RoleProtectedRoute allowedRoles={EXPENSE_ROLES} />}>
                 <Route path='/depenses' element={<DepensesPage />} />
@@ -103,6 +106,9 @@ function AppLayout () {
                 <Route path='/students/create' element={<CreateStudentPage />} />
                 <Route path='/students/:id' element={<StudentDetailPage />} />
                 <Route path='/students/:id/paiements' element={<StudentPaiementsPage />} />
+              </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={['PARENT']} />}>
+                <Route path='/parent/payer' element={<ParentPaymentPage />} />
               </Route>
               <Route element={<RoleProtectedRoute allowedRoles={[...ADMIN_ROLES, 'PARENT', 'COMPTABLE']} />}>
                 <Route path='/adresses' element={<AdressesPage />} />

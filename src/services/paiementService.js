@@ -21,6 +21,8 @@ export const getInscriptionPaiements = (inscriptionId) => (
 
 export const createPaiement = (payload) => getData(api.post('/api/paiements', payload))
 
+export const createParentPaiement = (payload) => getData(api.post('/api/paiements/parent', payload))
+
 export const updatePaiement = (id, payload) => getData(api.patch(`/api/paiements/${id}`, payload))
 
 export const annulerPaiement = (id) => getData(api.patch(`/api/paiements/${id}/annuler`))

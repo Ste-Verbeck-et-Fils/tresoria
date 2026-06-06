@@ -133,6 +133,10 @@ const Layout = () => {
     links.push({ label: 'Eleves', href: '/students', icon: <GraduationCap size={20} />, active: isPathActive('/students') })
   }
 
+  if (isParent) {
+    links.push({ label: 'Payer', href: '/parent/payer', icon: <CreditCard size={20} />, active: isPathActive('/parent/payer') })
+  }
+
   if (canAccessParents) {
     links.push({ label: 'Parents', href: '/parents', icon: <UsersRound size={20} />, active: isPathActive('/parents') })
   }
