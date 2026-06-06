@@ -8,12 +8,28 @@ import { formatAmount } from '../../inscriptions/utils/amounts'
 
 export const DEFAULT_DEPENSE_FORM = {
   annee_scolaire_id: '',
+  libelle: '',
+  categorie: '',
   montant: '',
-  motif: '',
+  mode_paiement: '',
+  beneficiaire: '',
   description: '',
   date_depense: '',
   reference: '',
 }
+
+export const CATEGORIE_DEPENSE_OPTIONS = [
+  { value: 'SALAIRE', label: 'Salaire' },
+  { value: 'LOYER', label: 'Loyer' },
+  { value: 'FOURNITURE', label: 'Fourniture' },
+  { value: 'TRANSPORT', label: 'Transport' },
+  { value: 'MAINTENANCE', label: 'Maintenance' },
+  { value: 'ACHAT_MATERIEL', label: 'Achat de materiel' },
+  { value: 'CHARGE_ADMINISTRATIVE', label: 'Charge administrative' },
+  { value: 'EAU', label: 'Eau' },
+  { value: 'ELECTRICITE', label: 'Electricite' },
+  { value: 'AUTRE', label: 'Autre' },
+]
 
 export const MODE_DEPENSE_OPTIONS = [
   { value: 'CASH', label: 'Cash' },
@@ -114,8 +130,16 @@ export const validateDepenseForm = (form, selectedAnneeScolaire) => {
     errors.montant = 'Le montant doit etre superieur a zero.'
   }
 
-  if (!form.motif.trim()) {
-    errors.motif = 'Le motif est obligatoire.'
+  if (!form.libelle.trim()) {
+    errors.libelle = 'Le libelle est obligatoire.'
+  }
+
+  if (!form.categorie) {
+    errors.categorie = 'La categorie est obligatoire.'
+  }
+
+  if (!form.mode_paiement) {
+    errors.mode_paiement = 'Le mode de paiement est obligatoire.'
   }
 
   if (!form.date_depense) {
@@ -127,9 +151,12 @@ export const validateDepenseForm = (form, selectedAnneeScolaire) => {
 
 export const getDepensePayload = (form) => ({
   annee_scolaire_id: Number(form.annee_scolaire_id),
+  libelle: form.libelle.trim(),
+  categorie: form.categorie,
   montant: Number(form.montant),
-  motif: form.motif.trim(),
+  mode_paiement: form.mode_paiement,
   date_depense: form.date_depense,
+  ...(form.beneficiaire.trim() ? { beneficiaire: form.beneficiaire.trim() } : {}),
   ...(form.description.trim() ? { description: form.description.trim() } : {}),
   ...(form.reference.trim() ? { reference: form.reference.trim() } : {}),
 })

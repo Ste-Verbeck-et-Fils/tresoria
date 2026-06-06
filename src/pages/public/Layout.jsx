@@ -129,7 +129,7 @@ const Layout = () => {
     links.push({ label: 'Annees scolaires', href: '/annees-scolaires', icon: <CalendarDays size={20} />, active: isPathActive('/annees-scolaires') })
   }
 
-  if (isAdmin || isParent) {
+  if (isAdmin || isParent || isComptable) {
     links.push({ label: 'Eleves', href: '/students', icon: <GraduationCap size={20} />, active: isPathActive('/students') })
   }
 

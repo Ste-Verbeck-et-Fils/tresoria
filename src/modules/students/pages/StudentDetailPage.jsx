@@ -28,6 +28,7 @@ import {
   unwrapStudent,
   validateStudentForm,
 } from '../utils/student'
+import { normalizeRole } from '../../../utils/roles'
 
 const StudentDetailPage = () => {
   const { id } = useParams()
@@ -50,7 +51,11 @@ const StudentDetailPage = () => {
 
   const userStr = localStorage.getItem('user')
   const currentUser = userStr ? JSON.parse(userStr) : {}
-  const isParent = currentUser?.role === 'PARENT'
+  const normalizedUserRole = normalizeRole(currentUser?.role)
+  const isParent = normalizedUserRole === 'PARENT'
+  const isComptable = normalizedUserRole === 'COMPTABLE'
+  const canEdit = !isParent && !isComptable
+  const canDelete = !isParent && !isComptable
 
   const loadStudentData = async () => {
     setIsLoading(true)
@@ -283,7 +288,7 @@ const StudentDetailPage = () => {
           <DetailSection
             title='Informations de l eleve'
             actions={
-              !isParent && (
+              canEdit && (
                 isEditing
                   ? (
                     <>
@@ -355,11 +360,11 @@ const StudentDetailPage = () => {
               adresses={adresses}
               loadAdresses={loadAdresses}
               disabled={isEditing || isDeleting}
-              readOnly={isParent}
+              readOnly={!canEdit}
             />
           )}
 
-          {!isParent && (
+          {canDelete && (
             <DetailSection
               title='Actions sensibles'
               actions={(

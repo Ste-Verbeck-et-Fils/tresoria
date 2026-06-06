@@ -8,8 +8,9 @@ import { normalizeCollection } from '../utils/data'
 import ModuleState from './ModuleState'
 import Loader from '../../../components/ui/Loader'
 import { getSocket } from '../../../services/socketService'
+import { normalizeRole } from '../../../utils/roles'
 
-const DefaultRowActions = ({ item, getRowPath, hideEdit, extraActions }) => {
+const DefaultRowActions = ({ item, getRowPath, hideEdit, extraActions, isLast }) => {
   const [isOpen, setIsOpen] = useState(false)
   const ref = useRef(null)
 
@@ -29,7 +30,20 @@ const DefaultRowActions = ({ item, getRowPath, hideEdit, extraActions }) => {
         <MoreVertical size={20} color="#6b7280" />
       </button>
       {isOpen && (
-        <div style={{ position: 'absolute', right: '100%', top: '0', background: 'white', border: '1px solid #e4e8ef', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '150px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ 
+          position: 'absolute', 
+          right: '100%', 
+          ...(isLast ? { bottom: '0' } : { top: '0' }),
+          background: 'white', 
+          border: '1px solid #e4e8ef', 
+          borderRadius: '8px', 
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)', 
+          zIndex: 50, 
+          minWidth: '150px', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          overflow: 'hidden' 
+        }}>
           <Link to={basePath} style={{ padding: '10px 16px', textDecoration: 'none', color: '#173f5f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Eye size={16} /> Détails
           </Link>
@@ -76,7 +90,8 @@ const EntityListPage = ({
 
   const userStr = localStorage.getItem('user')
   const user = userStr ? JSON.parse(userStr) : {}
-  const hideEdit = user?.role === 'PARENT'
+  const role = normalizeRole(user?.role)
+  const hideEdit = role === 'PARENT' || role === 'COMPTABLE'
 
   const load = useCallback(async () => {
     setIsLoading(true)
@@ -313,13 +328,13 @@ const EntityListPage = ({
                 </tr>
               </thead>
               <tbody>
-                {paginatedItems.map((item) => (
+                {paginatedItems.map((item, index) => (
                   <tr key={item.id}>
                     {columns.map((column) => <td key={column.label}>{column.render(item)}</td>)}
                     {(getRowPath || rowActions) && (
                       <td className='inscription-table__action'>
                         {rowActions ? rowActions(item) : (
-                          getRowPath && <DefaultRowActions item={item} getRowPath={getRowPath} hideEdit={hideEdit} extraActions={extraActions} />
+                          getRowPath && <DefaultRowActions item={item} getRowPath={getRowPath} hideEdit={hideEdit} extraActions={extraActions} isLast={index >= paginatedItems.length - 2} />
                         )}
                       </td>
                     )}

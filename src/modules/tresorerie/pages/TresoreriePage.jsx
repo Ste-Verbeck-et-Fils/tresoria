@@ -1,5 +1,6 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
@@ -30,6 +31,7 @@ import {
 } from '../utils/tresorerie'
 
 const TresoreriePage = () => {
+  const navigate = useNavigate()
   const [anneesScolaires, setAnneesScolaires] = useState([])
   const [draftFilters, setDraftFilters] = useState(DEFAULT_TRESORERIE_FILTERS)
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_TRESORERIE_FILTERS)
@@ -295,7 +297,22 @@ const TresoreriePage = () => {
       <header className='inscription-page-header'>
         <div>
           <h1>Tableau de bord tresorerie</h1>
-          
+        </div>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Button
+            type='button'
+            variant='super'
+            label='Nouveau paiement'
+            onClick={() => navigate('/paiements/create')}
+            className='inscription-action inscription-action--primary'
+          />
+          <Button
+            type='button'
+            variant='ghost'
+            label='Nouvelle depense'
+            onClick={() => navigate('/depenses/create')}
+            className='inscription-action inscription-action--secondary'
+          />
         </div>
       </header>
 

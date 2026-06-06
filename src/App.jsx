@@ -101,7 +101,7 @@ function AppLayout () {
                 <Route path='/parents/create' element={<CreateParentPage />} />
                 <Route path='/parents/:id' element={<ParentDetailPage />} />
               </Route>
-              <Route element={<RoleProtectedRoute allowedRoles={[...ADMIN_ROLES, 'PARENT']} />}>
+              <Route element={<RoleProtectedRoute allowedRoles={[...ADMIN_ROLES, 'PARENT', 'COMPTABLE']} />}>
                 <Route path='/students' element={<StudentsPage />} />
                 <Route path='/students/create' element={<CreateStudentPage />} />
                 <Route path='/students/:id' element={<StudentDetailPage />} />

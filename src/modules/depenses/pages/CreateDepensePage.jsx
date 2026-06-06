@@ -9,14 +9,16 @@ import { getAnneesScolaires } from '../../../services/anneeScolaireService'
 import { createDepense } from '../../../services/depenseService'
 import ModuleState from '../../inscriptions/components/ModuleState'
 import SearchableSelectField from '../../inscriptions/components/SearchableSelectField'
+import SelectField from '../../inscriptions/components/SelectField'
 import StatusBadge from '../../inscriptions/components/StatusBadge'
 import {
   getDesignation,
   normalizeCollection,
 } from '../../inscriptions/utils/data'
 import {
-
   DEFAULT_DEPENSE_FORM,
+  CATEGORIE_DEPENSE_OPTIONS,
+  MODE_DEPENSE_OPTIONS,
   getAnneeScolaireOptionLabel,
   getDepensePayload,
   isAnneeScolaireCloturee,
@@ -215,6 +217,26 @@ const CreateDepensePage = () => {
             <h2>Informations de la depense</h2>
             <div className='inscription-form-grid'>
               <Input
+                id='libelle'
+                type='text'
+                label='Libelle'
+                placeholder='Ex: Achat fournitures de bureau'
+                value={form.libelle}
+                error={errors.libelle}
+                disabled={isFormDisabled || isSelectedAnneeClosed}
+                onChange={handleChange}
+              />
+              <SelectField
+                id='categorie'
+                label='Categorie'
+                value={form.categorie}
+                options={CATEGORIE_DEPENSE_OPTIONS}
+                placeholder='Selectionner une categorie'
+                error={errors.categorie}
+                disabled={isFormDisabled || isSelectedAnneeClosed}
+                onChange={handleChange}
+              />
+              <Input
                 id='montant'
                 type='number'
                 min='1'
@@ -225,13 +247,22 @@ const CreateDepensePage = () => {
                 disabled={isFormDisabled || isSelectedAnneeClosed}
                 onChange={handleChange}
               />
+              <SelectField
+                id='mode_paiement'
+                label='Mode de paiement'
+                value={form.mode_paiement}
+                options={MODE_DEPENSE_OPTIONS}
+                placeholder='Selectionner un mode'
+                error={errors.mode_paiement}
+                disabled={isFormDisabled || isSelectedAnneeClosed}
+                onChange={handleChange}
+              />
               <Input
-                id='motif'
+                id='beneficiaire'
                 type='text'
-                label='Motif'
-                placeholder='Motif'
-                value={form.motif}
-                error={errors.motif}
+                label='Beneficiaire (optionnel)'
+                placeholder='Ex: Nom du fournisseur ou de l employe'
+                value={form.beneficiaire}
                 disabled={isFormDisabled || isSelectedAnneeClosed}
                 onChange={handleChange}
               />

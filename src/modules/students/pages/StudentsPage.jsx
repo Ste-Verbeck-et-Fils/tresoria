@@ -4,6 +4,7 @@ import { CreditCard } from 'lucide-react'
 import EntityListPage from '../../inscriptions/components/EntityListPage'
 import { getStudents } from '../../../services/studentService'
 import { formatDate, getStudentName } from '../../inscriptions/utils/data'
+import { normalizeRole } from '../../../utils/roles'
 
 const columns = [
   { label: 'Reference', render: (item) => `#${item.id}` },
@@ -17,7 +18,10 @@ const StudentsPage = () => {
   const location = useLocation()
   const userStr = localStorage.getItem('user')
   const user = userStr ? JSON.parse(userStr) : {}
-  const isParent = user?.role === 'PARENT'
+  const normalizedUserRole = normalizeRole(user?.role)
+  const isParent = normalizedUserRole === 'PARENT'
+  const isComptable = normalizedUserRole === 'COMPTABLE'
+  const canCreate = !isParent && !isComptable
 
   return (
     <EntityListPage
@@ -25,8 +29,8 @@ const StudentsPage = () => {
       loadItems={getStudents}
       columns={columns}
       emptyMessage='Aucun eleve enregistre.'
-      createPath={isParent ? null : '/students/create'}
-      createLabel={isParent ? null : 'Nouvel eleve'}
+      createPath={canCreate ? '/students/create' : null}
+      createLabel={canCreate ? 'Nouvel eleve' : null}
       getRowPath={(item) => `/students/${item.id}`}
       searchPlaceholder='Rechercher un eleve'
       getSearchText={(item) => [
