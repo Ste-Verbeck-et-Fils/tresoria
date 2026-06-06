@@ -9,6 +9,9 @@ import Loader from '../../../components/ui/Loader'
 import { getStudents } from '../../../services/studentService'
 import { getStudentInscriptions, getInscriptionSolde } from '../../../services/inscriptionService'
 import { createParentPaiement } from '../../../services/paiementService'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { createStripePaymentIntent } from '../../../services/stripeService'
 import DetailField from '../../inscriptions/components/DetailField'
 import ModuleState from '../../inscriptions/components/ModuleState'
 import SelectField from '../../inscriptions/components/SelectField'
@@ -38,8 +41,12 @@ const normalizeSoldePayload = (payload) => (
   null
 )
 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_mock')
+
 const ParentPaymentPage = () => {
   const navigate = useNavigate()
+  const stripe = useStripe()
+  const elements = useElements()
   const [students, setStudents] = useState([])
   const [selectedStudentId, setSelectedStudentId] = useState('')
   const [inscriptions, setInscriptions] = useState([])
@@ -53,10 +60,10 @@ const ParentPaymentPage = () => {
   const [modePaiement, setModePaiement] = useState('MOBILE_MONEY')
   const [montant, setMontant] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
-  const [cardNumber, setCardNumber] = useState('')
-  const [cardExpiry, setCardExpiry] = useState('')
-  const [cardCvv, setCardCvv] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const [step, setStep] = useState(1)
+  const [clientSecret, setClientSecret] = useState('')
 
   const loadStudents = useCallback(async () => {
     setIsLoadingStudents(true)
@@ -89,6 +96,8 @@ const ParentPaymentPage = () => {
     setSelectedInscriptionId('')
     setSoldePayload(null)
     setMontant('')
+    setStep(1)
+    setClientSecret('')
 
     if (!selectedStudentId) {
       return undefined
@@ -135,6 +144,8 @@ const ParentPaymentPage = () => {
     setFormError('')
     setSoldePayload(null)
     setMontant('')
+    setStep(1)
+    setClientSecret('')
 
     if (!selectedInscriptionId) {
       return undefined
@@ -218,7 +229,7 @@ const ParentPaymentPage = () => {
     ? 'Paiement...'
     : 'Confirmer le paiement'
 
-  const handleSubmit = async (event) => {
+  const handleContinue = async (event) => {
     event.preventDefault()
     setFormError('')
 
@@ -237,25 +248,76 @@ const ParentPaymentPage = () => {
       return
     }
 
+    if (modePaiement === 'BANQUE') {
+      setIsSubmitting(true)
+      try {
+        const intentPayload = await createStripePaymentIntent(amount)
+        const secret = intentPayload?.data?.clientSecret || intentPayload?.clientSecret
+        
+        if (!secret) {
+          throw new Error('Impossible d\'initialiser le paiement avec Stripe.')
+        }
+        
+        setClientSecret(secret)
+        setStep(2)
+      } catch (error) {
+        setFormError(error.message || 'Erreur lors de l\'initialisation du paiement.')
+      } finally {
+        setIsSubmitting(false)
+      }
+    } else {
+      setStep(2)
+    }
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setFormError('')
+
     if (modePaiement === 'MOBILE_MONEY' && phoneNumber.trim().length < 8) {
       setFormError('Renseignez le numero Airtel Money.')
       return
     }
 
-    if (modePaiement === 'BANQUE' && (!cardNumber.trim() || !cardExpiry.trim() || !cardCvv.trim())) {
-      setFormError('Renseignez les informations de la carte bancaire.')
-      return
+    if (modePaiement === 'BANQUE') {
+      if (!stripe || !elements || !clientSecret) {
+        setFormError('L\'interface de paiement Stripe n\'est pas encore chargée.')
+        return
+      }
     }
 
     setIsSubmitting(true)
 
     try {
+      let reference = null
+
+      if (modePaiement === 'BANQUE') {
+        const cardElement = elements.getElement(CardElement)
+        const result = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              name: selectedStudent ? getStudentName(selectedStudent) : 'Parent'
+            }
+          }
+        })
+
+        if (result.error) {
+          setFormError(result.error.message)
+          setIsSubmitting(false)
+          return
+        }
+        
+        reference = result.paymentIntent.id
+      }
+
       await createParentPaiement({
         inscription_id: Number(selectedInscriptionId),
         montant: amount,
         motif: 'FRAIS_SCOLAIRE',
         mode_paiement: modePaiement,
         description: `Paiement parent - ${selectedModeLabel}`,
+        reference: reference
       })
 
       navigate(`/students/${selectedStudentId}/paiements`, {
@@ -305,7 +367,7 @@ const ParentPaymentPage = () => {
           />
           )
         : (
-          <form className='inscription-form-panel inscription-create-form' onSubmit={handleSubmit}>
+          <form className='inscription-form-panel inscription-create-form' onSubmit={step === 1 ? handleContinue : handleSubmit}>
             {formError && (
               <Feedback
                 type='warning'
@@ -314,31 +376,33 @@ const ParentPaymentPage = () => {
               />
             )}
 
-            <section className='student-form-section'>
-              <h2>Eleve</h2>
-              <div className='inscription-form-grid'>
-                <SelectField
-                  id='student_id'
-                  label='Eleve'
-                  value={selectedStudentId}
-                  options={studentOptions}
-                  placeholder='Selectionner un eleve'
-                  disabled={isSubmitting}
-                  onChange={(event) => setSelectedStudentId(event.target.value)}
-                />
-                <SelectField
-                  id='inscription_id'
-                  label='Inscription'
-                  value={selectedInscriptionId}
-                  options={inscriptionOptions}
-                  placeholder={inscriptionPlaceholder}
-                  disabled={!selectedStudentId || isLoadingInscriptions || isSubmitting}
-                  onChange={(event) => setSelectedInscriptionId(event.target.value)}
-                />
-              </div>
-            </section>
+            {step === 1 && (
+              <section className='student-form-section'>
+                <h2>Eleve</h2>
+                <div className='inscription-form-grid'>
+                  <SelectField
+                    id='student_id'
+                    label='Eleve'
+                    value={selectedStudentId}
+                    options={studentOptions}
+                    placeholder='Selectionner un eleve'
+                    disabled={isSubmitting}
+                    onChange={(event) => setSelectedStudentId(event.target.value)}
+                  />
+                  <SelectField
+                    id='inscription_id'
+                    label='Inscription'
+                    value={selectedInscriptionId}
+                    options={inscriptionOptions}
+                    placeholder={inscriptionPlaceholder}
+                    disabled={!selectedStudentId || isLoadingInscriptions || isSubmitting}
+                    onChange={(event) => setSelectedInscriptionId(event.target.value)}
+                  />
+                </div>
+              </section>
+            )}
 
-            {selectedInscriptionId && (
+            {selectedInscriptionId && step === 1 && (
               <section className='inscription-amount-panel'>
                 <div>
                   <h2>Reste a payer</h2>
@@ -381,7 +445,7 @@ const ParentPaymentPage = () => {
               </section>
             )}
 
-            {!isPaymentUnavailable && (
+            {!isPaymentUnavailable && step === 1 && (
               <section className='student-form-section'>
                 <h2>Paiement</h2>
                 <div className='inscription-form-grid'>
@@ -439,83 +503,105 @@ const ParentPaymentPage = () => {
                   })}
                 </div>
 
-                <div className='inscription-form-grid' style={{ marginTop: '18px' }}>
+                <div className='inscription-form-actions' style={{ marginTop: '24px' }}>
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    label='Annuler'
+                    disabled={isSubmitting}
+                    onClick={() => navigate('/students')}
+                    className='inscription-action inscription-action--secondary'
+                  />
+                  <Button
+                    type='submit'
+                    variant='super'
+                    label={isSubmitting ? 'Chargement...' : 'Continuer'}
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    className='inscription-action inscription-action--primary'
+                  />
+                </div>
+              </section>
+            )}
+
+            {!isPaymentUnavailable && step === 2 && (
+              <section className='student-form-section'>
+                <h2>Interface de paiement - {selectedModeLabel}</h2>
+                <div style={{ marginBottom: '24px', fontSize: '1.2rem', fontWeight: 600 }}>
+                  Montant à payer : <span style={{ color: 'var(--color-primary)' }}>{formatAmount(amount)}</span>
+                </div>
+
+                <div className='inscription-form-grid'>
                   {modePaiement === 'MOBILE_MONEY'
                     ? (
                       <Input
                         id='airtel_phone'
                         type='tel'
                         label='Numero Airtel Money'
-                        placeholder='Numero Airtel Money'
+                        placeholder='Ex: 099...'
                         value={phoneNumber}
                         disabled={isSubmitting}
                         onChange={(event) => setPhoneNumber(event.target.value)}
                       />
                       )
                     : (
-                      <>
-                        <Input
-                          id='card_number'
-                          type='text'
-                          inputMode='numeric'
-                          label='Numero de carte'
-                          placeholder='Numero de carte'
-                          value={cardNumber}
-                          disabled={isSubmitting}
-                          onChange={(event) => setCardNumber(event.target.value)}
+                      <div style={{ gridColumn: '1 / -1', padding: '20px', border: '1px solid var(--color-border)', borderRadius: '8px', background: '#fff' }}>
+                        <label style={{ display: 'block', marginBottom: '16px', fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-text-main)' }}>Informations de la carte</label>
+                        <CardElement 
+                          options={{
+                            style: {
+                              base: {
+                                fontSize: '16px',
+                                color: '#424770',
+                                '::placeholder': {
+                                  color: '#aab7c4',
+                                },
+                              },
+                              invalid: {
+                                color: '#9e2146',
+                              },
+                            },
+                          }} 
                         />
-                        <Input
-                          id='card_expiry'
-                          type='text'
-                          label='Expiration'
-                          placeholder='MM/AA'
-                          value={cardExpiry}
-                          disabled={isSubmitting}
-                          onChange={(event) => setCardExpiry(event.target.value)}
-                        />
-                        <Input
-                          id='card_cvv'
-                          type='password'
-                          inputMode='numeric'
-                          label='CVV'
-                          placeholder='CVV'
-                          value={cardCvv}
-                          disabled={isSubmitting}
-                          onChange={(event) => setCardCvv(event.target.value)}
-                        />
-                      </>
+                      </div>
                       )}
+                </div>
+
+                <div className='inscription-form-actions' style={{ marginTop: '24px' }}>
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    label='Retour'
+                    disabled={isSubmitting}
+                    onClick={() => setStep(1)}
+                    className='inscription-action inscription-action--secondary'
+                  />
+                  <Button
+                    type='submit'
+                    variant='super'
+                    label={submitLabel}
+                    icon={modePaiement === 'BANQUE' ? <CreditCard size={17} /> : <Smartphone size={17} />}
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    className='inscription-action inscription-action--primary'
+                  />
                 </div>
               </section>
             )}
 
-            {selectedInscriptionId && !isLoadingSolde && soldePayload && resteAPayer <= 0 && (
+            {selectedInscriptionId && step === 1 && !isLoadingSolde && soldePayload && resteAPayer <= 0 && (
               <Feedback type='success' message='Cette inscription est deja entierement payee.' />
             )}
-
-            <div className='inscription-form-actions'>
-              <Button
-                type='button'
-                variant='ghost'
-                label='Annuler'
-                disabled={isSubmitting}
-                onClick={() => navigate('/students')}
-                className='inscription-action inscription-action--secondary'
-              />
-              <Button
-                type='submit'
-                variant='super'
-                label={submitLabel}
-                icon={<CreditCard size={17} />}
-                loading={isSubmitting}
-                disabled={isPaymentUnavailable || isSubmitting}
-                className='inscription-action inscription-action--primary'
-              />
-            </div>
           </form>
           )}
     </section>
   )
 }
 
-export default ParentPaymentPage
+const ParentPaymentPageWrapper = () => (
+  <Elements stripe={stripePromise}>
+    <ParentPaymentPage />
+  </Elements>
+)
+
+export default ParentPaymentPageWrapper
