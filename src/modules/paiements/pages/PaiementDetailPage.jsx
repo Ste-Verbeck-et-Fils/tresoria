@@ -112,7 +112,7 @@ const PaiementDetailPage = () => {
       setSolde(bundle.solde)
       setSoldeError(bundle.soldeError)
     } catch (error) {
-      setLoadError(error.message || 'Impossible de charger ce paiement.')
+      setLoadError(error.message || 'Impossible de charger cette entrée.')
     } finally {
       setIsLoading(false)
     }
@@ -142,7 +142,7 @@ const PaiementDetailPage = () => {
       })
       .catch((error) => {
         if (!isCancelled) {
-          setLoadError(error.message || 'Impossible de charger ce paiement.')
+          setLoadError(error.message || 'Impossible de charger cette entrée.')
         }
       })
       .finally(() => {
@@ -200,16 +200,16 @@ const PaiementDetailPage = () => {
     try {
       await updatePaiement(id, getPaiementPayload(editForm))
       setIsEditing(false)
-      await refreshAfterMutation('Paiement modifie avec succes.')
+      await refreshAfterMutation('Entrée modifiée avec succes.')
     } catch (error) {
-      setFeedback({ type: 'error', message: error.message || 'Impossible de modifier ce paiement.' })
+      setFeedback({ type: 'error', message: error.message || 'Impossible de modifier cette entrée.' })
     } finally {
       setIsSaving(false)
     }
   }
 
   const handleAnnuler = async () => {
-    const isConfirmed = window.confirm(`Annuler le paiement #${id} ?`)
+    const isConfirmed = window.confirm(`Annuler l'entrée #${id} ?`)
 
     if (!isConfirmed) {
       return
@@ -220,16 +220,16 @@ const PaiementDetailPage = () => {
 
     try {
       await annulerPaiement(id)
-      await refreshAfterMutation('Paiement annule avec succes.')
+      await refreshAfterMutation('Entrée annulée avec succes.')
     } catch (error) {
-      setFeedback({ type: 'error', message: error.message || 'Impossible d annuler ce paiement.' })
+      setFeedback({ type: 'error', message: error.message || 'Impossible d annuler cette entrée.' })
     } finally {
       setIsCancelling(false)
     }
   }
 
   const handleDelete = async () => {
-    const isConfirmed = window.confirm(`Supprimer le paiement #${id} ? Cette action est irreversible.`)
+    const isConfirmed = window.confirm(`Supprimer l'entrée #${id} ? Cette action est irreversible.`)
 
     if (!isConfirmed) {
       return
@@ -242,10 +242,10 @@ const PaiementDetailPage = () => {
       await deletePaiement(id)
       navigate('/paiements', {
         replace: true,
-        state: { successMessage: 'Paiement supprime avec succes.' },
+        state: { successMessage: 'Entrée supprimée avec succes.' },
       })
     } catch (error) {
-      setFeedback({ type: 'error', message: error.message || 'Impossible de supprimer ce paiement.' })
+      setFeedback({ type: 'error', message: error.message || 'Impossible de supprimer cette entrée.' })
     } finally {
       setIsDeleting(false)
     }
@@ -265,9 +265,9 @@ const PaiementDetailPage = () => {
         <div>
           <Link to='/paiements' className='inscription-back-link'>
             <ArrowLeft size={16} />
-            Retour aux paiements
+            Retour aux entrées
           </Link>
-          <h1>Detail du paiement #{id}</h1>
+          <h1>Detail de l'entrée #{id}</h1>
           
         </div>
       </header>
@@ -282,7 +282,7 @@ const PaiementDetailPage = () => {
         />
       )}
 
-      {isLoading && <Loader message='Chargement du paiement...' />}
+      {isLoading && <Loader message='Chargement de l entrée...' />}
 
       {!isLoading && loadError && (
         <ModuleState
@@ -298,7 +298,7 @@ const PaiementDetailPage = () => {
         <div className='detail-page-stack'>
           <DetailSummaryCard
             icon={<CreditCard size={36} aria-hidden='true' />}
-            title={`Paiement #${paiement.id || id}`}
+            title={`Entrée #${paiement.id || id}`}
             subtitle={formatAmount(getPaiementMontant(paiement))}
             meta={inscription ? getInscriptionOptionLabel(inscription) : '-'}
             badge={<StatusBadge value={status} />}
@@ -312,7 +312,7 @@ const PaiementDetailPage = () => {
           )}
 
           <DetailSection
-            title='Informations du paiement'
+            title='Informations de l entrée'
             actions={(
               isEditing
                 ? (
@@ -421,7 +421,7 @@ const PaiementDetailPage = () => {
                 </>
                 )}
             <DetailField label='Statut' value={<StatusBadge value={status} />} />
-            <DetailField label='Date du paiement' value={formatDate(getPaiementDate(paiement))} />
+            <DetailField label='Date de l entrée' value={formatDate(getPaiementDate(paiement))} />
           </DetailSection>
 
           <DetailSection title='Inscription concernee'>
@@ -462,7 +462,7 @@ const PaiementDetailPage = () => {
                 <Button
                   type='button'
                   variant='ghost'
-                  label={isCancelling ? 'Annulation...' : 'Annuler le paiement'}
+                  label={isCancelling ? 'Annulation...' : 'Annuler l\'entrée'}
                   icon={<Ban size={16} />}
                   loading={isCancelling}
                   disabled={isEditing || isDeleting || status === 'ANNULE'}

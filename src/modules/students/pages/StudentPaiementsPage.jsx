@@ -98,7 +98,7 @@ const StudentPaiementsPage = () => {
         </Link>
         <div>
           <h1 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            Paiements de l'eleve
+            Entrées de l'eleve
           </h1>
           <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-text-muted)' }}> {getStudentName(student)}</p>
         </div>
@@ -150,10 +150,10 @@ const StudentPaiementsPage = () => {
             </div>
 
             <div>
-              <h3 style={{ marginBottom: '16px', color: 'var(--color-secondary)' }}>Historique des paiements</h3>
+              <h3 style={{ marginBottom: '16px', color: 'var(--color-secondary)' }}>Historique des entrées</h3>
               {paiements.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '30px', background: 'var(--color-light)', borderRadius: '8px', color: 'var(--color-text-muted)' }}>
-                  Aucun paiement n'a ete effectue pour cette annee scolaire.
+                  Aucune entrée n'a été effectuée pour cette annee scolaire.
                 </div>
               ) : (
                 <div style={{ overflowX: 'auto' }}>

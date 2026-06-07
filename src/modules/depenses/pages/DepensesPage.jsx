@@ -30,6 +30,7 @@ import {
   getDepenseSearchText,
   getDepenseStatus,
   hasActiveDepenseFilters,
+  CATEGORIE_DEPENSE_OPTIONS,
   MODE_DEPENSE_OPTIONS,
   STATUT_DEPENSE_OPTIONS,
 } from '../utils/depense'
@@ -148,9 +149,9 @@ const DepensesPage = () => {
   const filterPanel = (
     <section className='module-filter-panel paiement-filter-panel'>
       <div>
-        <h2>Filtrer les depenses</h2>
+        <h2>Filtrer les sorties</h2>
         <p>
-          Affichez toutes les depenses ou limitez les resultats par statut, categorie, mode,
+          Affichez toutes les sorties ou limitez les résultats par statut, categorie, mode,
           periode, annee scolaire, reference ou beneficiaire.
         </p>
       </div>
@@ -186,20 +187,14 @@ const DepensesPage = () => {
             }
           }}
         />
-        <Input
+        <SelectField
           id='categorie'
-          type='search'
           label='Categorie'
-          placeholder='Categorie'
           value={draftFilters.categorie}
+          options={CATEGORIE_DEPENSE_OPTIONS}
+          placeholder='Toutes les categories'
           disabled={isLoadingOptions}
           onChange={handleFilterChange}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              event.preventDefault()
-              handleApplyFilters()
-            }
-          }}
         />
         <SelectField
           id='statut'
@@ -292,15 +287,15 @@ const DepensesPage = () => {
   return (
     <EntityListPage
       isLoadingDependencies={isLoadingOptions}
-      title='Depenses'
-      description='Consultez les depenses et suivez leur statut.'
+      title='Sorties'
+      description='Consultez les sorties et suivez leur statut.'
       loadItems={loadDepenses}
       columns={columns}
-      emptyMessage='Aucune depense enregistree.'
+      emptyMessage='Aucune sortie enregistrée.'
       createPath='/depenses/create'
-      createLabel='Nouvelle depense'
+      createLabel='Nouvelle sortie'
       getRowPath={(item) => `/depenses/${item.id}`}
-      searchPlaceholder='Recherche rapide dans les depenses affichees'
+      searchPlaceholder='Recherche rapide dans les sorties affichées'
       getSearchText={getDepenseSearchText}
       successMessage={location.state?.successMessage}
       beforePanel={filterPanel}

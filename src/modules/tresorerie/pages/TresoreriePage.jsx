@@ -302,14 +302,14 @@ const TresoreriePage = () => {
           <Button
             type='button'
             variant='super'
-            label='Nouveau paiement'
+            label='Nouvelle entrée'
             onClick={() => navigate('/paiements/create')}
             className='inscription-action inscription-action--primary'
           />
           <Button
             type='button'
             variant='ghost'
-            label='Nouvelle depense'
+            label='Nouvelle sortie'
             onClick={() => navigate('/depenses/create')}
             className='inscription-action inscription-action--secondary'
           />

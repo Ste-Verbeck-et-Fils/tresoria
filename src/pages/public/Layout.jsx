@@ -146,11 +146,11 @@ const Layout = () => {
   }
 
   if (canAccessPaiements) {
-    links.push({ label: 'Paiements', href: '/paiements', icon: <CreditCard size={20} />, active: isPathActive('/paiements') })
+    links.push({ label: 'Entrées', href: '/paiements', icon: <CreditCard size={20} />, active: isPathActive('/paiements') })
   }
 
   if (canAccessDepenses) {
-    links.push({ label: 'Depenses', href: '/depenses', icon: <FileText size={20} />, active: isPathActive('/depenses') })
+    links.push({ label: 'Sorties', href: '/depenses', icon: <FileText size={20} />, active: isPathActive('/depenses') })
   }
 
   if (canAccessTresorerie) {

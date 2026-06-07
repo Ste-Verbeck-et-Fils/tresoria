@@ -43,7 +43,7 @@ const About = () => {
               </div>
               <h2>Notre Objectif Principal</h2>
               <p>
-                L'application <strong>GSEMMANUEL</strong> a été conçue pour répondre à un besoin crucial : simplifier et sécuriser la gestion de la trésorerie au sein du Groupe Scolaire Emmanuel. Nous avons pour mission d'éliminer les erreurs manuelles, de centraliser les paiements des élèves et de garantir une comptabilité absolument irréprochable au quotidien.
+                L'application <strong>GSEMMANUEL</strong> a été conçue pour répondre à un besoin crucial : simplifier et sécuriser la gestion de la trésorerie au sein du Groupe Scolaire Emmanuel. Nous avons pour mission d'éliminer les erreurs manuelles, de centraliser les entrées des élèves et de garantir une comptabilité absolument irréprochable au quotidien.
               </p>
             </div>
           </div>

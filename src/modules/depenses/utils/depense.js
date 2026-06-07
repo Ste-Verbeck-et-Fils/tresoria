@@ -14,12 +14,14 @@ export const DEFAULT_DEPENSE_FORM = {
   mode_paiement: '',
   beneficiaire: '',
   description: '',
-  date_depense: '',
+  date_depense: new Date().toISOString().split('T')[0],
   reference: '',
 }
 
 export const CATEGORIE_DEPENSE_OPTIONS = [
   { value: 'SALAIRE', label: 'Salaire' },
+  { value: 'CHAUFFEUR', label: 'Chauffeur' },
+  { value: 'ENTRETIEN', label: 'Entretien' },
   { value: 'LOYER', label: 'Loyer' },
   { value: 'FOURNITURE', label: 'Fourniture' },
   { value: 'TRANSPORT', label: 'Transport' },
@@ -32,7 +34,7 @@ export const CATEGORIE_DEPENSE_OPTIONS = [
 ]
 
 export const MODE_DEPENSE_OPTIONS = [
-  { value: 'CASH', label: 'Cash' },
+  { value: 'CASH', label: 'Espèces' },
   { value: 'MOBILE_MONEY', label: 'Mobile money' },
   { value: 'BANQUE', label: 'Banque' },
 ]

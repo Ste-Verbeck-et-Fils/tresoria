@@ -231,10 +231,10 @@ const PaiementsPage = () => {
   const filterPanel = (
     <section className='module-filter-panel paiement-filter-panel'>
       <div>
-        <h2>Filtrer les paiements</h2>
+        <h2>Filtrer les entrées</h2>
         <p>
-          Affichez tous les paiements ou limitez les resultats par statut, motif, mode, periode,
-          inscription, eleve, classe, annee scolaire ou reference.
+          Affichez toutes les entrées ou limitez les résultats par statut, motif, mode, période,
+          inscription, élève, classe, année scolaire ou référence.
         </p>
       </div>
 
@@ -384,15 +384,15 @@ const PaiementsPage = () => {
   return (
     <EntityListPage
       isLoadingDependencies={isLoadingOptions}
-      title='Paiements'
-      description='Consultez les paiements, filtrez les resultats et suivez leur statut.'
+      title='Entrées'
+      description='Consultez les entrées, filtrez les résultats et suivez leur statut.'
       loadItems={loadPaiements}
       columns={columns}
-      emptyMessage='Aucun paiement enregistre.'
+      emptyMessage='Aucune entrée enregistrée.'
       createPath='/paiements/create'
-      createLabel='Nouveau paiement'
+      createLabel='Nouvelle entrée'
       getRowPath={(item) => `/paiements/${item.id}`}
-      searchPlaceholder='Recherche rapide dans les paiements affiches'
+      searchPlaceholder='Recherche rapide dans les entrées affichées'
       getSearchText={getPaiementSearchText}
       successMessage={location.state?.successMessage}
       beforePanel={filterPanel}
