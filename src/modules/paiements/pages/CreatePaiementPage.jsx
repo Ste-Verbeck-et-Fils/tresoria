@@ -27,9 +27,11 @@ import {
 import {
   getInscriptionOptionLabel,
   getPaiementPayload,
+  isPaiementChequeMode,
   isAnneeScolaireCloturee,
   MODE_PAIEMENT_OPTIONS,
   MOTIF_PAIEMENT_OPTIONS,
+  STATUT_CHEQUE_PAIEMENT_OPTIONS,
   MOIS_OPTIONS,
   ANNEE_OPTIONS,
   normalizePaiementForm,
@@ -172,11 +174,34 @@ const CreatePaiementPage = () => {
         setIsLoadingSolde(Boolean(value))
       }
 
+      if (id === 'mode_paiement') {
+        if (isPaiementChequeMode(value)) {
+          nextForm.statut_cheque = nextForm.statut_cheque || 'RECU'
+        } else {
+          nextForm.numero_cheque = ''
+          nextForm.banque_cheque = ''
+          nextForm.titulaire_compte_cheque = ''
+          nextForm.date_cheque = ''
+          nextForm.statut_cheque = 'RECU'
+        }
+      }
+
       return nextForm
     })
 
-    if (errors[id]) {
-      setErrors((currentErrors) => ({ ...currentErrors, [id]: '' }))
+    if (errors[id] || id === 'mode_paiement') {
+      setErrors((currentErrors) => {
+        const nextErrors = { ...currentErrors, [id]: '' }
+
+        if (id === 'mode_paiement' && !isPaiementChequeMode(value)) {
+          delete nextErrors.numero_cheque
+          delete nextErrors.banque_cheque
+          delete nextErrors.date_cheque
+          delete nextErrors.statut_cheque
+        }
+
+        return nextErrors
+      })
     }
   }
 
@@ -210,6 +235,7 @@ const CreatePaiementPage = () => {
 
   const isFormUnavailable = isLoadingOptions || Boolean(optionsError)
   const isFormDisabled = isFormUnavailable || isSubmitting
+  const showChequeFields = isPaiementChequeMode(form.mode_paiement)
 
   const computedTransportDateFin = form.motif === 'FRAIS_TRANSPORT' ? calculateDateFin(form.transport_date_debut, form.transport_nombre_mois) : ''
   const computedMontantAttendu = form.motif === 'FRAIS_TRANSPORT' ? ((Number(form.transport_nombre_mois) || 0) * (Number(form.tarif_mensuel_transport) || 0)) : ''
@@ -392,6 +418,63 @@ const CreatePaiementPage = () => {
               </div>
               {/* Empty div to preserve 3-column alignment */}
               <div></div>
+
+              {showChequeFields && (
+                <>
+                  {/* LIGNE 3 : Chèque */}
+                  <Input
+                    id='numero_cheque'
+                    type='text'
+                    label='Numéro du chèque'
+                    placeholder='Ex: CHQ-000123'
+                    value={form.numero_cheque}
+                    error={errors.numero_cheque}
+                    disabled={isFormDisabled || isSelectedInscriptionClosed}
+                    onChange={handleChange}
+                  />
+                  <Input
+                    id='banque_cheque'
+                    type='text'
+                    label='Nom de la banque'
+                    placeholder='Ex: Banque principale'
+                    value={form.banque_cheque}
+                    error={errors.banque_cheque}
+                    disabled={isFormDisabled || isSelectedInscriptionClosed}
+                    onChange={handleChange}
+                  />
+                  <Input
+                    id='date_cheque'
+                    type='date'
+                    label='Date du chèque'
+                    value={form.date_cheque}
+                    error={errors.date_cheque}
+                    disabled={isFormDisabled || isSelectedInscriptionClosed}
+                    onChange={handleChange}
+                  />
+
+                  {/* LIGNE 4 : Chèque */}
+                  <Input
+                    id='titulaire_compte_cheque'
+                    type='text'
+                    label='Titulaire du compte (Optionnel)'
+                    placeholder='Nom du titulaire'
+                    value={form.titulaire_compte_cheque}
+                    disabled={isFormDisabled || isSelectedInscriptionClosed}
+                    onChange={handleChange}
+                  />
+                  <SelectField
+                    id='statut_cheque'
+                    label='Statut du chèque'
+                    value={form.statut_cheque}
+                    options={STATUT_CHEQUE_PAIEMENT_OPTIONS}
+                    placeholder='Selectionner un statut'
+                    error={errors.statut_cheque}
+                    disabled={isFormDisabled || isSelectedInscriptionClosed}
+                    onChange={handleChange}
+                  />
+                  <div></div>
+                </>
+              )}
 
               {/* LIGNE 3 : FRAIS_TRANSPORT uniquement */}
               {form.motif === 'FRAIS_TRANSPORT' && (
