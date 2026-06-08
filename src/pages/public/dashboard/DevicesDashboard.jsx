@@ -14,6 +14,8 @@ import '../../../styles/public/DevicesDashboard.css'
 const mapApiErrorToMessage = (error) => {
   if (!error) return 'Impossible d\'enregistrer cet appareil.'
   if (typeof error === 'string') return error
+  if (error.message) return error.message
+
   const status = error.status
   switch (status) {
     case 400:
@@ -42,7 +44,14 @@ const DevicesDashboard = () => {
   const [deviceForm, setDeviceForm] = useState({
     device_name: '',
   })
-  const { register: registerDevice, isLoading: isRegistering, isSupported } = useWebAuthn()
+  const {
+    register: registerDevice,
+    resumeRegistration,
+    isLoading: isRegistering,
+    isFinalizing,
+    isSupported,
+    hasPendingRegistration,
+  } = useWebAuthn()
 
   const [actionLoading, setActionLoading] = useState({})
 
@@ -51,7 +60,34 @@ const DevicesDashboard = () => {
   const canChangeStatus = ADMIN_ROLES.includes(currentRole)
 
   useEffect(() => {
-    fetchDevices()
+    const init = async () => {
+      await fetchDevices()
+
+      if (!hasPendingRegistration) return
+
+      setFeedback({
+        type: 'success',
+        message: 'Finalisation de l\'enregistrement en cours. Ne fermez pas le navigateur.',
+      })
+
+      try {
+        await resumeRegistration()
+        setDeviceForm({ device_name: '' })
+        await fetchDevices()
+        setFeedback({ type: 'success', message: 'Device ajouté avec succès.' })
+      } catch (error) {
+        if (error?.status === 401 || error?.status === 403) {
+          navigate('/login', { replace: true })
+          return
+        }
+        setFeedback({
+          type: 'error',
+          message: mapApiErrorToMessage(error),
+        })
+      }
+    }
+
+    init()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -79,6 +115,11 @@ const DevicesDashboard = () => {
 
   const handleAddDevice = async (event) => {
     event.preventDefault()
+
+    if (isRegistering) {
+      return
+    }
+
     setFeedback({ type: '', message: '' })
 
     if (!isSupported) {
@@ -200,7 +241,13 @@ const DevicesDashboard = () => {
               <Button
                 type='submit'
                 variant='super'
-                label={isRegistering ? 'Enregistrement...' : 'Enregistrer mon appareil'}
+                label={
+                  isFinalizing
+                    ? 'Finalisation...'
+                    : isRegistering
+                      ? 'Enregistrement...'
+                      : 'Enregistrer mon appareil'
+                }
                 disabled={isRegistering}
                 loading={isRegistering}
                 className='devices-action-button devices-action-button--primary'
