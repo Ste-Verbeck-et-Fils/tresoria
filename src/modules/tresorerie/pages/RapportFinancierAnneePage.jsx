@@ -163,7 +163,7 @@ const RapportFinancierAnneePage = () => {
             Retour a la tresorerie
           </Link>
           <h1>Rapport financier annuel</h1>
-          
+
         </div>
       </header>
 

@@ -269,7 +269,7 @@ const CreateInscriptionPage = () => {
             Retour aux inscriptions
           </Link>
           <h1>Nouvelle inscription</h1>
-          
+
         </div>
       </header>
 

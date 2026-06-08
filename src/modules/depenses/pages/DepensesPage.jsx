@@ -396,25 +396,25 @@ const DepensesPage = () => {
   return (
     <>
       <EntityListPage
-      isLoadingDependencies={isLoadingOptions}
-      title='Sorties'
-      description='Consultez les sorties et suivez leur statut.'
-      loadItems={loadDepenses}
-      columns={columns}
-      emptyMessage='Aucune sortie enregistrée.'
-      createPath='/depenses/create'
-      createLabel='Nouvelle sortie'
-      getRowPath={(item) => `/depenses/${item.id}`}
-      searchPlaceholder='Recherche rapide dans les sorties affichées'
-      getSearchText={getDepenseSearchText}
-      successMessage={location.state?.successMessage}
-      beforePanel={filterPanel}
-      extraActions={renderChequeAction}
-      socketEvents={{
-        created: 'depense_created',
-        updated: 'depense_updated',
-        deleted: 'depense_deleted'
-      }}
+        isLoadingDependencies={isLoadingOptions}
+        title='Sorties'
+        description='Consultez les sorties et suivez leur statut.'
+        loadItems={loadDepenses}
+        columns={columns}
+        emptyMessage='Aucune sortie enregistrée.'
+        createPath='/depenses/create'
+        createLabel='Nouvelle sortie'
+        getRowPath={(item) => `/depenses/${item.id}`}
+        searchPlaceholder='Recherche rapide dans les sorties affichées'
+        getSearchText={getDepenseSearchText}
+        successMessage={location.state?.successMessage}
+        beforePanel={filterPanel}
+        extraActions={renderChequeAction}
+        socketEvents={{
+          created: 'depense_created',
+          updated: 'depense_updated',
+          deleted: 'depense_deleted'
+        }}
       />
 
       {chequeStatusItem && (

@@ -279,7 +279,7 @@ const ParentDetailPage = () => {
             Retour aux parents
           </Link>
           <h1>Detail du parent #{id}</h1>
-          
+
         </div>
       </header>
 

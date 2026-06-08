@@ -199,7 +199,7 @@ const InscriptionDetailPage = () => {
           </Link>
 
           <h1>Detail de l inscription #{id}</h1>
-          
+
         </div>
       </header>
 

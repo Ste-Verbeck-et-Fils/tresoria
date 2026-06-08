@@ -173,7 +173,7 @@ const ClasseDetailPage = () => {
           </Link>
 
           <h1>Detail de la classe #{id}</h1>
-          
+
         </div>
       </header>
 

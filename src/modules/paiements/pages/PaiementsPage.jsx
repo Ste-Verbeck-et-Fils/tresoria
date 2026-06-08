@@ -493,20 +493,20 @@ const PaiementsPage = () => {
   return (
     <>
       <EntityListPage
-      isLoadingDependencies={isLoadingOptions}
-      title='Entrées'
-      description='Consultez les entrées, filtrez les résultats et suivez leur statut.'
-      loadItems={loadPaiements}
-      columns={columns}
-      emptyMessage='Aucune entrée enregistrée.'
-      createPath='/paiements/create'
-      createLabel='Nouvelle entrée'
-      getRowPath={(item) => `/paiements/${item.id}`}
-      searchPlaceholder='Recherche rapide dans les entrées affichées'
-      getSearchText={getPaiementSearchText}
-      successMessage={location.state?.successMessage}
-      beforePanel={filterPanel}
-      extraActions={renderChequeAction}
+        isLoadingDependencies={isLoadingOptions}
+        title='Entrées'
+        description='Consultez les entrées, filtrez les résultats et suivez leur statut.'
+        loadItems={loadPaiements}
+        columns={columns}
+        emptyMessage='Aucune entrée enregistrée.'
+        createPath='/paiements/create'
+        createLabel='Nouvelle entrée'
+        getRowPath={(item) => `/paiements/${item.id}`}
+        searchPlaceholder='Recherche rapide dans les entrées affichées'
+        getSearchText={getPaiementSearchText}
+        successMessage={location.state?.successMessage}
+        beforePanel={filterPanel}
+        extraActions={renderChequeAction}
       />
 
       {chequeStatusItem && (

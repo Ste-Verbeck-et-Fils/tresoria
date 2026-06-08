@@ -295,10 +295,10 @@ const StudentDetailPage = () => {
                       <Button type='button' variant='ghost' label='Annuler' disabled={isSaving} onClick={handleCancelEdit} className='inscription-action inscription-action--secondary' />
                       <Button type='button' variant='super' label={isSaving ? 'Enregistrement...' : 'Enregistrer'} loading={isSaving} onClick={handleSaveEdit} className='inscription-action inscription-action--primary' />
                     </>
-                  )
+                    )
                   : (
                     <Button type='button' variant='ghost' label='Modifier' icon={<PencilLine size={16} />} disabled={isDeleting} onClick={handleStartEdit} className='inscription-action inscription-action--secondary' />
-                  )
+                    )
               )
             }
           >
@@ -321,7 +321,7 @@ const StudentDetailPage = () => {
                   <div className='inscription-detail-field inscription-detail-field--editing'><dt>Groupement d origine</dt><dd><Input id='groupement_origine' type='text' value={editForm.groupement_origine} error={editErrors.groupement_origine} disabled={isSaving} onChange={handleEditChange} /></dd></div>
                   <div className='inscription-detail-field inscription-detail-field--editing'><dt>Localite d origine</dt><dd><Input id='localite_origine' type='text' value={editForm.localite_origine} error={editErrors.localite_origine} disabled={isSaving} onChange={handleEditChange} /></dd></div>
                 </>
-              )
+                )
               : (
                 <>
                   <DetailField label='Nom' value={student.nom} />
@@ -339,7 +339,7 @@ const StudentDetailPage = () => {
                   <DetailField label='Groupement d origine' value={student.groupement_origine} />
                   <DetailField label='Localite d origine' value={student.localite_origine} />
                 </>
-              )}
+                )}
           </DetailSection>
 
           {isLoadingAdresses && <Loader message='Chargement des adresses...' />}

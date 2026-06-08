@@ -268,7 +268,7 @@ const PaiementDetailPage = () => {
             Retour aux entrées
           </Link>
           <h1>Detail de l'entrée #{id}</h1>
-          
+
         </div>
       </header>
 

@@ -108,11 +108,13 @@ const AideDashboard = () => {
 
                 {isUser && (
                   <div className='chat-app-avatar chat-app-avatar-user'>
-                    {user?.photo_url ? (
-                      <img src={user.photo_url} alt={user.full_name || 'Utilisateur'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <User size={20} />
-                    )}
+                    {user?.photo_url
+                      ? (
+                        <img src={user.photo_url} alt={user.full_name || 'Utilisateur'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        )
+                      : (
+                        <User size={20} />
+                        )}
                   </div>
                 )}
               </div>
@@ -129,7 +131,7 @@ const AideDashboard = () => {
                   <span className='chat-app-name'>Assistant</span>
                 </div>
                 <div className='chat-app-bubble chat-app-bubble-bot chat-app-typing'>
-                  <span></span><span></span><span></span>
+                  <span /><span /><span />
                 </div>
               </div>
             </div>

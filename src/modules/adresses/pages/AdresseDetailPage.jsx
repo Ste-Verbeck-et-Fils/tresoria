@@ -258,7 +258,7 @@ const AdresseDetailPage = () => {
             Retour aux adresses
           </Link>
           <h1>Detail de l adresse #{id}</h1>
-          
+
         </div>
       </header>
 

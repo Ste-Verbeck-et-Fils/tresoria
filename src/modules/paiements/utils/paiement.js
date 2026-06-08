@@ -110,12 +110,12 @@ export const normalizePaiementForm = (paiement = {}) => ({
   titulaire_compte_cheque: paiement.titulaire_compte_cheque || paiement.titulaireCompteCheque || '',
   date_cheque: paiement.date_cheque ? String(paiement.date_cheque).slice(0, 10) : '',
   statut_cheque: paiement.statut_cheque || paiement.statutCheque || 'RECU',
-  
+
   // Transport fields
   transport_date_debut: paiement.transport_date_debut ?? '',
   transport_nombre_mois: paiement.transport_nombre_mois ?? 1,
   tarif_mensuel_transport: paiement.tarif_mensuel_transport ?? '',
-  
+
   description: paiement.description ?? '',
 })
 

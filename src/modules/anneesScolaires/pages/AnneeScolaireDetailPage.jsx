@@ -185,7 +185,7 @@ const AnneeScolaireDetailPage = () => {
             Retour aux annees scolaires
           </Link>
           <h1>Detail de l annee scolaire #{id}</h1>
-          
+
         </div>
       </header>
 
