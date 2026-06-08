@@ -434,6 +434,15 @@ const DepenseDetailPage = () => {
                   <DetailField label='Annee scolaire' value={getDesignation(anneeScolaire, `Annee #${depense.annee_scolaire_id || '-'}`)} />
                   <DetailField label='Montant' value={formatAmount(getDepenseMontant(depense))} />
                   <DetailField label='Motif' value={depense.motif || depense.type} />
+                  {(depense.mode_paiement || depense.modePaiement || depense.mode) === 'CHEQUE' && (
+                    <>
+                      <DetailField label='Numero du cheque' value={depense.numero_cheque || depense.numeroCheque} />
+                      <DetailField label='Banque du cheque' value={depense.banque_cheque || depense.banqueCheque} />
+                      <DetailField label='Titulaire du compte' value={depense.titulaire_compte_cheque || depense.titulaireCompteCheque} />
+                      <DetailField label='Date du cheque' value={formatDate(depense.date_cheque || depense.dateCheque)} />
+                      <DetailField label='Statut du cheque' value={<StatusBadge value={depense.statut_cheque || depense.statutCheque} />} />
+                    </>
+                  )}
                   <DetailField label='Date de sortie' value={formatDate(getDepenseDate(depense))} />
                   <DetailField label='Reference externe' value={depense.reference || depense.transaction_reference} />
                   <DetailField label='Statut' value={<StatusBadge value={status} />} />

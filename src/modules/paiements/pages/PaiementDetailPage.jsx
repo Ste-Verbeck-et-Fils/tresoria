@@ -417,6 +417,15 @@ const PaiementDetailPage = () => {
                   <DetailField label='Montant' value={formatAmount(getPaiementMontant(paiement))} />
                   <DetailField label='Motif' value={getPaiementMotifLabel(paiement.motif || paiement.type)} />
                   <DetailField label='Mode' value={getPaiementModeLabel(paiement.mode_paiement || paiement.modePaiement || paiement.mode)} />
+                  {(paiement.mode_paiement || paiement.modePaiement || paiement.mode) === 'CHEQUE' && (
+                    <>
+                      <DetailField label='Numero du cheque' value={paiement.numero_cheque || paiement.numeroCheque} />
+                      <DetailField label='Banque du cheque' value={paiement.banque_cheque || paiement.banqueCheque} />
+                      <DetailField label='Titulaire du compte' value={paiement.titulaire_compte_cheque || paiement.titulaireCompteCheque} />
+                      <DetailField label='Date du cheque' value={formatDate(paiement.date_cheque || paiement.dateCheque)} />
+                      <DetailField label='Statut du cheque' value={<StatusBadge value={paiement.statut_cheque || paiement.statutCheque} />} />
+                    </>
+                  )}
                   <DetailField label='Reference externe' value={paiement.reference || paiement.transaction_reference} />
                 </>
                 )}
