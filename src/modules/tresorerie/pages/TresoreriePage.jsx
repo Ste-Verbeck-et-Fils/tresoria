@@ -5,12 +5,7 @@ import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
 import { getAnneesScolaires } from '../../../services/anneeScolaireService'
-import {
-  getTresorerie,
-  getTresorerieAnneeScolaire,
-  getTresoreriePeriode,
-  getTresorerieResume,
-} from '../../../services/tresorerieService'
+import { getTresorerieDashboard } from '../../../services/tresorerieService'
 import DetailField from '../../inscriptions/components/DetailField'
 import DetailSection from '../../inscriptions/components/DetailSection'
 import ModuleState from '../../inscriptions/components/ModuleState'
@@ -22,11 +17,8 @@ import {
   formatDateForApi,
 } from '../../inscriptions/utils/data'
 import {
-
   DEFAULT_TRESORERIE_FILTERS,
-  getTresorerieFilterMode,
   getTresorerieScopeLabel,
-  getTresorerieSummary,
   validateTresorerieFilters,
 } from '../utils/tresorerie'
 
@@ -35,76 +27,42 @@ const TresoreriePage = () => {
   const [anneesScolaires, setAnneesScolaires] = useState([])
   const [draftFilters, setDraftFilters] = useState(DEFAULT_TRESORERIE_FILTERS)
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_TRESORERIE_FILTERS)
-  const [tresorerie, setTresorerie] = useState(null)
-  const [resume, setResume] = useState(null)
+  
+  const [dashboardData, setDashboardData] = useState(null)
+  
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadingOptions, setIsLoadingOptions] = useState(true)
   const [loadError, setLoadError] = useState('')
-  const [resumeError, setResumeError] = useState('')
   const [optionsError, setOptionsError] = useState('')
   const [filterError, setFilterError] = useState('')
   const [isForbidden, setIsForbidden] = useState(false)
   const [forbiddenMessage, setForbiddenMessage] = useState('')
 
-  const loadCurrentTresorerie = useCallback(() => {
-    const mode = getTresorerieFilterMode(appliedFilters)
-
-    if (mode === 'periode') {
-      return getTresoreriePeriode({
-        start_date: formatDateForApi(appliedFilters.start_date),
-        end_date: formatDateForApi(appliedFilters.end_date),
-      })
-    }
-
-    if (mode === 'annee') {
-      return getTresorerieAnneeScolaire(appliedFilters.annee_scolaire_id)
-    }
-
-    return getTresorerie()
-  }, [appliedFilters])
-
   const loadDashboard = useCallback(async () => {
     setIsLoading(true)
     setLoadError('')
-    setResumeError('')
     setIsForbidden(false)
     setForbiddenMessage('')
 
-    const [tresorerieResult, resumeResult] = await Promise.allSettled([
-      loadCurrentTresorerie(),
-      getTresorerieResume(),
-    ])
+    try {
+      const params = {}
+      if (appliedFilters.annee_scolaire_id) params.anneeScolaireId = appliedFilters.annee_scolaire_id
+      if (appliedFilters.start_date) params.dateDebut = formatDateForApi(appliedFilters.start_date)
+      if (appliedFilters.end_date) params.dateFin = formatDateForApi(appliedFilters.end_date)
 
-    let hasForbidden = false
-
-    if (tresorerieResult.status === 'rejected' && tresorerieResult.reason?.status === 403) {
-      hasForbidden = true
-      setForbiddenMessage(tresorerieResult.reason.message || 'Accès refusé.')
-    } else if (resumeResult.status === 'rejected' && resumeResult.reason?.status === 403) {
-      hasForbidden = true
-      setForbiddenMessage(resumeResult.reason.message || 'Accès refusé.')
-    }
-
-    if (hasForbidden) {
-      setIsForbidden(true)
+      const payload = await getTresorerieDashboard(params)
+      setDashboardData(payload.data)
+    } catch (error) {
+      if (error.status === 403) {
+        setIsForbidden(true)
+        setForbiddenMessage(error.message || 'Accès refusé.')
+      } else {
+        setLoadError(error.message || 'Impossible de charger la tresorerie.')
+      }
+    } finally {
       setIsLoading(false)
-      return
     }
-
-    if (tresorerieResult.status === 'fulfilled') {
-      setTresorerie(tresorerieResult.value)
-    } else {
-      setLoadError(tresorerieResult.reason?.message || 'Impossible de charger la tresorerie.')
-    }
-
-    if (resumeResult.status === 'fulfilled') {
-      setResume(resumeResult.value)
-    } else {
-      setResumeError(resumeResult.reason?.message || 'Impossible de charger le resume global.')
-    }
-
-    setIsLoading(false)
-  }, [loadCurrentTresorerie])
+  }, [appliedFilters])
 
   const loadAnnees = useCallback(async () => {
     setIsLoadingOptions(true)
@@ -121,81 +79,12 @@ const TresoreriePage = () => {
   }, [])
 
   useEffect(() => {
-    let isCancelled = false
-
-    setIsLoading(true)
-    setIsForbidden(false)
-    setLoadError('')
-    setResumeError('')
-
-    Promise.allSettled([
-      loadCurrentTresorerie(),
-      getTresorerieResume(),
-    ]).then(([tresorerieResult, resumeResult]) => {
-      if (isCancelled) {
-        return
-      }
-
-      let hasForbidden = false
-
-      if (tresorerieResult.status === 'rejected' && tresorerieResult.reason?.status === 403) {
-        hasForbidden = true
-        setForbiddenMessage(tresorerieResult.reason.message || 'Accès refusé.')
-      } else if (resumeResult.status === 'rejected' && resumeResult.reason?.status === 403) {
-        hasForbidden = true
-        setForbiddenMessage(resumeResult.reason.message || 'Accès refusé.')
-      }
-
-      if (hasForbidden) {
-        setIsForbidden(true)
-        setIsLoading(false)
-        return
-      }
-
-      if (tresorerieResult.status === 'fulfilled') {
-        setTresorerie(tresorerieResult.value)
-      } else {
-        setLoadError(tresorerieResult.reason?.message || 'Impossible de charger la tresorerie.')
-      }
-
-      if (resumeResult.status === 'fulfilled') {
-        setResume(resumeResult.value)
-      } else {
-        setResumeError(resumeResult.reason?.message || 'Impossible de charger le resume global.')
-      }
-
-      setIsLoading(false)
-    })
-
-    return () => {
-      isCancelled = true
-    }
-  }, [loadCurrentTresorerie])
+    loadDashboard()
+  }, [loadDashboard])
 
   useEffect(() => {
-    let isCancelled = false
-
-    getAnneesScolaires()
-      .then((payload) => {
-        if (!isCancelled) {
-          setAnneesScolaires(normalizeCollection(payload))
-        }
-      })
-      .catch((error) => {
-        if (!isCancelled) {
-          setOptionsError(error.message || 'Impossible de charger les annees scolaires.')
-        }
-      })
-      .finally(() => {
-        if (!isCancelled) {
-          setIsLoadingOptions(false)
-        }
-      })
-
-    return () => {
-      isCancelled = true
-    }
-  }, [])
+    loadAnnees()
+  }, [loadAnnees])
 
   const anneeOptions = useMemo(
     () => anneesScolaires.map((annee) => ({
@@ -205,12 +94,12 @@ const TresoreriePage = () => {
     })),
     [anneesScolaires]
   )
-  const currentSummary = useMemo(() => getTresorerieSummary(tresorerie), [tresorerie])
-  const globalSummary = useMemo(() => getTresorerieSummary(resume), [resume])
+
   const scopeLabel = useMemo(
     () => getTresorerieScopeLabel(appliedFilters, anneesScolaires),
     [anneesScolaires, appliedFilters]
   )
+
   const hasActiveFilters = Boolean(
     appliedFilters.annee_scolaire_id ||
     appliedFilters.start_date ||
@@ -255,10 +144,8 @@ const TresoreriePage = () => {
 
     setFilterError('')
     setLoadError('')
-    setResumeError('')
     setIsForbidden(false)
-    setTresorerie(null) // Clear data on new search
-    setResume(null)
+    setDashboardData(null)
     setIsLoading(true)
     setAppliedFilters({ ...draftFilters })
   }
@@ -268,29 +155,36 @@ const TresoreriePage = () => {
     setAppliedFilters(DEFAULT_TRESORERIE_FILTERS)
     setFilterError('')
     setLoadError('')
-    setResumeError('')
     setIsForbidden(false)
-    setTresorerie(null)
-    setResume(null)
+    setDashboardData(null)
     setIsLoading(true)
   }
 
-  const renderSummaryCards = (summary) => (
-    <div className='inscription-amount-grid tresorerie-amount-grid'>
-      <article className='inscription-amount-card'>
-        <span>Entrees comptabilisables</span>
-        <strong>{formatAmount(summary.entreesComptabilisables)}</strong>
-      </article>
-      <article className='inscription-amount-card'>
-        <span>Sorties confirmees</span>
-        <strong>{formatAmount(summary.sortiesConfirmees)}</strong>
-      </article>
-      <article className='inscription-amount-card inscription-amount-card--total'>
-        <span>Solde de tresorerie</span>
-        <strong>{formatAmount(summary.soldeTresorerie)}</strong>
-      </article>
-    </div>
-  )
+  const renderSummaryCards = (summary, title, subtitle) => {
+    if (!summary) return null
+    return (
+      <section className='inscription-amount-panel' style={{ marginBottom: '24px' }}>
+        <div>
+          <h2>{title}</h2>
+          {subtitle && <p>{subtitle}</p>}
+        </div>
+        <div className='inscription-amount-grid tresorerie-amount-grid'>
+          <article className='inscription-amount-card'>
+            <span>Entrées comptabilisables</span>
+            <strong>{formatAmount(summary.entreesComptabilisables)}</strong>
+          </article>
+          <article className='inscription-amount-card'>
+            <span>Sorties confirmées</span>
+            <strong>{formatAmount(summary.sortiesConfirmees)}</strong>
+          </article>
+          <article className='inscription-amount-card inscription-amount-card--total'>
+            <span>Solde de trésorerie</span>
+            <strong>{formatAmount(summary.soldeTresorerie)}</strong>
+          </article>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className='inscription-page'>
@@ -320,8 +214,7 @@ const TresoreriePage = () => {
         <div>
           <h2>Filtrer la tresorerie</h2>
           <p>
-            Filtrez la vue courante par annee scolaire ou par periode. Le resume global reste affiche
-            separement.
+            Filtrez la vue courante par annee scolaire ou par periode. Le resume global reste affiche separement.
           </p>
         </div>
 
@@ -397,7 +290,7 @@ const TresoreriePage = () => {
         <ModuleState
           type='error'
           title='Accès réservé'
-          message={forbiddenMessage || 'Vous n avez pas les permissions nécessaires pour accéder à cette ressource.'}
+          message={forbiddenMessage}
         />
       )}
 
@@ -411,37 +304,75 @@ const TresoreriePage = () => {
         />
       )}
 
-      {!isLoading && !isForbidden && !loadError && (
+      {!isLoading && !isForbidden && !loadError && dashboardData && (
         <div className='detail-page-stack'>
-          <section className='inscription-amount-panel'>
-            <div>
-              <h2>Vue courante</h2>
-              <p>{scopeLabel}</p>
-            </div>
+          {/* Vue Courante */}
+          {renderSummaryCards(dashboardData.vueCourante, 'Vue courante', scopeLabel)}
 
-            {renderSummaryCards(currentSummary)}
-          </section>
+          {/* Résumé Global */}
+          {renderSummaryCards(dashboardData.resumeGlobal, 'Résumé global', 'Toutes les années et périodes confondues')}
 
-          <DetailSection title='Resume global'>
-            {resumeError && !isForbidden && (
-              <div className='inscription-detail-field inscription-detail-field--wide inscription-solde-error'>
-                <dt>Erreur resume</dt>
-                <dd>{resumeError}</dd>
-              </div>
-            )}
-            <DetailField
-              label='Entrees comptabilisables'
-              value={formatAmount(globalSummary.entreesComptabilisables)}
-            />
-            <DetailField
-              label='Sorties confirmees'
-              value={formatAmount(globalSummary.sortiesConfirmees)}
-            />
-            <DetailField
-              label='Solde de tresorerie'
-              value={formatAmount(globalSummary.soldeTresorerie)}
-            />
+          {/* Soldes réels disponibles */}
+          <DetailSection title='Soldes réels disponibles' description='Montants réellement disponibles en possession de l école.'>
+            <DetailField label='Caisse' value={formatAmount(dashboardData.soldesReels.caisse)} />
+            <DetailField label='Mobile Money' value={formatAmount(dashboardData.soldesReels.mobileMoney)} />
+            <DetailField label='Banque' value={formatAmount(dashboardData.soldesReels.banque)} />
+            <DetailField label='Solde disponible' value={formatAmount(dashboardData.soldesReels.soldeDisponible)} className='inscription-detail-field--highlight' />
+            <DetailField label='Chèques en attente' value={formatAmount(dashboardData.soldesReels.chequesEnAttente)} />
           </DetailSection>
+
+          {/* Chèques */}
+          <DetailSection title='État des chèques'>
+            <DetailField label='Entrées (Chèques reçus en attente)' value={formatAmount(dashboardData.cheques.entreesChequesEnAttente)} />
+            <DetailField label='Sorties (Chèques émis en attente)' value={formatAmount(dashboardData.cheques.sortiesChequesEnAttente)} />
+            <DetailField label='Total chèques en attente' value={formatAmount(dashboardData.cheques.totalChequesEnAttente)} />
+            <DetailField label='Chèques encaissés' value={formatAmount(dashboardData.cheques.chequesEncaisses)} />
+            <DetailField label='Chèques rejetés' value={formatAmount(dashboardData.cheques.chequesRejetes)} />
+            <DetailField label='Chèques annulés' value={formatAmount(dashboardData.cheques.chequesAnnules)} />
+          </DetailSection>
+
+          {/* Transport */}
+          <DetailSection title='Résumé Transport'>
+            <DetailField label='Entrées transport' value={formatAmount(dashboardData.transport.entreesTransport)} />
+            <DetailField label='Sorties transport' value={formatAmount(dashboardData.transport.sortiesTransport)} />
+            <DetailField label='Solde transport' value={formatAmount(dashboardData.transport.soldeTransport)} className='inscription-detail-field--highlight' />
+            
+            <div className='inscription-detail-field inscription-detail-field--wide' style={{ marginTop: '16px' }}>
+              <dt>Détail des sorties transport</dt>
+              <dd>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Chauffeur:</span> <strong>{formatAmount(dashboardData.transport.detailsSorties.chauffeur)}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Carburant:</span> <strong>{formatAmount(dashboardData.transport.detailsSorties.carburant)}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Entretien:</span> <strong>{formatAmount(dashboardData.transport.detailsSorties.entretienBusScolaire)}</strong>
+                  </div>
+                </div>
+              </dd>
+            </div>
+          </DetailSection>
+
+          {/* Entrées par catégorie */}
+          {dashboardData.entreesParCategorie && dashboardData.entreesParCategorie.length > 0 && (
+            <DetailSection title='Entrées par catégorie'>
+              {dashboardData.entreesParCategorie.map((item, index) => (
+                <DetailField key={index} label={item.categorie} value={formatAmount(item.montant)} />
+              ))}
+            </DetailSection>
+          )}
+
+          {/* Sorties par catégorie */}
+          {dashboardData.sortiesParCategorie && dashboardData.sortiesParCategorie.length > 0 && (
+            <DetailSection title='Sorties par catégorie'>
+              {dashboardData.sortiesParCategorie.map((item, index) => (
+                <DetailField key={index} label={item.categorie} value={formatAmount(item.montant)} />
+              ))}
+            </DetailSection>
+          )}
+
         </div>
       )}
     </section>

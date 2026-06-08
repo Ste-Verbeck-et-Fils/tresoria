@@ -24,3 +24,9 @@ export const getTresorerieResume = () => getData(api.get('/api/tresorerie/resume
 export const getRapportFinancierAnneeScolaire = (anneeScolaireId) => (
   getData(api.get(`/api/tresorerie/rapport/annee-scolaire/${anneeScolaireId}`))
 )
+
+export const getTresorerieDashboard = (params = {}) => {
+  return getData(api.get('/api/tresorerie/dashboard', {
+    params: cleanParams(params),
+  }))
+}
