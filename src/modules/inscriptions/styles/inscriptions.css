@@ -654,6 +654,45 @@
   border-top: 1px solid #edf0f4;
 }
 
+.cheque-status-dialog-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.32);
+}
+
+.cheque-status-dialog {
+  display: flex;
+  width: min(100%, 620px);
+  max-height: calc(100vh - 36px);
+  overflow-y: auto;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid #edf0f4;
+  border-radius: 9px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+}
+
+.cheque-status-dialog__header h2 {
+  margin: 0;
+  color: var(--inscription-accent);
+  font-size: 1.05rem;
+}
+
+.cheque-status-dialog__summary {
+  padding-top: 0;
+}
+
+.cheque-status-dialog__actions {
+  margin-top: 0;
+}
+
 .inscription-action {
   min-height: 42px;
   border-radius: 8px;

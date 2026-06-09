@@ -91,7 +91,7 @@ const DepenseDetailPage = () => {
       setAnneeScolaire(bundle.anneeScolaire)
       applyAnneesPayload(anneesPayload)
     } catch (error) {
-      setLoadError(error.message || 'Impossible de charger cette depense.')
+      setLoadError(error.message || 'Impossible de charger cette sortie.')
     } finally {
       setIsLoading(false)
     }
@@ -121,7 +121,7 @@ const DepenseDetailPage = () => {
       })
       .catch((error) => {
         if (!isCancelled) {
-          setLoadError(error.message || 'Impossible de charger cette depense.')
+          setLoadError(error.message || 'Impossible de charger cette sortie.')
         }
       })
       .finally(() => {
@@ -153,7 +153,7 @@ const DepenseDetailPage = () => {
         label: getAnneeScolaireOptionLabel(annee),
         searchText: annee.statut || annee.status || '',
         disabled: isClosed,
-        disabledReason: isClosed ? 'Depense interdite : annee scolaire cloturee' : '',
+        disabledReason: isClosed ? 'Sortie interdite : annee scolaire cloturee' : '',
       }
     }),
     [anneesScolaires]
@@ -203,16 +203,16 @@ const DepenseDetailPage = () => {
     try {
       await updateDepense(id, getDepensePayload(editForm))
       setIsEditing(false)
-      await refreshAfterMutation('Depense modifiee avec succes.')
+      await refreshAfterMutation('Sortie modifiée avec succes.')
     } catch (error) {
-      setFeedback({ type: 'error', message: error.message || 'Impossible de modifier cette depense.' })
+      setFeedback({ type: 'error', message: error.message || 'Impossible de modifier cette sortie.' })
     } finally {
       setIsSaving(false)
     }
   }
 
   const handleAnnuler = async () => {
-    const isConfirmed = window.confirm(`Annuler la depense #${id} ?`)
+    const isConfirmed = window.confirm(`Annuler la sortie #${id} ?`)
 
     if (!isConfirmed) {
       return
@@ -223,16 +223,16 @@ const DepenseDetailPage = () => {
 
     try {
       await annulerDepense(id)
-      await refreshAfterMutation('Depense annulee avec succes.')
+      await refreshAfterMutation('Sortie annulée avec succes.')
     } catch (error) {
-      setFeedback({ type: 'error', message: error.message || 'Impossible d annuler cette depense.' })
+      setFeedback({ type: 'error', message: error.message || 'Impossible d annuler cette sortie.' })
     } finally {
       setIsCancelling(false)
     }
   }
 
   const handleDelete = async () => {
-    const isConfirmed = window.confirm(`Supprimer la depense #${id} ? Cette action est irreversible.`)
+    const isConfirmed = window.confirm(`Supprimer la sortie #${id} ? Cette action est irreversible.`)
 
     if (!isConfirmed) {
       return
@@ -245,10 +245,10 @@ const DepenseDetailPage = () => {
       await deleteDepense(id)
       navigate('/depenses', {
         replace: true,
-        state: { successMessage: 'Depense supprimee avec succes.' },
+        state: { successMessage: 'Sortie supprimée avec succes.' },
       })
     } catch (error) {
-      setFeedback({ type: 'error', message: error.message || 'Impossible de supprimer cette depense.' })
+      setFeedback({ type: 'error', message: error.message || 'Impossible de supprimer cette sortie.' })
     } finally {
       setIsDeleting(false)
     }
@@ -260,9 +260,9 @@ const DepenseDetailPage = () => {
         <div>
           <Link to='/depenses' className='inscription-back-link'>
             <ArrowLeft size={16} />
-            Retour aux depenses
+            Retour aux sorties
           </Link>
-          <h1>Detail de la depense #{id}</h1>
+          <h1>Detail de la sortie #{id}</h1>
           
         </div>
       </header>
@@ -277,7 +277,7 @@ const DepenseDetailPage = () => {
         />
       )}
 
-      {isLoading && <Loader message='Chargement de la depense...' />}
+      {isLoading && <Loader message='Chargement de la sortie...' />}
 
       {!isLoading && loadError && (
         <ModuleState
@@ -293,14 +293,14 @@ const DepenseDetailPage = () => {
         <div className='detail-page-stack'>
           <DetailSummaryCard
             icon={<FileText size={36} aria-hidden='true' />}
-            title={`Depense #${depense.id || id}`}
+            title={`Sortie #${depense.id || id}`}
             subtitle={formatAmount(getDepenseMontant(depense))}
             meta={getDesignation(anneeScolaire, `Annee #${depense.annee_scolaire_id || '-'}`)}
             badge={<StatusBadge value={status} />}
           />
 
           <DetailSection
-            title='Informations de la depense'
+            title='Informations de la sortie'
             actions={(
               isEditing
                 ? (
@@ -360,7 +360,7 @@ const DepenseDetailPage = () => {
                   {isSelectedEditAnneeClosed && (
                     <div className='inscription-detail-field inscription-detail-field--wide inscription-solde-error'>
                       <dt>Annee cloturee</dt>
-                      <dd>Depense interdite : l annee scolaire selectionnee est cloturee.</dd>
+                      <dd>Sortie interdite : l annee scolaire selectionnee est cloturee.</dd>
                     </div>
                   )}
                   <div className='inscription-detail-field inscription-detail-field--editing'>
@@ -391,7 +391,7 @@ const DepenseDetailPage = () => {
                     </dd>
                   </div>
                   <div className='inscription-detail-field inscription-detail-field--editing'>
-                    <dt>Date de depense</dt>
+                    <dt>Date de sortie</dt>
                     <dd>
                       <Input
                         id='date_depense'
@@ -434,7 +434,16 @@ const DepenseDetailPage = () => {
                   <DetailField label='Annee scolaire' value={getDesignation(anneeScolaire, `Annee #${depense.annee_scolaire_id || '-'}`)} />
                   <DetailField label='Montant' value={formatAmount(getDepenseMontant(depense))} />
                   <DetailField label='Motif' value={depense.motif || depense.type} />
-                  <DetailField label='Date de depense' value={formatDate(getDepenseDate(depense))} />
+                  {(depense.mode_paiement || depense.modePaiement || depense.mode) === 'CHEQUE' && (
+                    <>
+                      <DetailField label='Numero du cheque' value={depense.numero_cheque || depense.numeroCheque} />
+                      <DetailField label='Banque du cheque' value={depense.banque_cheque || depense.banqueCheque} />
+                      <DetailField label='Titulaire du compte' value={depense.titulaire_compte_cheque || depense.titulaireCompteCheque} />
+                      <DetailField label='Date du cheque' value={formatDate(depense.date_cheque || depense.dateCheque)} />
+                      <DetailField label='Statut du cheque' value={<StatusBadge value={depense.statut_cheque || depense.statutCheque} />} />
+                    </>
+                  )}
+                  <DetailField label='Date de sortie' value={formatDate(getDepenseDate(depense))} />
                   <DetailField label='Reference externe' value={depense.reference || depense.transaction_reference} />
                   <DetailField label='Statut' value={<StatusBadge value={status} />} />
                   <DetailField label='Description' value={depense.description || depense.observation} />
@@ -449,7 +458,7 @@ const DepenseDetailPage = () => {
                 <Button
                   type='button'
                   variant='ghost'
-                  label={isCancelling ? 'Annulation...' : 'Annuler la depense'}
+                  label={isCancelling ? 'Annulation...' : 'Annuler la sortie'}
                   icon={<Ban size={16} />}
                   loading={isCancelling}
                   disabled={isEditing || isDeleting || isDepenseCancelled}

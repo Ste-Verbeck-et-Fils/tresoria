@@ -43,7 +43,7 @@ const StudentsPage = () => {
       ].join(' ')}
       extraActions={(item) => (
         <Link to={`/students/${item.id}/paiements`} style={{ padding: '10px 16px', textDecoration: 'none', color: '#173f5f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px', borderTop: '1px solid #f3f4f6' }}>
-          <CreditCard size={16} /> Paiements
+          <CreditCard size={16} /> Entrées
         </Link>
       )}
       successMessage={location.state?.successMessage}

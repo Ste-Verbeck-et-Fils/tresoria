@@ -25,6 +25,8 @@ export const createParentPaiement = (payload) => getData(api.post('/api/paiement
 
 export const updatePaiement = (id, payload) => getData(api.patch(`/api/paiements/${id}`, payload))
 
+export const updatePaiementStatutCheque = (id, payload) => getData(api.patch(`/api/paiements/${id}/statut-cheque`, payload))
+
 export const annulerPaiement = (id) => getData(api.patch(`/api/paiements/${id}/annuler`))
 
 export const deletePaiement = (id) => getData(api.delete(`/api/paiements/${id}`))

@@ -1,14 +1,16 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { RefreshCw } from 'lucide-react'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
 import { getAnneesScolaires } from '../../../services/anneeScolaireService'
 import { getClasses } from '../../../services/classeService'
 import { getInscriptions } from '../../../services/inscriptionService'
-import { getPaiements } from '../../../services/paiementService'
+import { getPaiements, updatePaiementStatutCheque } from '../../../services/paiementService'
 import { getStudents } from '../../../services/studentService'
+import DetailField from '../../inscriptions/components/DetailField'
 import EntityListPage from '../../inscriptions/components/EntityListPage'
 import SearchableSelectField from '../../inscriptions/components/SearchableSelectField'
 import SelectField from '../../inscriptions/components/SelectField'
@@ -38,8 +40,25 @@ import {
   hasActivePaiementFilters,
   MODE_PAIEMENT_OPTIONS,
   MOTIF_PAIEMENT_OPTIONS,
+  STATUT_CHEQUE_PAIEMENT_OPTIONS,
   STATUT_PAIEMENT_OPTIONS,
 } from '../utils/paiement'
+
+const actionMenuButtonStyle = {
+  width: '100%',
+  padding: '10px 16px',
+  border: 0,
+  borderTop: '1px solid #f3f4f6',
+  background: 'white',
+  color: '#173f5f',
+  fontFamily: 'var(--font-primary)',
+  fontSize: '0.9rem',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  cursor: 'pointer',
+  textAlign: 'left',
+}
 
 const columns = [
   { label: 'Reference', render: (item) => `#${item.id}` },
@@ -87,6 +106,13 @@ const PaiementsPage = () => {
   const [isLoadingOptions, setIsLoadingOptions] = useState(true)
   const [optionsError, setOptionsError] = useState('')
   const [filterError, setFilterError] = useState('')
+  const [refreshNonce, setRefreshNonce] = useState(0)
+  const [chequeStatusModal, setChequeStatusModal] = useState({
+    item: null,
+    nextStatus: 'RECU',
+    feedback: '',
+    isSaving: false,
+  })
 
   const applyOptionsResults = useCallback((inscriptionsResult, studentsResult, classesResult, anneesResult) => {
     if (inscriptionsResult.status === 'fulfilled') {
@@ -157,7 +183,7 @@ const PaiementsPage = () => {
 
   const loadPaiements = useCallback(() => {
     return getPaiements(getPaiementFilterParams(appliedFilters))
-  }, [appliedFilters])
+  }, [appliedFilters, refreshNonce])
 
   const inscriptionOptions = useMemo(
     () => inscriptions.map((inscription) => ({
@@ -228,13 +254,96 @@ const PaiementsPage = () => {
   const hasDraftFilters = hasActivePaiementFilters(draftFilters)
   const hasAppliedFilters = hasActivePaiementFilters(appliedFilters)
 
+  const openChequeStatusModal = (item) => {
+    setChequeStatusModal({
+      item,
+      nextStatus: item.statut_cheque || 'RECU',
+      feedback: '',
+      isSaving: false,
+    })
+  }
+
+  const closeChequeStatusModal = () => {
+    if (chequeStatusModal.isSaving) {
+      return
+    }
+
+    setChequeStatusModal({
+      item: null,
+      nextStatus: 'RECU',
+      feedback: '',
+      isSaving: false,
+    })
+  }
+
+  const handleChequeStatusChange = (event) => {
+    setChequeStatusModal((current) => ({
+      ...current,
+      nextStatus: event.target.value,
+      feedback: '',
+    }))
+  }
+
+  const handleSaveChequeStatus = async (event) => {
+    event.preventDefault()
+
+    if (!chequeStatusModal.item) {
+      return
+    }
+
+    setChequeStatusModal((current) => ({ ...current, feedback: '', isSaving: true }))
+
+    try {
+      await updatePaiementStatutCheque(chequeStatusModal.item.id, {
+        statut_cheque: chequeStatusModal.nextStatus,
+      })
+      setRefreshNonce((value) => value + 1)
+      setChequeStatusModal({
+        item: null,
+        nextStatus: 'RECU',
+        feedback: '',
+        isSaving: false,
+      })
+    } catch (error) {
+      setChequeStatusModal((current) => ({
+        ...current,
+        feedback: error.message || 'Impossible de changer le statut du cheque.',
+        isSaving: false,
+      }))
+    }
+  }
+
+  const renderChequeAction = (item, actionContext = {}) => {
+    const modePaiement = item.mode_paiement || item.modePaiement || item.mode
+
+    if (modePaiement !== 'CHEQUE') {
+      return null
+    }
+
+    return (
+      <button
+        type='button'
+        style={actionMenuButtonStyle}
+        onClick={() => {
+          actionContext.closeMenu?.()
+          openChequeStatusModal(item)
+        }}
+      >
+        <RefreshCw size={16} />
+        Changer statut du chèque
+      </button>
+    )
+  }
+
+  const chequeStatusItem = chequeStatusModal.item
+
   const filterPanel = (
     <section className='module-filter-panel paiement-filter-panel'>
       <div>
-        <h2>Filtrer les paiements</h2>
+        <h2>Filtrer les entrées</h2>
         <p>
-          Affichez tous les paiements ou limitez les resultats par statut, motif, mode, periode,
-          inscription, eleve, classe, annee scolaire ou reference.
+          Affichez toutes les entrées ou limitez les résultats par statut, motif, mode, période,
+          inscription, élève, classe, année scolaire ou référence.
         </p>
       </div>
 
@@ -382,21 +491,71 @@ const PaiementsPage = () => {
   )
 
   return (
-    <EntityListPage
+    <>
+      <EntityListPage
       isLoadingDependencies={isLoadingOptions}
-      title='Paiements'
-      description='Consultez les paiements, filtrez les resultats et suivez leur statut.'
+      title='Entrées'
+      description='Consultez les entrées, filtrez les résultats et suivez leur statut.'
       loadItems={loadPaiements}
       columns={columns}
-      emptyMessage='Aucun paiement enregistre.'
+      emptyMessage='Aucune entrée enregistrée.'
       createPath='/paiements/create'
-      createLabel='Nouveau paiement'
+      createLabel='Nouvelle entrée'
       getRowPath={(item) => `/paiements/${item.id}`}
-      searchPlaceholder='Recherche rapide dans les paiements affiches'
+      searchPlaceholder='Recherche rapide dans les entrées affichées'
       getSearchText={getPaiementSearchText}
       successMessage={location.state?.successMessage}
       beforePanel={filterPanel}
-    />
+      extraActions={renderChequeAction}
+      />
+
+      {chequeStatusItem && (
+        <div className='cheque-status-dialog-backdrop' role='presentation'>
+          <form className='cheque-status-dialog' onSubmit={handleSaveChequeStatus}>
+            <header className='cheque-status-dialog__header'>
+              <h2>Changer statut du chèque</h2>
+            </header>
+
+            {chequeStatusModal.feedback && (
+              <Feedback type='error' message={chequeStatusModal.feedback} />
+            )}
+
+            <dl className='inscription-detail-grid cheque-status-dialog__summary'>
+              <DetailField label='Numéro du chèque' value={chequeStatusItem.numero_cheque || '-'} />
+              <DetailField label='Montant' value={formatAmount(getPaiementMontant(chequeStatusItem))} />
+              <DetailField label='Statut actuel' value={<StatusBadge value={chequeStatusItem.statut_cheque || '-'} />} />
+            </dl>
+
+            <SelectField
+              id='paiement_statut_cheque'
+              label='Nouveau statut'
+              value={chequeStatusModal.nextStatus}
+              options={STATUT_CHEQUE_PAIEMENT_OPTIONS}
+              disabled={chequeStatusModal.isSaving}
+              onChange={handleChequeStatusChange}
+            />
+
+            <div className='inscription-form-actions cheque-status-dialog__actions'>
+              <Button
+                type='button'
+                variant='ghost'
+                label='Annuler'
+                disabled={chequeStatusModal.isSaving}
+                onClick={closeChequeStatusModal}
+                className='inscription-action inscription-action--secondary'
+              />
+              <Button
+                type='submit'
+                variant='super'
+                label={chequeStatusModal.isSaving ? 'Enregistrement...' : 'Enregistrer'}
+                loading={chequeStatusModal.isSaving}
+                className='inscription-action inscription-action--primary'
+              />
+            </div>
+          </form>
+        </div>
+      )}
+    </>
   )
 }
 

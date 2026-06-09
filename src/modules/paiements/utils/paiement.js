@@ -11,21 +11,77 @@ import { formatAmount } from '../../inscriptions/utils/amounts'
 
 export const MOTIF_PAIEMENT_OPTIONS = [
   { value: 'FRAIS_SCOLAIRE', label: 'Frais scolaire' },
-  { value: 'FRAIS_TRANSPORT', label: 'Frais transport' },
-  { value: 'FRAIS_ETAT', label: 'Frais Etat' },
-  { value: 'FRAIS_ETUDE', label: 'Frais etude' },
+  { value: 'FRAIS_ETUDE', label: 'Frais d\'étude' },
+  { value: 'FRAIS_ETAT', label: 'Frais de l\'État' },
+  { value: 'FRAIS_TRANSPORT', label: 'Frais de transport' },
+  { value: 'AUTRE', label: 'Autres' },
 ]
 
 export const MODE_PAIEMENT_OPTIONS = [
   { value: 'CASH', label: 'Cash' },
-  { value: 'MOBILE_MONEY', label: 'Mobile money' },
-  { value: 'BANQUE', label: 'Banque' },
+  { value: 'MOBILE_MONEY', label: 'Mobile Money' },
+  { value: 'CHEQUE', label: 'Chèque' },
 ]
 
 export const STATUT_PAIEMENT_OPTIONS = [
   { value: 'EN_ATTENTE', label: 'En attente' },
   { value: 'CONFIRME', label: 'Confirme' },
   { value: 'ANNULE', label: 'Annule' },
+]
+
+export const STATUT_CHEQUE_PAIEMENT_OPTIONS = [
+  { value: 'RECU', label: 'Reçu' },
+  { value: 'ENCAISSE', label: 'Encaissé' },
+  { value: 'ANNULE', label: 'Annulé' },
+  { value: 'REJETE', label: 'Rejeté' },
+]
+
+export const COMPTE_ENTREE_OPTIONS = [
+  { value: 'CAISSE_PRINCIPALE', label: 'Caisse principale' },
+  { value: 'BANQUE_PRINCIPALE', label: 'Banque principale' },
+  { value: 'MOBILE_MONEY', label: 'Mobile Money' },
+  { value: 'CAISSE_TRANSPORT', label: 'Caisse transport' },
+]
+
+export const getCompteDestinationByMotif = (motif) => {
+  switch (motif) {
+    case 'FRAIS_TRANSPORT':
+      return 'Transport'
+    case 'FRAIS_SCOLAIRE':
+    case 'FRAIS_ETUDE':
+      return 'Frais scolaire / Frais d\'étude'
+    case 'FRAIS_DIVERS':
+      return 'Frais divers'
+    case 'FRAIS_ETAT':
+      return 'Frais d\'État'
+    case 'VENTE':
+      return 'Vente'
+    case 'AUTRE':
+    default:
+      return 'Autre'
+  }
+}
+
+export const MOIS_OPTIONS = [
+  { value: 'Janvier', label: 'Janvier' },
+  { value: 'Février', label: 'Février' },
+  { value: 'Mars', label: 'Mars' },
+  { value: 'Avril', label: 'Avril' },
+  { value: 'Mai', label: 'Mai' },
+  { value: 'Juin', label: 'Juin' },
+  { value: 'Juillet', label: 'Juillet' },
+  { value: 'Août', label: 'Août' },
+  { value: 'Septembre', label: 'Septembre' },
+  { value: 'Octobre', label: 'Octobre' },
+  { value: 'Novembre', label: 'Novembre' },
+  { value: 'Décembre', label: 'Décembre' },
+]
+
+const currentYear = new Date().getFullYear()
+export const ANNEE_OPTIONS = [
+  { value: String(currentYear - 1), label: String(currentYear - 1) },
+  { value: String(currentYear), label: String(currentYear) },
+  { value: String(currentYear + 1), label: String(currentYear + 1) },
 ]
 
 export const DEFAULT_PAIEMENT_FILTERS = {
@@ -47,6 +103,20 @@ export const normalizePaiementForm = (paiement = {}) => ({
   motif: paiement.motif || paiement.type || 'FRAIS_SCOLAIRE',
   mode_paiement: paiement.mode_paiement || paiement.modePaiement || paiement.mode || 'CASH',
   reference: paiement.reference || paiement.transaction_reference || '',
+  compte_destination_id: paiement.compte_destination_id ?? 'CAISSE_PRINCIPALE',
+  date_paiement: paiement.date_paiement ?? new Date().toISOString().split('T')[0],
+  numero_cheque: paiement.numero_cheque || paiement.numeroCheque || '',
+  banque_cheque: paiement.banque_cheque || paiement.banqueCheque || '',
+  titulaire_compte_cheque: paiement.titulaire_compte_cheque || paiement.titulaireCompteCheque || '',
+  date_cheque: paiement.date_cheque ? String(paiement.date_cheque).slice(0, 10) : '',
+  statut_cheque: paiement.statut_cheque || paiement.statutCheque || 'RECU',
+  
+  // Transport fields
+  transport_date_debut: paiement.transport_date_debut ?? '',
+  transport_nombre_mois: paiement.transport_nombre_mois ?? 1,
+  tarif_mensuel_transport: paiement.tarif_mensuel_transport ?? '',
+  
+  description: paiement.description ?? '',
 })
 
 export const unwrapPaiement = (payload) => (
@@ -92,6 +162,8 @@ export const getPaiementDate = (paiement) => (
   paiement?.createdAt
 )
 
+export const isPaiementChequeMode = (modePaiement) => modePaiement === 'CHEQUE'
+
 export const getInscriptionOptionLabel = (inscription) => {
   const student = getInscriptionStudent(inscription)
   const classe = getInscriptionClasse(inscription)
@@ -129,16 +201,89 @@ export const validatePaiementForm = (form, selectedInscription) => {
     errors.mode_paiement = 'Selectionnez un mode de paiement.'
   }
 
+  if (!form.date_paiement) {
+    errors.date_paiement = 'La date de l\'entrée est obligatoire.'
+  }
+
+  if (isPaiementChequeMode(form.mode_paiement)) {
+    if (!form.numero_cheque.trim()) {
+      errors.numero_cheque = 'Le numero du cheque est obligatoire.'
+    }
+
+    if (!form.banque_cheque.trim()) {
+      errors.banque_cheque = 'Le nom de la banque est obligatoire.'
+    }
+
+    if (!form.date_cheque) {
+      errors.date_cheque = 'La date du cheque est obligatoire.'
+    }
+
+    if (!form.statut_cheque) {
+      errors.statut_cheque = 'Le statut du cheque est obligatoire.'
+    }
+  }
+
+  if (form.motif === 'FRAIS_TRANSPORT') {
+    if (!form.transport_date_debut) {
+      errors.transport_date_debut = 'La date de début est obligatoire.'
+    }
+    if (!form.transport_nombre_mois || form.transport_nombre_mois < 1) {
+      errors.transport_nombre_mois = 'Le nombre de mois doit être au moins 1.'
+    }
+    if (!form.tarif_mensuel_transport || form.tarif_mensuel_transport <= 0) {
+      errors.tarif_mensuel_transport = 'Le tarif mensuel est obligatoire et > 0.'
+    }
+  }
+
   return errors
 }
 
-export const getPaiementPayload = (form) => ({
-  inscription_id: Number(form.inscription_id),
-  montant: Number(form.montant),
-  motif: form.motif,
-  mode_paiement: form.mode_paiement,
-  ...(form.reference.trim() ? { reference: form.reference.trim() } : {}),
-})
+export const getPaiementPayload = (form) => {
+  const payload = {
+    inscription_id: Number(form.inscription_id),
+    montant: Number(form.montant),
+    motif: form.motif,
+    mode_paiement: form.mode_paiement,
+    date_paiement: form.date_paiement,
+    ...(form.reference.trim() ? { reference: form.reference.trim() } : {}),
+    ...(form.description?.trim() ? { description: form.description.trim() } : {}),
+    ...(form.motif === 'FRAIS_TRANSPORT'
+      ? {
+          transport_date_debut: form.transport_date_debut,
+          transport_nombre_mois: Number(form.transport_nombre_mois),
+          transport_date_fin: calculateDateFin(form.transport_date_debut, Number(form.transport_nombre_mois)),
+          tarif_mensuel_transport: Number(form.tarif_mensuel_transport),
+          montant_attendu: Number(form.transport_nombre_mois) * Number(form.tarif_mensuel_transport)
+        }
+      : {}),
+    // compte_destination_id: form.compte_destination_id, // To be enabled when backend supports it
+  }
+
+  if (!isPaiementChequeMode(form.mode_paiement)) {
+    return payload
+  }
+
+  return {
+    ...payload,
+    numero_cheque: form.numero_cheque.trim(),
+    banque_cheque: form.banque_cheque.trim(),
+    ...(form.titulaire_compte_cheque.trim()
+      ? { titulaire_compte_cheque: form.titulaire_compte_cheque.trim() }
+      : {}),
+    date_cheque: form.date_cheque,
+    statut_cheque: form.statut_cheque || 'RECU',
+  }
+}
+
+export const calculateDateFin = (dateDebut, nombreMois) => {
+  if (!dateDebut || !nombreMois || nombreMois < 1) return ''
+  const date = new Date(dateDebut)
+  // Ajoute le nombre de mois
+  date.setMonth(date.getMonth() + Number(nombreMois))
+  // Retire 1 jour
+  date.setDate(date.getDate() - 1)
+  return date.toISOString().split('T')[0]
+}
 
 export const getPaiementSearchText = (paiement) => {
   const inscription = getPaiementInscription(paiement)

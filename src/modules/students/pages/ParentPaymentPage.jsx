@@ -226,8 +226,8 @@ const ParentPaymentPage = () => {
     : 'Selectionner une inscription'
   const selectedModeLabel = MODE_OPTIONS.find((option) => option.value === modePaiement)?.label || 'Carte bancaire'
   const submitLabel = isSubmitting
-    ? 'Paiement...'
-    : 'Confirmer le paiement'
+    ? 'Entrée...'
+    : 'Confirmer l\'entrée'
 
   const handleContinue = async (event) => {
     event.preventDefault()
@@ -255,13 +255,13 @@ const ParentPaymentPage = () => {
         const secret = intentPayload?.data?.clientSecret || intentPayload?.clientSecret
         
         if (!secret) {
-          throw new Error('Impossible d\'initialiser le paiement avec Stripe.')
+          throw new Error('Impossible d\'initialiser l\'entrée avec Stripe.')
         }
         
         setClientSecret(secret)
         setStep(2)
       } catch (error) {
-        setFormError(error.message || 'Erreur lors de l\'initialisation du paiement.')
+        setFormError(error.message || 'Erreur lors de l\'initialisation de l\'entrée.')
       } finally {
         setIsSubmitting(false)
       }
@@ -281,7 +281,7 @@ const ParentPaymentPage = () => {
 
     if (modePaiement === 'BANQUE') {
       if (!stripe || !elements || !clientSecret) {
-        setFormError('L\'interface de paiement Stripe n\'est pas encore chargée.')
+        setFormError('L\'interface d\'entrée Stripe n\'est pas encore chargée.')
         return
       }
     }
@@ -316,16 +316,16 @@ const ParentPaymentPage = () => {
         montant: amount,
         motif: 'FRAIS_SCOLAIRE',
         mode_paiement: modePaiement,
-        description: `Paiement parent - ${selectedModeLabel}`,
+        description: `Entrée parent - ${selectedModeLabel}`,
         reference: reference
       })
 
       navigate(`/students/${selectedStudentId}/paiements`, {
         replace: true,
-        state: { successMessage: 'Paiement effectue avec succes.' },
+        state: { successMessage: 'Entrée effectuée avec succes.' },
       })
     } catch (error) {
-      setFormError(error.message || 'Erreur lors du traitement du paiement.')
+      setFormError(error.message || 'Erreur lors du traitement de l\'entrée.')
     } finally {
       setIsSubmitting(false)
     }
@@ -339,7 +339,7 @@ const ParentPaymentPage = () => {
     return (
       <ModuleState
         type='error'
-        title='Paiement indisponible'
+        title='Entrée indisponible'
         message={pageError}
         actionLabel='Reessayer'
         onAction={loadStudents}
@@ -447,7 +447,7 @@ const ParentPaymentPage = () => {
 
             {!isPaymentUnavailable && step === 1 && (
               <section className='student-form-section'>
-                <h2>Paiement</h2>
+                <h2>Entrée</h2>
                 <div className='inscription-form-grid'>
                   <Input
                     id='montant'
@@ -526,7 +526,7 @@ const ParentPaymentPage = () => {
 
             {!isPaymentUnavailable && step === 2 && (
               <section className='student-form-section'>
-                <h2>Interface de paiement - {selectedModeLabel}</h2>
+                <h2>Interface d'entrée - {selectedModeLabel}</h2>
                 <div style={{ marginBottom: '24px', fontSize: '1.2rem', fontWeight: 600 }}>
                   Montant à payer : <span style={{ color: 'var(--color-primary)' }}>{formatAmount(amount)}</span>
                 </div>

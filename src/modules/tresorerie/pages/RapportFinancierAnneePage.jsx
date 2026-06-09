@@ -250,19 +250,19 @@ const RapportFinancierAnneePage = () => {
 
             <div className='inscription-amount-grid rapport-financier-amount-grid'>
               <article className='inscription-amount-card'>
-                <span>Paiements comptabilisables</span>
+                <span>Entrées comptabilisables</span>
                 <strong>{formatAmount(summary.paiementsComptabilisables)}</strong>
               </article>
               <article className='inscription-amount-card'>
-                <span>Paiements non comptabilisables</span>
+                <span>Entrées non comptabilisables</span>
                 <strong>{formatAmount(summary.paiementsNonComptabilisables)}</strong>
               </article>
               <article className='inscription-amount-card'>
-                <span>Depenses confirmees</span>
+                <span>Sorties confirmees</span>
                 <strong>{formatAmount(summary.depensesConfirmees)}</strong>
               </article>
               <article className='inscription-amount-card'>
-                <span>Depenses annulees</span>
+                <span>Sorties annulees</span>
                 <strong>{formatAmount(summary.depensesAnnulees)}</strong>
               </article>
               <article className='inscription-amount-card inscription-amount-card--total'>
@@ -274,23 +274,23 @@ const RapportFinancierAnneePage = () => {
 
           <div className='rapport-financier-group-grid'>
             <GroupTable
-              title='Paiements par motif'
-              emptyMessage='Aucun paiement groupe par motif.'
+              title='Entrées par motif'
+              emptyMessage='Aucune entrée groupée par motif.'
               items={groups.paiementsParMotif}
             />
             <GroupTable
-              title='Depenses par categorie'
-              emptyMessage='Aucune depense groupee par categorie.'
+              title='Sorties par categorie'
+              emptyMessage='Aucune sortie groupée par categorie.'
               items={groups.depensesParCategorie}
             />
             <GroupTable
-              title='Paiements par mode de paiement'
-              emptyMessage='Aucun paiement groupe par mode.'
+              title='Entrées par mode de paiement'
+              emptyMessage='Aucune entrée groupée par mode.'
               items={groups.paiementsParMode}
             />
             <GroupTable
-              title='Depenses par mode de paiement'
-              emptyMessage='Aucune depense groupee par mode.'
+              title='Sorties par mode de paiement'
+              emptyMessage='Aucune sortie groupée par mode.'
               items={groups.depensesParMode}
             />
           </div>

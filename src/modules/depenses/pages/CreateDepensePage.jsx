@@ -19,8 +19,10 @@ import {
   DEFAULT_DEPENSE_FORM,
   CATEGORIE_DEPENSE_OPTIONS,
   MODE_DEPENSE_OPTIONS,
+  STATUT_CHEQUE_OPTIONS,
   getAnneeScolaireOptionLabel,
   getDepensePayload,
+  isChequeMode,
   isAnneeScolaireCloturee,
   unwrapDepense,
   validateDepenseForm,
@@ -94,7 +96,7 @@ const CreateDepensePage = () => {
         label: getAnneeScolaireOptionLabel(annee),
         searchText: annee.statut || annee.status || '',
         disabled: isClosed,
-        disabledReason: isClosed ? 'Depense interdite : annee scolaire cloturee' : '',
+        disabledReason: isClosed ? 'Sortie interdite : annee scolaire cloturee' : '',
       }
     }),
     [anneesScolaires]
@@ -102,10 +104,37 @@ const CreateDepensePage = () => {
 
   const handleChange = (event) => {
     const { id, value } = event.target
-    setForm((currentForm) => ({ ...currentForm, [id]: value }))
+    setForm((currentForm) => {
+      const nextForm = { ...currentForm, [id]: value }
 
-    if (errors[id]) {
-      setErrors((currentErrors) => ({ ...currentErrors, [id]: '' }))
+      if (id === 'mode_paiement') {
+        if (isChequeMode(value)) {
+          nextForm.statut_cheque = nextForm.statut_cheque || 'EMIS'
+        } else {
+          nextForm.numero_cheque = ''
+          nextForm.banque_cheque = ''
+          nextForm.titulaire_compte_cheque = ''
+          nextForm.date_cheque = ''
+          nextForm.statut_cheque = 'EMIS'
+        }
+      }
+
+      return nextForm
+    })
+
+    if (errors[id] || id === 'mode_paiement') {
+      setErrors((currentErrors) => {
+        const nextErrors = { ...currentErrors, [id]: '' }
+
+        if (id === 'mode_paiement' && !isChequeMode(value)) {
+          delete nextErrors.numero_cheque
+          delete nextErrors.banque_cheque
+          delete nextErrors.date_cheque
+          delete nextErrors.statut_cheque
+        }
+
+        return nextErrors
+      })
     }
   }
 
@@ -128,10 +157,10 @@ const CreateDepensePage = () => {
 
       navigate(depense?.id ? `/depenses/${depense.id}` : '/depenses', {
         replace: true,
-        state: { successMessage: 'Depense enregistree avec succes.' },
+        state: { successMessage: 'Sortie enregistrée avec succes.' },
       })
     } catch (error) {
-      setFeedback(error.message || 'Impossible d enregistrer la depense.')
+      setFeedback(error.message || 'Impossible d enregistrer la sortie.')
     } finally {
       setIsSubmitting(false)
     }
@@ -139,6 +168,7 @@ const CreateDepensePage = () => {
 
   const isFormUnavailable = isLoadingOptions || Boolean(optionsError)
   const isFormDisabled = isFormUnavailable || isSubmitting
+  const showChequeFields = isChequeMode(form.mode_paiement)
 
   return (
     <section className='inscription-page'>
@@ -146,9 +176,9 @@ const CreateDepensePage = () => {
         <div>
           <Link to='/depenses' className='inscription-back-link'>
             <ArrowLeft size={16} />
-            Retour aux depenses
+            Retour aux sorties
           </Link>
-          <h1>Nouvelle depense</h1>
+          <h1>Nouvelle sortie</h1>
           
         </div>
       </header>
@@ -208,24 +238,15 @@ const CreateDepensePage = () => {
             {isSelectedAnneeClosed && (
               <Feedback
                 type='warning'
-                message='Depense interdite : l annee scolaire selectionnee est cloturee.'
+                message='Sortie interdite : l annee scolaire selectionnee est cloturee.'
               />
             )}
           </section>
 
           <section className='student-form-section'>
-            <h2>Informations de la depense</h2>
+            <h2>Informations de la sortie</h2>
             <div className='inscription-form-grid'>
-              <Input
-                id='libelle'
-                type='text'
-                label='Libelle'
-                placeholder='Ex: Achat fournitures de bureau'
-                value={form.libelle}
-                error={errors.libelle}
-                disabled={isFormDisabled || isSelectedAnneeClosed}
-                onChange={handleChange}
-              />
+              {/* LIGNE 1 : 3 colonnes */}
               <SelectField
                 id='categorie'
                 label='Categorie'
@@ -236,17 +257,19 @@ const CreateDepensePage = () => {
                 disabled={isFormDisabled || isSelectedAnneeClosed}
                 onChange={handleChange}
               />
-              <Input
-                id='montant'
-                type='number'
-                min='1'
-                label='Montant'
-                placeholder='Montant'
-                value={form.montant}
-                error={errors.montant}
-                disabled={isFormDisabled || isSelectedAnneeClosed}
-                onChange={handleChange}
-              />
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
+                <Input
+                  id='montant'
+                  type='number'
+                  min='1'
+                  label='Montant'
+                  placeholder='Saisissez le montant'
+                  value={form.montant}
+                  error={errors.montant}
+                  disabled={isFormDisabled || isSelectedAnneeClosed}
+                  onChange={handleChange}
+                />
+              </div>
               <SelectField
                 id='mode_paiement'
                 label='Mode de paiement'
@@ -257,39 +280,111 @@ const CreateDepensePage = () => {
                 disabled={isFormDisabled || isSelectedAnneeClosed}
                 onChange={handleChange}
               />
-              <Input
-                id='beneficiaire'
-                type='text'
-                label='Beneficiaire (optionnel)'
-                placeholder='Ex: Nom du fournisseur ou de l employe'
-                value={form.beneficiaire}
-                disabled={isFormDisabled || isSelectedAnneeClosed}
-                onChange={handleChange}
-              />
+
+              {/* LIGNE 2 : 3 colonnes */}
               <Input
                 id='date_depense'
                 type='date'
-                label='Date de depense'
-                placeholder='Date de depense'
+                label='Date de la sortie'
                 value={form.date_depense}
                 error={errors.date_depense}
                 disabled={isFormDisabled || isSelectedAnneeClosed}
                 onChange={handleChange}
               />
               <Input
-                id='reference'
+                id='beneficiaire'
                 type='text'
-                label='Reference externe (optionnel)'
-                placeholder='Reference externe (optionnel)'
-                value={form.reference}
+                label='Bénéficiaire / Fournisseur (Optionnel)'
+                placeholder='Ex: Chauffeur Jean, Garage Kivu Auto'
+                value={form.beneficiaire}
                 disabled={isFormDisabled || isSelectedAnneeClosed}
                 onChange={handleChange}
               />
               <Input
+                id='reference'
+                type='text'
+                label='Référence (Optionnel)'
+                placeholder='Ex: SORTIE-2026-001'
+                value={form.reference}
+                disabled={isFormDisabled || isSelectedAnneeClosed}
+                onChange={handleChange}
+              />
+
+              {/* LIGNE 3 : Pleine largeur */}
+              <Input
+                id='libelle'
+                type='text'
+                label='Libellé (Titre de la sortie)'
+                placeholder='Ex: Entretien du bus scolaire'
+                value={form.libelle}
+                error={errors.libelle}
+                disabled={isFormDisabled || isSelectedAnneeClosed}
+                onChange={handleChange}
+                className='inscription-form-field--wide'
+              />
+
+              {showChequeFields && (
+                <>
+                  {/* LIGNE 4 : 3 colonnes */}
+                  <Input
+                    id='numero_cheque'
+                    type='text'
+                    label='Numéro du chèque'
+                    placeholder='Ex: CHQ-000123'
+                    value={form.numero_cheque}
+                    error={errors.numero_cheque}
+                    disabled={isFormDisabled || isSelectedAnneeClosed}
+                    onChange={handleChange}
+                  />
+                  <Input
+                    id='banque_cheque'
+                    type='text'
+                    label='Nom de la banque'
+                    placeholder='Ex: Banque principale'
+                    value={form.banque_cheque}
+                    error={errors.banque_cheque}
+                    disabled={isFormDisabled || isSelectedAnneeClosed}
+                    onChange={handleChange}
+                  />
+                  <Input
+                    id='date_cheque'
+                    type='date'
+                    label='Date du chèque'
+                    value={form.date_cheque}
+                    error={errors.date_cheque}
+                    disabled={isFormDisabled || isSelectedAnneeClosed}
+                    onChange={handleChange}
+                  />
+
+                  {/* LIGNE 5 : 2 colonnes */}
+                  <Input
+                    id='titulaire_compte_cheque'
+                    type='text'
+                    label='Titulaire du compte (Optionnel)'
+                    placeholder='Nom du titulaire'
+                    value={form.titulaire_compte_cheque}
+                    disabled={isFormDisabled || isSelectedAnneeClosed}
+                    onChange={handleChange}
+                  />
+                  <SelectField
+                    id='statut_cheque'
+                    label='Statut du chèque'
+                    value={form.statut_cheque}
+                    options={STATUT_CHEQUE_OPTIONS}
+                    placeholder='Selectionner un statut'
+                    error={errors.statut_cheque}
+                    disabled={isFormDisabled || isSelectedAnneeClosed}
+                    onChange={handleChange}
+                  />
+                </>
+              )}
+
+              {/* Description : Pleine largeur */}
+              <Input
                 id='description'
                 variant='textarea'
-                label='Description (optionnel)'
-                placeholder='Description (optionnel)'
+                label='Description et notes (Optionnel)'
+                placeholder='Ajoutez des details ou observations supplementaires ici...'
                 value={form.description}
                 disabled={isFormDisabled || isSelectedAnneeClosed}
                 onChange={handleChange}
@@ -310,7 +405,7 @@ const CreateDepensePage = () => {
             <Button
               type='submit'
               variant='super'
-              label={isSubmitting ? 'Enregistrement...' : 'Enregistrer la depense'}
+              label={isSubmitting ? 'Enregistrement...' : 'Enregistrer la sortie'}
               icon={<FileText size={17} />}
               loading={isSubmitting}
               disabled={isFormDisabled || isSelectedAnneeClosed}

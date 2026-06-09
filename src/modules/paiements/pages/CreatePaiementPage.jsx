@@ -25,15 +25,19 @@ import {
   unwrapInscriptionSolde,
 } from '../../inscriptions/utils/amounts'
 import {
-
   getInscriptionOptionLabel,
   getPaiementPayload,
+  isPaiementChequeMode,
   isAnneeScolaireCloturee,
   MODE_PAIEMENT_OPTIONS,
   MOTIF_PAIEMENT_OPTIONS,
+  STATUT_CHEQUE_PAIEMENT_OPTIONS,
+  MOIS_OPTIONS,
+  ANNEE_OPTIONS,
   normalizePaiementForm,
   unwrapPaiement,
   validatePaiementForm,
+  calculateDateFin,
 } from '../utils/paiement'
 
 const getInitialForm = (navigationState = {}) => normalizePaiementForm({
@@ -160,16 +164,44 @@ const CreatePaiementPage = () => {
 
   const handleChange = (event) => {
     const { id, value } = event.target
-    setForm((currentForm) => ({ ...currentForm, [id]: value }))
+    
+    setForm((currentForm) => {
+      const nextForm = { ...currentForm, [id]: value }
+      
+      if (id === 'inscription_id') {
+        setSolde(null)
+        setSoldeError('')
+        setIsLoadingSolde(Boolean(value))
+      }
 
-    if (id === 'inscription_id') {
-      setSolde(null)
-      setSoldeError('')
-      setIsLoadingSolde(Boolean(value))
-    }
+      if (id === 'mode_paiement') {
+        if (isPaiementChequeMode(value)) {
+          nextForm.statut_cheque = nextForm.statut_cheque || 'RECU'
+        } else {
+          nextForm.numero_cheque = ''
+          nextForm.banque_cheque = ''
+          nextForm.titulaire_compte_cheque = ''
+          nextForm.date_cheque = ''
+          nextForm.statut_cheque = 'RECU'
+        }
+      }
 
-    if (errors[id]) {
-      setErrors((currentErrors) => ({ ...currentErrors, [id]: '' }))
+      return nextForm
+    })
+
+    if (errors[id] || id === 'mode_paiement') {
+      setErrors((currentErrors) => {
+        const nextErrors = { ...currentErrors, [id]: '' }
+
+        if (id === 'mode_paiement' && !isPaiementChequeMode(value)) {
+          delete nextErrors.numero_cheque
+          delete nextErrors.banque_cheque
+          delete nextErrors.date_cheque
+          delete nextErrors.statut_cheque
+        }
+
+        return nextErrors
+      })
     }
   }
 
@@ -192,10 +224,10 @@ const CreatePaiementPage = () => {
 
       navigate(paiement?.id ? `/paiements/${paiement.id}` : '/paiements', {
         replace: true,
-        state: { successMessage: 'Paiement enregistre avec succes.' },
+        state: { successMessage: 'Entrée enregistrée avec succès.' },
       })
     } catch (error) {
-      setFeedback(error.message || 'Impossible d enregistrer le paiement.')
+      setFeedback(error.message || 'Impossible d\'enregistrer l\'entrée.')
     } finally {
       setIsSubmitting(false)
     }
@@ -203,6 +235,10 @@ const CreatePaiementPage = () => {
 
   const isFormUnavailable = isLoadingOptions || Boolean(optionsError)
   const isFormDisabled = isFormUnavailable || isSubmitting
+  const showChequeFields = isPaiementChequeMode(form.mode_paiement)
+
+  const computedTransportDateFin = form.motif === 'FRAIS_TRANSPORT' ? calculateDateFin(form.transport_date_debut, form.transport_nombre_mois) : ''
+  const computedMontantAttendu = form.motif === 'FRAIS_TRANSPORT' ? ((Number(form.transport_nombre_mois) || 0) * (Number(form.tarif_mensuel_transport) || 0)) : ''
 
   return (
     <section className='inscription-page'>
@@ -210,9 +246,9 @@ const CreatePaiementPage = () => {
         <div>
           <Link to='/paiements' className='inscription-back-link'>
             <ArrowLeft size={16} />
-            Retour aux paiements
+            Retour aux entrées
           </Link>
-          <h1>Nouveau paiement</h1>
+          <h1>Nouvelle entrée</h1>
           
         </div>
       </header>
@@ -320,19 +356,22 @@ const CreatePaiementPage = () => {
           )}
 
           <section className='student-form-section'>
-            <h2>Paiement</h2>
+            <h2>Entrée</h2>
             <div className='inscription-form-grid'>
-              <Input
-                id='montant'
-                type='number'
-                min='1'
-                label='Montant'
-                placeholder='Montant'
-                value={form.montant}
-                error={errors.montant}
-                disabled={isFormDisabled || isSelectedInscriptionClosed}
-                onChange={handleChange}
-              />
+              {/* LIGNE 1 */}
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
+                <Input
+                  id='montant'
+                  type='number'
+                  min='1'
+                  label='Montant payé'
+                  placeholder='Montant payé'
+                  value={form.montant}
+                  error={errors.montant}
+                  disabled={isFormDisabled || isSelectedInscriptionClosed}
+                  onChange={handleChange}
+                />
+              </div>
               <SelectField
                 id='motif'
                 label='Motif'
@@ -353,15 +392,171 @@ const CreatePaiementPage = () => {
                 disabled={isFormDisabled || isSelectedInscriptionClosed}
                 onChange={handleChange}
               />
-              <Input
-                id='reference'
-                type='text'
-                label='Reference externe (optionnel)'
-                placeholder='Reference externe (optionnel)'
-                value={form.reference}
-                disabled={isFormDisabled || isSelectedInscriptionClosed}
-                onChange={handleChange}
-              />
+
+              {/* LIGNE 2 */}
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
+                <Input
+                  id='date_paiement'
+                  type='date'
+                  label='Date de l’entrée'
+                  value={form.date_paiement}
+                  error={errors.date_paiement}
+                  disabled={isFormDisabled || isSelectedInscriptionClosed}
+                  onChange={handleChange}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
+                <Input
+                  id='reference'
+                  type='text'
+                  label='Référence externe (optionnel)'
+                  placeholder={form.motif === 'FRAIS_TRANSPORT' ? 'Ex: ENTREE-TRANSPORT-2026-001' : 'Ex: ENTREE-2026-001'}
+                  value={form.reference}
+                  disabled={isFormDisabled || isSelectedInscriptionClosed}
+                  onChange={handleChange}
+                />
+              </div>
+              {/* Empty div to preserve 3-column alignment */}
+              <div></div>
+
+              {showChequeFields && (
+                <>
+                  {/* LIGNE 3 : Chèque */}
+                  <Input
+                    id='numero_cheque'
+                    type='text'
+                    label='Numéro du chèque'
+                    placeholder='Ex: CHQ-000123'
+                    value={form.numero_cheque}
+                    error={errors.numero_cheque}
+                    disabled={isFormDisabled || isSelectedInscriptionClosed}
+                    onChange={handleChange}
+                  />
+                  <Input
+                    id='banque_cheque'
+                    type='text'
+                    label='Nom de la banque'
+                    placeholder='Ex: Banque principale'
+                    value={form.banque_cheque}
+                    error={errors.banque_cheque}
+                    disabled={isFormDisabled || isSelectedInscriptionClosed}
+                    onChange={handleChange}
+                  />
+                  <Input
+                    id='date_cheque'
+                    type='date'
+                    label='Date du chèque'
+                    value={form.date_cheque}
+                    error={errors.date_cheque}
+                    disabled={isFormDisabled || isSelectedInscriptionClosed}
+                    onChange={handleChange}
+                  />
+
+                  {/* LIGNE 4 : Chèque */}
+                  <Input
+                    id='titulaire_compte_cheque'
+                    type='text'
+                    label='Titulaire du compte (Optionnel)'
+                    placeholder='Nom du titulaire'
+                    value={form.titulaire_compte_cheque}
+                    disabled={isFormDisabled || isSelectedInscriptionClosed}
+                    onChange={handleChange}
+                  />
+                  <SelectField
+                    id='statut_cheque'
+                    label='Statut du chèque'
+                    value={form.statut_cheque}
+                    options={STATUT_CHEQUE_PAIEMENT_OPTIONS}
+                    placeholder='Selectionner un statut'
+                    error={errors.statut_cheque}
+                    disabled={isFormDisabled || isSelectedInscriptionClosed}
+                    onChange={handleChange}
+                  />
+                  <div></div>
+                </>
+              )}
+
+              {/* LIGNE 3 : FRAIS_TRANSPORT uniquement */}
+              {form.motif === 'FRAIS_TRANSPORT' && (
+                <>
+                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
+                    <Input
+                      id='transport_date_debut'
+                      type='date'
+                      label='Date début de couverture'
+                      value={form.transport_date_debut}
+                      error={errors.transport_date_debut}
+                      disabled={isFormDisabled || isSelectedInscriptionClosed}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
+                    <Input
+                      id='transport_nombre_mois'
+                      type='number'
+                      min='1'
+                      label='Nombre de mois payés'
+                      placeholder='Ex: 1'
+                      value={form.transport_nombre_mois}
+                      error={errors.transport_nombre_mois}
+                      disabled={isFormDisabled || isSelectedInscriptionClosed}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
+                    <Input
+                      id='tarif_mensuel_transport'
+                      type='number'
+                      min='1'
+                      label='Tarif mensuel transport'
+                      placeholder='Tarif mensuel'
+                      value={form.tarif_mensuel_transport}
+                      error={errors.tarif_mensuel_transport}
+                      disabled={isFormDisabled || isSelectedInscriptionClosed}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* LIGNE 4 : Date de fin et Montant attendu pour FRAIS_TRANSPORT */}
+              {form.motif === 'FRAIS_TRANSPORT' && (
+                <>
+                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
+                    <Input
+                      id='transport_date_fin_readonly'
+                      type='date'
+                      label='Date fin de couverture (calculée)'
+                      value={computedTransportDateFin}
+                      disabled={true}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
+                    <Input
+                      id='montant_attendu_readonly'
+                      type='text'
+                      label='Montant attendu (calculé)'
+                      value={computedMontantAttendu ? formatAmount(computedMontantAttendu) : ''}
+                      disabled={true}
+                    />
+                  </div>
+                  {/* Empty div for 3rd column alignment if description takes a new row */}
+                  <div></div>
+                </>
+              )}
+
+              {/* LIGNE 5 */}
+              <div className='inscription-form-field--wide'>
+                <Input
+                  id='description'
+                  variant='textarea'
+                  label='Description et notes (Optionnel)'
+                  placeholder='Ajoutez des détails supplémentaires...'
+                  value={form.description}
+                  disabled={isFormDisabled || isSelectedInscriptionClosed}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
           </section>
 
@@ -377,7 +572,7 @@ const CreatePaiementPage = () => {
             <Button
               type='submit'
               variant='super'
-              label={isSubmitting ? 'Enregistrement...' : 'Enregistrer le paiement'}
+              label={isSubmitting ? 'Enregistrement...' : 'Enregistrer l\'entrée'}
               icon={<CreditCard size={17} />}
               loading={isSubmitting}
               disabled={isFormDisabled || isSelectedInscriptionClosed}

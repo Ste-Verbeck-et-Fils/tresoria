@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, Search, MoreVertical, Eye, Pencil } from 'lucide-react'
+import { Plus, Search, MoreVertical, Eye } from 'lucide-react'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
@@ -8,9 +8,8 @@ import { normalizeCollection } from '../utils/data'
 import ModuleState from './ModuleState'
 import Loader from '../../../components/ui/Loader'
 import { getSocket } from '../../../services/socketService'
-import { normalizeRole } from '../../../utils/roles'
 
-const DefaultRowActions = ({ item, getRowPath, hideEdit, extraActions, isLast }) => {
+const DefaultRowActions = ({ item, getRowPath, extraActions, isLast }) => {
   const [isOpen, setIsOpen] = useState(false)
   const ref = useRef(null)
 
@@ -39,7 +38,7 @@ const DefaultRowActions = ({ item, getRowPath, hideEdit, extraActions, isLast })
           borderRadius: '8px', 
           boxShadow: '0 4px 12px rgba(0,0,0,0.1)', 
           zIndex: 50, 
-          minWidth: '150px', 
+          minWidth: '150px',
           display: 'flex', 
           flexDirection: 'column', 
           overflow: 'hidden' 
@@ -47,12 +46,7 @@ const DefaultRowActions = ({ item, getRowPath, hideEdit, extraActions, isLast })
           <Link to={basePath} style={{ padding: '10px 16px', textDecoration: 'none', color: '#173f5f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Eye size={16} /> Détails
           </Link>
-          {extraActions && extraActions(item)}
-          {!hideEdit && (
-            <Link to={basePath} state={{ startEdit: true }} style={{ padding: '10px 16px', textDecoration: 'none', color: '#173f5f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px', borderTop: '1px solid #f3f4f6' }}>
-              <Pencil size={16} /> Modifier
-            </Link>
-          )}
+          {extraActions && extraActions(item, { closeMenu: () => setIsOpen(false) })}
         </div>
       )}
     </div>
@@ -87,11 +81,6 @@ const EntityListPage = ({
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
-
-  const userStr = localStorage.getItem('user')
-  const user = userStr ? JSON.parse(userStr) : {}
-  const role = normalizeRole(user?.role)
-  const hideEdit = role === 'PARENT' || role === 'COMPTABLE'
 
   const load = useCallback(async () => {
     setIsLoading(true)
@@ -334,7 +323,7 @@ const EntityListPage = ({
                     {(getRowPath || rowActions) && (
                       <td className='inscription-table__action'>
                         {rowActions ? rowActions(item) : (
-                          getRowPath && <DefaultRowActions item={item} getRowPath={getRowPath} hideEdit={hideEdit} extraActions={extraActions} isLast={index >= paginatedItems.length - 2} />
+                          getRowPath && <DefaultRowActions item={item} getRowPath={getRowPath} extraActions={extraActions} isLast={index >= paginatedItems.length - 2} />
                         )}
                       </td>
                     )}
