@@ -23,8 +23,6 @@ export const createDepense = (payload) => getData(api.post('/api/depenses', payl
 
 export const updateDepense = (id, payload) => getData(api.patch(`/api/depenses/${id}`, payload))
 
-export const updateDepenseStatutCheque = (id, payload) => getData(api.patch(`/api/depenses/${id}/statut-cheque`, payload))
-
 export const annulerDepense = (id) => getData(api.patch(`/api/depenses/${id}/annuler`))
 
 export const deleteDepense = (id) => getData(api.delete(`/api/depenses/${id}`))

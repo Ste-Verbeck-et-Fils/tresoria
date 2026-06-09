@@ -20,7 +20,6 @@ export const MOTIF_PAIEMENT_OPTIONS = [
 export const MODE_PAIEMENT_OPTIONS = [
   { value: 'CASH', label: 'Cash' },
   { value: 'MOBILE_MONEY', label: 'Mobile Money' },
-  { value: 'CHEQUE', label: 'Chèque' },
 ]
 
 export const STATUT_PAIEMENT_OPTIONS = [
@@ -29,16 +28,8 @@ export const STATUT_PAIEMENT_OPTIONS = [
   { value: 'ANNULE', label: 'Annule' },
 ]
 
-export const STATUT_CHEQUE_PAIEMENT_OPTIONS = [
-  { value: 'RECU', label: 'Reçu' },
-  { value: 'ENCAISSE', label: 'Encaissé' },
-  { value: 'ANNULE', label: 'Annulé' },
-  { value: 'REJETE', label: 'Rejeté' },
-]
-
 export const COMPTE_ENTREE_OPTIONS = [
   { value: 'CAISSE_PRINCIPALE', label: 'Caisse principale' },
-  { value: 'BANQUE_PRINCIPALE', label: 'Banque principale' },
   { value: 'MOBILE_MONEY', label: 'Mobile Money' },
   { value: 'CAISSE_TRANSPORT', label: 'Caisse transport' },
 ]
@@ -50,12 +41,8 @@ export const getCompteDestinationByMotif = (motif) => {
     case 'FRAIS_SCOLAIRE':
     case 'FRAIS_ETUDE':
       return 'Frais scolaire / Frais d\'étude'
-    case 'FRAIS_DIVERS':
-      return 'Frais divers'
     case 'FRAIS_ETAT':
       return 'Frais d\'État'
-    case 'VENTE':
-      return 'Vente'
     case 'AUTRE':
     default:
       return 'Autre'
@@ -105,11 +92,6 @@ export const normalizePaiementForm = (paiement = {}) => ({
   reference: paiement.reference || paiement.transaction_reference || '',
   compte_destination_id: paiement.compte_destination_id ?? 'CAISSE_PRINCIPALE',
   date_paiement: paiement.date_paiement ?? new Date().toISOString().split('T')[0],
-  numero_cheque: paiement.numero_cheque || paiement.numeroCheque || '',
-  banque_cheque: paiement.banque_cheque || paiement.banqueCheque || '',
-  titulaire_compte_cheque: paiement.titulaire_compte_cheque || paiement.titulaireCompteCheque || '',
-  date_cheque: paiement.date_cheque ? String(paiement.date_cheque).slice(0, 10) : '',
-  statut_cheque: paiement.statut_cheque || paiement.statutCheque || 'RECU',
 
   // Transport fields
   transport_date_debut: paiement.transport_date_debut ?? '',
@@ -162,8 +144,6 @@ export const getPaiementDate = (paiement) => (
   paiement?.createdAt
 )
 
-export const isPaiementChequeMode = (modePaiement) => modePaiement === 'CHEQUE'
-
 export const getInscriptionOptionLabel = (inscription) => {
   const student = getInscriptionStudent(inscription)
   const classe = getInscriptionClasse(inscription)
@@ -205,24 +185,6 @@ export const validatePaiementForm = (form, selectedInscription) => {
     errors.date_paiement = 'La date de l\'entrée est obligatoire.'
   }
 
-  if (isPaiementChequeMode(form.mode_paiement)) {
-    if (!form.numero_cheque.trim()) {
-      errors.numero_cheque = 'Le numero du cheque est obligatoire.'
-    }
-
-    if (!form.banque_cheque.trim()) {
-      errors.banque_cheque = 'Le nom de la banque est obligatoire.'
-    }
-
-    if (!form.date_cheque) {
-      errors.date_cheque = 'La date du cheque est obligatoire.'
-    }
-
-    if (!form.statut_cheque) {
-      errors.statut_cheque = 'Le statut du cheque est obligatoire.'
-    }
-  }
-
   if (form.motif === 'FRAIS_TRANSPORT') {
     if (!form.transport_date_debut) {
       errors.transport_date_debut = 'La date de début est obligatoire.'
@@ -259,20 +221,7 @@ export const getPaiementPayload = (form) => {
     // compte_destination_id: form.compte_destination_id, // To be enabled when backend supports it
   }
 
-  if (!isPaiementChequeMode(form.mode_paiement)) {
-    return payload
-  }
-
-  return {
-    ...payload,
-    numero_cheque: form.numero_cheque.trim(),
-    banque_cheque: form.banque_cheque.trim(),
-    ...(form.titulaire_compte_cheque.trim()
-      ? { titulaire_compte_cheque: form.titulaire_compte_cheque.trim() }
-      : {}),
-    date_cheque: form.date_cheque,
-    statut_cheque: form.statut_cheque || 'RECU',
-  }
+  return payload
 }
 
 export const calculateDateFin = (dateDebut, nombreMois) => {

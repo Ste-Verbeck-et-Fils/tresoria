@@ -16,17 +16,12 @@ export const DEFAULT_DEPENSE_FORM = {
   description: '',
   date_depense: new Date().toISOString().split('T')[0],
   reference: '',
-  numero_cheque: '',
-  banque_cheque: '',
-  titulaire_compte_cheque: '',
-  date_cheque: '',
-  statut_cheque: 'EMIS',
 }
 
 export const CATEGORIE_DEPENSE_OPTIONS = [
   { value: 'SALAIRE', label: 'Salaire' },
   { value: 'CHAUFFEUR', label: 'Chauffeur' },
-  { value: 'ENTRETIEN', label: 'Entretien bus scolaire' },
+  { value: 'ENTRETIEN', label: 'Entretien' },
   { value: 'CARBURANT', label: 'Carburant' },
   { value: 'LOYER', label: 'Loyer' },
   { value: 'FOURNITURE', label: 'Fourniture' },
@@ -41,20 +36,12 @@ export const CATEGORIE_DEPENSE_OPTIONS = [
 export const MODE_DEPENSE_OPTIONS = [
   { value: 'CASH', label: 'Espèces' },
   { value: 'MOBILE_MONEY', label: 'Mobile money' },
-  { value: 'CHEQUE', label: 'Chèque' },
 ]
 
 export const STATUT_DEPENSE_OPTIONS = [
   { value: 'EN_ATTENTE', label: 'En attente' },
   { value: 'CONFIRME', label: 'Confirmee' },
   { value: 'ANNULE', label: 'Annulee' },
-]
-
-export const STATUT_CHEQUE_OPTIONS = [
-  { value: 'EMIS', label: 'Emis' },
-  { value: 'ENCAISSE', label: 'Encaisse' },
-  { value: 'ANNULE', label: 'Annule' },
-  { value: 'REJETE', label: 'Rejete' },
 ]
 
 export const DEFAULT_DEPENSE_FILTERS = {
@@ -81,11 +68,6 @@ export const normalizeDepenseForm = (depense = {}) => ({
   description: depense.description || depense.observation || '',
   date_depense: normalizeDateInput(depense.date_depense || depense.dateDepense),
   reference: depense.reference || depense.transaction_reference || '',
-  numero_cheque: depense.numero_cheque || depense.numeroCheque || '',
-  banque_cheque: depense.banque_cheque || depense.banqueCheque || '',
-  titulaire_compte_cheque: depense.titulaire_compte_cheque || depense.titulaireCompteCheque || '',
-  date_cheque: normalizeDateInput(depense.date_cheque || depense.dateCheque),
-  statut_cheque: depense.statut_cheque || depense.statutCheque || 'EMIS',
 })
 
 export const unwrapDepense = (payload) => (
@@ -136,8 +118,6 @@ export const getDepenseModePaiement = (depense) => depense?.mode_paiement || dep
 
 export const getDepenseBeneficiaire = (depense) => depense?.beneficiaire || depense?.beneficiary || depense?.fournisseur
 
-export const isChequeMode = (modePaiement) => modePaiement === 'CHEQUE'
-
 export const validateDepenseForm = (form, selectedAnneeScolaire) => {
   const errors = {}
   const montant = Number(form.montant)
@@ -170,24 +150,6 @@ export const validateDepenseForm = (form, selectedAnneeScolaire) => {
     errors.date_depense = 'La date de sortie est obligatoire.'
   }
 
-  if (isChequeMode(form.mode_paiement)) {
-    if (!form.numero_cheque.trim()) {
-      errors.numero_cheque = 'Le numero du cheque est obligatoire.'
-    }
-
-    if (!form.banque_cheque.trim()) {
-      errors.banque_cheque = 'Le nom de la banque est obligatoire.'
-    }
-
-    if (!form.date_cheque) {
-      errors.date_cheque = 'La date du cheque est obligatoire.'
-    }
-
-    if (!form.statut_cheque) {
-      errors.statut_cheque = 'Le statut du cheque est obligatoire.'
-    }
-  }
-
   return errors
 }
 
@@ -204,20 +166,7 @@ export const getDepensePayload = (form) => {
     ...(form.reference.trim() ? { reference: form.reference.trim() } : {}),
   }
 
-  if (!isChequeMode(form.mode_paiement)) {
-    return payload
-  }
-
-  return {
-    ...payload,
-    numero_cheque: form.numero_cheque.trim(),
-    banque_cheque: form.banque_cheque.trim(),
-    ...(form.titulaire_compte_cheque.trim()
-      ? { titulaire_compte_cheque: form.titulaire_compte_cheque.trim() }
-      : {}),
-    date_cheque: form.date_cheque,
-    statut_cheque: form.statut_cheque || 'EMIS',
-  }
+  return payload
 }
 
 export const getDepenseSearchText = (depense) => {
