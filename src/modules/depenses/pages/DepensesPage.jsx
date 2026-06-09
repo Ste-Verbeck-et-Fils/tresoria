@@ -1,12 +1,11 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { RefreshCw } from 'lucide-react'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
 import { getAnneesScolaires } from '../../../services/anneeScolaireService'
-import { getDepenses, updateDepenseStatutCheque } from '../../../services/depenseService'
+import { getDepenses } from '../../../services/depenseService'
 import DetailField from '../../inscriptions/components/DetailField'
 import EntityListPage from '../../inscriptions/components/EntityListPage'
 import SearchableSelectField from '../../inscriptions/components/SearchableSelectField'
@@ -19,7 +18,6 @@ import {
 } from '../../inscriptions/utils/data'
 import { formatAmount } from '../../inscriptions/utils/amounts'
 import {
-
   DEFAULT_DEPENSE_FILTERS,
   getAnneeScolaireOptionLabel,
   getDepenseAnneeScolaire,
@@ -34,25 +32,8 @@ import {
   hasActiveDepenseFilters,
   CATEGORIE_DEPENSE_OPTIONS,
   MODE_DEPENSE_OPTIONS,
-  STATUT_CHEQUE_OPTIONS,
   STATUT_DEPENSE_OPTIONS,
 } from '../utils/depense'
-
-const actionMenuButtonStyle = {
-  width: '100%',
-  padding: '10px 16px',
-  border: 0,
-  borderTop: '1px solid #f3f4f6',
-  background: 'white',
-  color: '#173f5f',
-  fontFamily: 'var(--font-primary)',
-  fontSize: '0.9rem',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
-  cursor: 'pointer',
-  textAlign: 'left',
-}
 
 const columns = [
   { label: 'Reference', render: (item) => `#${item.id}` },
@@ -77,12 +58,6 @@ const DepensesPage = () => {
   const [optionsError, setOptionsError] = useState('')
   const [filterError, setFilterError] = useState('')
   const [refreshNonce, setRefreshNonce] = useState(0)
-  const [chequeStatusModal, setChequeStatusModal] = useState({
-    item: null,
-    nextStatus: 'EMIS',
-    feedback: '',
-    isSaving: false,
-  })
 
   const applyAnneesPayload = useCallback((payload) => {
     setAnneesScolaires(normalizeCollection(payload))
@@ -171,89 +146,6 @@ const DepensesPage = () => {
 
   const hasDraftFilters = hasActiveDepenseFilters(draftFilters)
   const hasAppliedFilters = hasActiveDepenseFilters(appliedFilters)
-
-  const openChequeStatusModal = (item) => {
-    setChequeStatusModal({
-      item,
-      nextStatus: item.statut_cheque || 'EMIS',
-      feedback: '',
-      isSaving: false,
-    })
-  }
-
-  const closeChequeStatusModal = () => {
-    if (chequeStatusModal.isSaving) {
-      return
-    }
-
-    setChequeStatusModal({
-      item: null,
-      nextStatus: 'EMIS',
-      feedback: '',
-      isSaving: false,
-    })
-  }
-
-  const handleChequeStatusChange = (event) => {
-    setChequeStatusModal((current) => ({
-      ...current,
-      nextStatus: event.target.value,
-      feedback: '',
-    }))
-  }
-
-  const handleSaveChequeStatus = async (event) => {
-    event.preventDefault()
-
-    if (!chequeStatusModal.item) {
-      return
-    }
-
-    setChequeStatusModal((current) => ({ ...current, feedback: '', isSaving: true }))
-
-    try {
-      await updateDepenseStatutCheque(chequeStatusModal.item.id, {
-        statut_cheque: chequeStatusModal.nextStatus,
-      })
-      setRefreshNonce((value) => value + 1)
-      setChequeStatusModal({
-        item: null,
-        nextStatus: 'EMIS',
-        feedback: '',
-        isSaving: false,
-      })
-    } catch (error) {
-      setChequeStatusModal((current) => ({
-        ...current,
-        feedback: error.message || 'Impossible de changer le statut du cheque.',
-        isSaving: false,
-      }))
-    }
-  }
-
-  const renderChequeAction = (item, actionContext = {}) => {
-    const modePaiement = getDepenseModePaiement(item)
-
-    if (modePaiement !== 'CHEQUE') {
-      return null
-    }
-
-    return (
-      <button
-        type='button'
-        style={actionMenuButtonStyle}
-        onClick={() => {
-          actionContext.closeMenu?.()
-          openChequeStatusModal(item)
-        }}
-      >
-        <RefreshCw size={16} />
-        Changer statut du chèque
-      </button>
-    )
-  }
-
-  const chequeStatusItem = chequeStatusModal.item
 
   const filterPanel = (
     <section className='module-filter-panel paiement-filter-panel'>
@@ -409,60 +301,12 @@ const DepensesPage = () => {
         getSearchText={getDepenseSearchText}
         successMessage={location.state?.successMessage}
         beforePanel={filterPanel}
-        extraActions={renderChequeAction}
         socketEvents={{
           created: 'depense_created',
           updated: 'depense_updated',
           deleted: 'depense_deleted'
         }}
       />
-
-      {chequeStatusItem && (
-        <div className='cheque-status-dialog-backdrop' role='presentation'>
-          <form className='cheque-status-dialog' onSubmit={handleSaveChequeStatus}>
-            <header className='cheque-status-dialog__header'>
-              <h2>Changer statut du chèque</h2>
-            </header>
-
-            {chequeStatusModal.feedback && (
-              <Feedback type='error' message={chequeStatusModal.feedback} />
-            )}
-
-            <dl className='inscription-detail-grid cheque-status-dialog__summary'>
-              <DetailField label='Numéro du chèque' value={chequeStatusItem.numero_cheque || '-'} />
-              <DetailField label='Montant' value={formatAmount(getDepenseMontant(chequeStatusItem))} />
-              <DetailField label='Statut actuel' value={<StatusBadge value={chequeStatusItem.statut_cheque || '-'} />} />
-            </dl>
-
-            <SelectField
-              id='depense_statut_cheque'
-              label='Nouveau statut'
-              value={chequeStatusModal.nextStatus}
-              options={STATUT_CHEQUE_OPTIONS}
-              disabled={chequeStatusModal.isSaving}
-              onChange={handleChequeStatusChange}
-            />
-
-            <div className='inscription-form-actions cheque-status-dialog__actions'>
-              <Button
-                type='button'
-                variant='ghost'
-                label='Annuler'
-                disabled={chequeStatusModal.isSaving}
-                onClick={closeChequeStatusModal}
-                className='inscription-action inscription-action--secondary'
-              />
-              <Button
-                type='submit'
-                variant='super'
-                label={chequeStatusModal.isSaving ? 'Enregistrement...' : 'Enregistrer'}
-                loading={chequeStatusModal.isSaving}
-                className='inscription-action inscription-action--primary'
-              />
-            </div>
-          </form>
-        </div>
-      )}
     </>
   )
 }

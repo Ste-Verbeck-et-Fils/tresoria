@@ -12,6 +12,9 @@ import SearchableSelectField from '../../inscriptions/components/SearchableSelec
 import SelectField from '../../inscriptions/components/SelectField'
 import StatusBadge from '../../inscriptions/components/StatusBadge'
 import {
+  formatAmount,
+} from '../../inscriptions/utils/amounts'
+import {
   getDesignation,
   normalizeCollection,
 } from '../../inscriptions/utils/data'
@@ -19,10 +22,8 @@ import {
   DEFAULT_DEPENSE_FORM,
   CATEGORIE_DEPENSE_OPTIONS,
   MODE_DEPENSE_OPTIONS,
-  STATUT_CHEQUE_OPTIONS,
   getAnneeScolaireOptionLabel,
   getDepensePayload,
-  isChequeMode,
   isAnneeScolaireCloturee,
   unwrapDepense,
   validateDepenseForm,
@@ -104,37 +105,10 @@ const CreateDepensePage = () => {
 
   const handleChange = (event) => {
     const { id, value } = event.target
-    setForm((currentForm) => {
-      const nextForm = { ...currentForm, [id]: value }
+    setForm((currentForm) => ({ ...currentForm, [id]: value }))
 
-      if (id === 'mode_paiement') {
-        if (isChequeMode(value)) {
-          nextForm.statut_cheque = nextForm.statut_cheque || 'EMIS'
-        } else {
-          nextForm.numero_cheque = ''
-          nextForm.banque_cheque = ''
-          nextForm.titulaire_compte_cheque = ''
-          nextForm.date_cheque = ''
-          nextForm.statut_cheque = 'EMIS'
-        }
-      }
-
-      return nextForm
-    })
-
-    if (errors[id] || id === 'mode_paiement') {
-      setErrors((currentErrors) => {
-        const nextErrors = { ...currentErrors, [id]: '' }
-
-        if (id === 'mode_paiement' && !isChequeMode(value)) {
-          delete nextErrors.numero_cheque
-          delete nextErrors.banque_cheque
-          delete nextErrors.date_cheque
-          delete nextErrors.statut_cheque
-        }
-
-        return nextErrors
-      })
+    if (errors[id]) {
+      setErrors((currentErrors) => ({ ...currentErrors, [id]: '' }))
     }
   }
 
@@ -168,7 +142,6 @@ const CreateDepensePage = () => {
 
   const isFormUnavailable = isLoadingOptions || Boolean(optionsError)
   const isFormDisabled = isFormUnavailable || isSubmitting
-  const showChequeFields = isChequeMode(form.mode_paiement)
 
   return (
     <section className='inscription-page'>
@@ -322,62 +295,6 @@ const CreateDepensePage = () => {
                 onChange={handleChange}
                 className='inscription-form-field--wide'
               />
-
-              {showChequeFields && (
-                <>
-                  {/* LIGNE 4 : 3 colonnes */}
-                  <Input
-                    id='numero_cheque'
-                    type='text'
-                    label='Numéro du chèque'
-                    placeholder='Ex: CHQ-000123'
-                    value={form.numero_cheque}
-                    error={errors.numero_cheque}
-                    disabled={isFormDisabled || isSelectedAnneeClosed}
-                    onChange={handleChange}
-                  />
-                  <Input
-                    id='banque_cheque'
-                    type='text'
-                    label='Nom de la banque'
-                    placeholder='Ex: Banque principale'
-                    value={form.banque_cheque}
-                    error={errors.banque_cheque}
-                    disabled={isFormDisabled || isSelectedAnneeClosed}
-                    onChange={handleChange}
-                  />
-                  <Input
-                    id='date_cheque'
-                    type='date'
-                    label='Date du chèque'
-                    value={form.date_cheque}
-                    error={errors.date_cheque}
-                    disabled={isFormDisabled || isSelectedAnneeClosed}
-                    onChange={handleChange}
-                  />
-
-                  {/* LIGNE 5 : 2 colonnes */}
-                  <Input
-                    id='titulaire_compte_cheque'
-                    type='text'
-                    label='Titulaire du compte (Optionnel)'
-                    placeholder='Nom du titulaire'
-                    value={form.titulaire_compte_cheque}
-                    disabled={isFormDisabled || isSelectedAnneeClosed}
-                    onChange={handleChange}
-                  />
-                  <SelectField
-                    id='statut_cheque'
-                    label='Statut du chèque'
-                    value={form.statut_cheque}
-                    options={STATUT_CHEQUE_OPTIONS}
-                    placeholder='Selectionner un statut'
-                    error={errors.statut_cheque}
-                    disabled={isFormDisabled || isSelectedAnneeClosed}
-                    onChange={handleChange}
-                  />
-                </>
-              )}
 
               {/* Description : Pleine largeur */}
               <Input

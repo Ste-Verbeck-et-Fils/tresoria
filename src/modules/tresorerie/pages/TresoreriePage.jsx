@@ -316,19 +316,7 @@ const TresoreriePage = () => {
           <DetailSection title='Soldes réels disponibles' description='Montants réellement disponibles en possession de l école.'>
             <DetailField label='Caisse' value={formatAmount(dashboardData.soldesReels.caisse)} />
             <DetailField label='Mobile Money' value={formatAmount(dashboardData.soldesReels.mobileMoney)} />
-            <DetailField label='Banque' value={formatAmount(dashboardData.soldesReels.banque)} />
             <DetailField label='Solde disponible' value={formatAmount(dashboardData.soldesReels.soldeDisponible)} className='inscription-detail-field--highlight' />
-            <DetailField label='Chèques en attente' value={formatAmount(dashboardData.soldesReels.chequesEnAttente)} />
-          </DetailSection>
-
-          {/* Chèques */}
-          <DetailSection title='État des chèques'>
-            <DetailField label='Entrées (Chèques reçus en attente)' value={formatAmount(dashboardData.cheques.entreesChequesEnAttente)} />
-            <DetailField label='Sorties (Chèques émis en attente)' value={formatAmount(dashboardData.cheques.sortiesChequesEnAttente)} />
-            <DetailField label='Total chèques en attente' value={formatAmount(dashboardData.cheques.totalChequesEnAttente)} />
-            <DetailField label='Chèques encaissés' value={formatAmount(dashboardData.cheques.chequesEncaisses)} />
-            <DetailField label='Chèques rejetés' value={formatAmount(dashboardData.cheques.chequesRejetes)} />
-            <DetailField label='Chèques annulés' value={formatAmount(dashboardData.cheques.chequesAnnules)} />
           </DetailSection>
 
           {/* Transport */}
@@ -348,7 +336,7 @@ const TresoreriePage = () => {
                     <span>Carburant:</span> <strong>{formatAmount(dashboardData.transport.detailsSorties.carburant)}</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Entretien:</span> <strong>{formatAmount(dashboardData.transport.detailsSorties.entretienBusScolaire)}</strong>
+                     <span>Entretien:</span> <strong>{formatAmount(dashboardData.transport.detailsSorties.entretien)}</strong>
                   </div>
                 </div>
               </dd>
