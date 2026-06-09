@@ -124,77 +124,82 @@ const StudentPaiementsPage = () => {
           {isLoadingDetails && <RefreshCw className='animate-spin' size={20} color='var(--color-text-muted)' />}
         </div>
 
-        {inscriptions.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-muted)' }}>
-            Cet eleve n'a aucune inscription.
-          </div>
-        ) : (
-          <>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>
-              <div style={{ background: 'var(--color-light)', padding: '20px', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
-                <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Frais de l'annee</p>
-                <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--color-text-primary)' }}>{formatMoney(fraisAnnee)}</h3>
-              </div>
-              <div style={{ background: 'var(--color-light)', padding: '20px', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
-                <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Dette reportee</p>
-                <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--color-text-primary)' }}>{formatMoney(detteReportee)}</h3>
-              </div>
-              <div style={{ background: 'var(--color-light)', padding: '20px', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
-                <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Total deja paye</p>
-                <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--color-text-primary)' }}>{formatMoney(totalPaye)}</h3>
-              </div>
-              <div style={{ background: resteAPayer > 0 ? 'var(--color-light)' : 'var(--color-light)', padding: '20px', borderRadius: '12px', border: `1px solid ${resteAPayer > 0 ? '#fdba74' : 'var(--color-border)'}` }}>
-                <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: resteAPayer > 0 ? '#c2410c' : 'var(--color-text-muted)' }}>Reste a payer</p>
-                <h3 style={{ margin: 0, fontSize: '1.5rem', color: resteAPayer > 0 ? '#c2410c' : 'var(--color-text-primary)' }}>{formatMoney(resteAPayer)}</h3>
-              </div>
+        {inscriptions.length === 0
+          ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-muted)' }}>
+              Cet eleve n'a aucune inscription.
             </div>
+            )
+          : (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+                <div style={{ background: 'var(--color-light)', padding: '20px', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+                  <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Frais de l'annee</p>
+                  <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--color-text-primary)' }}>{formatMoney(fraisAnnee)}</h3>
+                </div>
+                <div style={{ background: 'var(--color-light)', padding: '20px', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+                  <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Dette reportee</p>
+                  <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--color-text-primary)' }}>{formatMoney(detteReportee)}</h3>
+                </div>
+                <div style={{ background: 'var(--color-light)', padding: '20px', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+                  <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Total deja paye</p>
+                  <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--color-text-primary)' }}>{formatMoney(totalPaye)}</h3>
+                </div>
+                <div style={{ background: resteAPayer > 0 ? 'var(--color-light)' : 'var(--color-light)', padding: '20px', borderRadius: '12px', border: `1px solid ${resteAPayer > 0 ? '#fdba74' : 'var(--color-border)'}` }}>
+                  <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: resteAPayer > 0 ? '#c2410c' : 'var(--color-text-muted)' }}>Reste a payer</p>
+                  <h3 style={{ margin: 0, fontSize: '1.5rem', color: resteAPayer > 0 ? '#c2410c' : 'var(--color-text-primary)' }}>{formatMoney(resteAPayer)}</h3>
+                </div>
+              </div>
 
-            <div>
-              <h3 style={{ marginBottom: '16px', color: 'var(--color-secondary)' }}>Historique des entrées</h3>
-              {paiements.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '30px', background: 'var(--color-light)', borderRadius: '8px', color: 'var(--color-text-muted)' }}>
-                  Aucune entrée n'a été effectuée pour cette annee scolaire.
-                </div>
-              ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                    <thead>
-                      <tr style={{ background: 'var(--color-light)', color: 'var(--color-text-muted)', fontSize: '0.85rem', textTransform: 'uppercase' }}>
-                        <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Date</th>
-                        <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Montant</th>
-                        <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Motif</th>
-                        <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Mode</th>
-                        <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Statut</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paiements.map(p => (
-                        <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                          <td style={{ padding: '16px' }}>{new Date(p.created_at).toLocaleDateString('fr-FR')}</td>
-                          <td style={{ padding: '16px', fontWeight: 'bold' }}>{formatMoney(p.montant)}</td>
-                          <td style={{ padding: '16px' }}>{p.motif?.replace('_', ' ')}</td>
-                          <td style={{ padding: '16px' }}>{p.mode_paiement}</td>
-                          <td style={{ padding: '16px' }}>
-                            <span style={{
-                              padding: '4px 8px',
-                              borderRadius: '999px',
-                              fontSize: '0.8rem',
-                              fontWeight: '600',
-                              background: p.statut === 'CONFIRME' ? 'var(--color-success-bg)' : p.statut === 'ANNULE' ? 'var(--color-error-bg)' : '#fef08a',
-                              color: p.statut === 'CONFIRME' ? 'var(--color-success)' : p.statut === 'ANNULE' ? 'var(--color-error)' : '#854d0e'
-                            }}>
-                              {p.statut}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </>
-        )}
+              <div>
+                <h3 style={{ marginBottom: '16px', color: 'var(--color-secondary)' }}>Historique des entrées</h3>
+                {paiements.length === 0
+                  ? (
+                    <div style={{ textAlign: 'center', padding: '30px', background: 'var(--color-light)', borderRadius: '8px', color: 'var(--color-text-muted)' }}>
+                      Aucune entrée n'a été effectuée pour cette annee scolaire.
+                    </div>
+                    )
+                  : (
+                    <div style={{ overflowX: 'auto' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                        <thead>
+                          <tr style={{ background: 'var(--color-light)', color: 'var(--color-text-muted)', fontSize: '0.85rem', textTransform: 'uppercase' }}>
+                  <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Date</th>
+                  <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Montant</th>
+                  <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Motif</th>
+                  <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Mode</th>
+                  <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Statut</th>
+                </tr>
+                        </thead>
+                        <tbody>
+                          {paiements.map(p => (
+                  <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                            <td style={{ padding: '16px' }}>{new Date(p.created_at).toLocaleDateString('fr-FR')}</td>
+                            <td style={{ padding: '16px', fontWeight: 'bold' }}>{formatMoney(p.montant)}</td>
+                            <td style={{ padding: '16px' }}>{p.motif?.replace('_', ' ')}</td>
+                            <td style={{ padding: '16px' }}>{p.mode_paiement}</td>
+                            <td style={{ padding: '16px' }}>
+                              <span style={{
+                                padding: '4px 8px',
+                                borderRadius: '999px',
+                                fontSize: '0.8rem',
+                                fontWeight: '600',
+                                background: p.statut === 'CONFIRME' ? 'var(--color-success-bg)' : p.statut === 'ANNULE' ? 'var(--color-error-bg)' : '#fef08a',
+                                color: p.statut === 'CONFIRME' ? 'var(--color-success)' : p.statut === 'ANNULE' ? 'var(--color-error)' : '#854d0e'
+                              }}
+                              >
+                                {p.statut}
+                              </span>
+                            </td>
+                          </tr>
+                ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    )}
+              </div>
+            </>
+            )}
       </div>
     </div>
   )

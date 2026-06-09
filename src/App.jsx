@@ -11,6 +11,7 @@ import ForgotPassword from './pages/public/ForgotPassword'
 import VerifyCode from './pages/public/VerifyCode'
 import ResetPassword from './pages/public/ResetPassword'
 import ProfileDashboard from './pages/public/dashboard/ProfileDashboard'
+import DevicesDashboard from './pages/public/dashboard/DevicesDashboard'
 import AideDashboard from './pages/public/dashboard/AideDashboard'
 import NotificationsDashboard from './pages/public/dashboard/NotificationsDashboard'
 import AuthenticatedModuleRoute from './modules/inscriptions/routes/AuthenticatedModuleRoute'
@@ -62,6 +63,7 @@ function AppLayout () {
             <Route path='/dashboard'>
               <Route index element={<Navigate to='profile' replace />} />
               <Route path='profile' element={<ProfileDashboard />} />
+              <Route path='devices' element={<DevicesDashboard />} />
               <Route path='aide' element={<AideDashboard />} />
               <Route path='notifications' element={<NotificationsDashboard />} />
             </Route>

@@ -26,23 +26,24 @@ const DefaultRowActions = ({ item, getRowPath, extraActions, isLast }) => {
   return (
     <div style={{ position: 'relative' }} ref={ref}>
       <button onClick={() => setIsOpen(!isOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
-        <MoreVertical size={20} color="#6b7280" />
+        <MoreVertical size={20} color='#6b7280' />
       </button>
       {isOpen && (
-        <div style={{ 
-          position: 'absolute', 
-          right: '100%', 
+        <div style={{
+          position: 'absolute',
+          right: '100%',
           ...(isLast ? { bottom: '0' } : { top: '0' }),
-          background: 'white', 
-          border: '1px solid #e4e8ef', 
-          borderRadius: '8px', 
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)', 
-          zIndex: 50, 
+          background: 'white',
+          border: '1px solid #e4e8ef',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          zIndex: 50,
           minWidth: '150px',
-          display: 'flex', 
-          flexDirection: 'column', 
-          overflow: 'hidden' 
-        }}>
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }}
+        >
           <Link to={basePath} style={{ padding: '10px 16px', textDecoration: 'none', color: '#173f5f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Eye size={16} /> Détails
           </Link>
@@ -227,7 +228,7 @@ const EntityListPage = ({
   }, [columns, getSearchText, items, search, searchedItems])
 
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage))
-  
+
   const paginatedItems = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage
     return filteredItems.slice(startIndex, startIndex + itemsPerPage)
@@ -310,52 +311,54 @@ const EntityListPage = ({
           <>
             <div className='inscription-table-wrapper' style={{ flex: 1, overflowY: 'auto' }}>
               <table className='inscription-table'>
-              <thead>
-                <tr>
-                  {columns.map((column) => <th key={column.label}>{column.label}</th>)}
-                  {(getRowPath || rowActions) && <th className='inscription-table__action-heading'>Action</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedItems.map((item, index) => (
-                  <tr key={item.id}>
-                    {columns.map((column) => <td key={column.label}>{column.render(item)}</td>)}
-                    {(getRowPath || rowActions) && (
-                      <td className='inscription-table__action'>
-                        {rowActions ? rowActions(item) : (
-                          getRowPath && <DefaultRowActions item={item} getRowPath={getRowPath} extraActions={extraActions} isLast={index >= paginatedItems.length - 2} />
-                        )}
-                      </td>
-                    )}
+                <thead>
+                  <tr>
+                    {columns.map((column) => <th key={column.label}>{column.label}</th>)}
+                    {(getRowPath || rowActions) && <th className='inscription-table__action-heading'>Action</th>}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderTop: '1px solid #edf0f4' }}>
-            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-              Affichage de {((currentPage - 1) * itemsPerPage) + 1} à {Math.min(currentPage * itemsPerPage, filteredItems.length)} sur {filteredItems.length}
-            </span>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <Button
-                variant='outline'
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                label='Precedent'
-              />
-              <span style={{ display: 'flex', alignItems: 'center', padding: '0 12px', fontSize: '0.85rem', color: '#334155', fontWeight: 'bold' }}>
-                {currentPage} / {totalPages}
-              </span>
-              <Button
-                variant='outline'
-                disabled={currentPage >= totalPages}
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                label='Suivant'
-              />
+                </thead>
+                <tbody>
+                  {paginatedItems.map((item, index) => (
+                    <tr key={item.id}>
+                      {columns.map((column) => <td key={column.label}>{column.render(item)}</td>)}
+                      {(getRowPath || rowActions) && (
+                        <td className='inscription-table__action'>
+                          {rowActions
+                            ? rowActions(item)
+                            : (
+                                getRowPath && <DefaultRowActions item={item} getRowPath={getRowPath} extraActions={extraActions} isLast={index >= paginatedItems.length - 2} />
+                              )}
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-        </>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderTop: '1px solid #edf0f4' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Affichage de {((currentPage - 1) * itemsPerPage) + 1} à {Math.min(currentPage * itemsPerPage, filteredItems.length)} sur {filteredItems.length}
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <Button
+                  variant='outline'
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  label='Precedent'
+                />
+                <span style={{ display: 'flex', alignItems: 'center', padding: '0 12px', fontSize: '0.85rem', color: '#334155', fontWeight: 'bold' }}>
+                  {currentPage} / {totalPages}
+                </span>
+                <Button
+                  variant='outline'
+                  disabled={currentPage >= totalPages}
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  label='Suivant'
+                />
+              </div>
+            </div>
+          </>
         )}
       </div>
     </section>

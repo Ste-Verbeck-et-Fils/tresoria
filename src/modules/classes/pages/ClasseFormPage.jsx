@@ -139,7 +139,7 @@ const ClasseFormPage = ({ mode }) => {
           </Link>
           <p className='inscription-page-kicker'>Gestion des classes</p>
           <h1>{isEditing ? 'Modifier la classe' : 'Nouvelle classe'}</h1>
-          
+
         </div>
       </header>
 

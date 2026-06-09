@@ -27,9 +27,9 @@ const TresoreriePage = () => {
   const [anneesScolaires, setAnneesScolaires] = useState([])
   const [draftFilters, setDraftFilters] = useState(DEFAULT_TRESORERIE_FILTERS)
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_TRESORERIE_FILTERS)
-  
+
   const [dashboardData, setDashboardData] = useState(null)
-  
+
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadingOptions, setIsLoadingOptions] = useState(true)
   const [loadError, setLoadError] = useState('')
@@ -336,7 +336,7 @@ const TresoreriePage = () => {
             <DetailField label='Entrées transport' value={formatAmount(dashboardData.transport.entreesTransport)} />
             <DetailField label='Sorties transport' value={formatAmount(dashboardData.transport.sortiesTransport)} />
             <DetailField label='Solde transport' value={formatAmount(dashboardData.transport.soldeTransport)} className='inscription-detail-field--highlight' />
-            
+
             <div className='inscription-detail-field inscription-detail-field--wide' style={{ marginTop: '16px' }}>
               <dt>Détail des sorties transport</dt>
               <dd>

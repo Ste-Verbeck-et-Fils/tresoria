@@ -66,7 +66,7 @@ const CreateAnneeScolairePage = () => {
           </Link>
 
           <h1>Nouvelle annee scolaire</h1>
-          
+
         </div>
       </header>
 

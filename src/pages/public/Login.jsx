@@ -6,6 +6,7 @@ import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
 import Feedback from '../../components/ui/Feedback'
 import { loginUser } from '../../services/authService'
+import { useWebAuthn } from '../../hooks/useWebAuthn'
 import '../../styles/public/Auth.css'
 
 const Login = () => {
@@ -14,6 +15,7 @@ const Login = () => {
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState({ type: '', text: '' })
   const [isLoading, setIsLoading] = useState(false)
+  const { login: loginWithWebAuthn, isLoading: isWebAuthnLoading, isSupported } = useWebAuthn()
   const messageTimeoutRef = useRef(null)
 
   const showMessage = (type, text) => {
@@ -54,6 +56,30 @@ const Login = () => {
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
+  }
+
+  const handleBiometricLogin = async () => {
+    if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current)
+    setMessage({ type: '', text: '' })
+
+    if (!isSupported) {
+      showMessage('error', 'Votre navigateur ne prend pas en charge l\'authentification biométrique.')
+      return
+    }
+
+    try {
+      const data = await loginWithWebAuthn({
+        phone: formData.phone.trim() || undefined,
+      })
+
+      const token = data.access_token
+      persistSession(token, data.user)
+
+      showMessage('success', 'Connexion réussie ! Redirection...')
+      setTimeout(() => navigate('/dashboard/profile', { replace: true }), 1500)
+    } catch (error) {
+      showMessage('error', error.message || 'Connexion biométrique impossible. Veuillez réessayer.')
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -132,9 +158,20 @@ const Login = () => {
               variant='super'
               label={isLoading ? 'Connexion...' : 'Se connecter'}
               className='auth-submit-btn'
-              disabled={isLoading}
-
+              disabled={isLoading || isWebAuthnLoading}
             />
+
+            {isSupported && (
+              <Button
+                type='button'
+                variant='secondary'
+                label={isWebAuthnLoading ? 'Connexion biométrique...' : 'Connexion biométrique'}
+                className='auth-submit-btn'
+                disabled={isLoading || isWebAuthnLoading}
+                loading={isWebAuthnLoading}
+                onClick={handleBiometricLogin}
+              />
+            )}
 
             <div className='auth-footer-text'>
               <span className='auth-text-muted'>Vous n'avez pas de compte ? </span>

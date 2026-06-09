@@ -179,7 +179,7 @@ const CreateDepensePage = () => {
             Retour aux sorties
           </Link>
           <h1>Nouvelle sortie</h1>
-          
+
         </div>
       </header>
 

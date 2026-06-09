@@ -164,10 +164,10 @@ const CreatePaiementPage = () => {
 
   const handleChange = (event) => {
     const { id, value } = event.target
-    
+
     setForm((currentForm) => {
       const nextForm = { ...currentForm, [id]: value }
-      
+
       if (id === 'inscription_id') {
         setSolde(null)
         setSoldeError('')
@@ -249,7 +249,7 @@ const CreatePaiementPage = () => {
             Retour aux entrées
           </Link>
           <h1>Nouvelle entrée</h1>
-          
+
         </div>
       </header>
 
@@ -417,7 +417,7 @@ const CreatePaiementPage = () => {
                 />
               </div>
               {/* Empty div to preserve 3-column alignment */}
-              <div></div>
+              <div />
 
               {showChequeFields && (
                 <>
@@ -472,7 +472,7 @@ const CreatePaiementPage = () => {
                     disabled={isFormDisabled || isSelectedInscriptionClosed}
                     onChange={handleChange}
                   />
-                  <div></div>
+                  <div />
                 </>
               )}
 
@@ -528,7 +528,7 @@ const CreatePaiementPage = () => {
                       type='date'
                       label='Date fin de couverture (calculée)'
                       value={computedTransportDateFin}
-                      disabled={true}
+                      disabled
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
@@ -537,11 +537,11 @@ const CreatePaiementPage = () => {
                       type='text'
                       label='Montant attendu (calculé)'
                       value={computedMontantAttendu ? formatAmount(computedMontantAttendu) : ''}
-                      disabled={true}
+                      disabled
                     />
                   </div>
                   {/* Empty div for 3rd column alignment if description takes a new row */}
-                  <div></div>
+                  <div />
                 </>
               )}
 

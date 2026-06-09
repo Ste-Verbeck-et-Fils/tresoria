@@ -263,7 +263,7 @@ const DepenseDetailPage = () => {
             Retour aux sorties
           </Link>
           <h1>Detail de la sortie #{id}</h1>
-          
+
         </div>
       </header>
 

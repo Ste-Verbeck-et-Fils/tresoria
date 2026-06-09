@@ -253,11 +253,11 @@ const ParentPaymentPage = () => {
       try {
         const intentPayload = await createStripePaymentIntent(amount)
         const secret = intentPayload?.data?.clientSecret || intentPayload?.clientSecret
-        
+
         if (!secret) {
           throw new Error('Impossible d\'initialiser l\'entrée avec Stripe.')
         }
-        
+
         setClientSecret(secret)
         setStep(2)
       } catch (error) {
@@ -307,7 +307,7 @@ const ParentPaymentPage = () => {
           setIsSubmitting(false)
           return
         }
-        
+
         reference = result.paymentIntent.id
       }
 
@@ -317,7 +317,7 @@ const ParentPaymentPage = () => {
         motif: 'FRAIS_SCOLAIRE',
         mode_paiement: modePaiement,
         description: `Entrée parent - ${selectedModeLabel}`,
-        reference: reference
+        reference
       })
 
       navigate(`/students/${selectedStudentId}/paiements`, {
@@ -547,7 +547,7 @@ const ParentPaymentPage = () => {
                     : (
                       <div style={{ gridColumn: '1 / -1', padding: '20px', border: '1px solid var(--color-border)', borderRadius: '8px', background: '#fff' }}>
                         <label style={{ display: 'block', marginBottom: '16px', fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-text-main)' }}>Informations de la carte</label>
-                        <CardElement 
+                        <CardElement
                           options={{
                             style: {
                               base: {
@@ -561,7 +561,7 @@ const ParentPaymentPage = () => {
                                 color: '#9e2146',
                               },
                             },
-                          }} 
+                          }}
                         />
                       </div>
                       )}

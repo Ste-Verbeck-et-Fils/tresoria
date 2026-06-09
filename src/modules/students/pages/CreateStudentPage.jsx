@@ -217,9 +217,9 @@ const CreateStudentPage = () => {
     <section className='inscription-page'>
       <header className='inscription-page-header'>
         <div>
- 
+
           <h1>Nouvel eleve</h1>
-          
+
         </div>
       </header>
 

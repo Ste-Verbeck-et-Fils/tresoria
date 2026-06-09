@@ -9,6 +9,7 @@ import {
   FileText,
   GraduationCap,
   HelpCircle,
+  KeyRound,
   MapPin,
   School,
   SwatchBook,
@@ -159,6 +160,7 @@ const Layout = () => {
 
   links.push(
     { label: 'Profil', href: '/dashboard/profile', icon: <UserRound size={20} />, active: location.pathname === '/dashboard/profile' },
+    { label: 'Dispositifs', href: '/dashboard/devices', icon: <KeyRound size={20} />, active: location.pathname === '/dashboard/devices' },
     { label: 'Aide', href: '/dashboard/aide', icon: <HelpCircle size={20} />, active: isPathActive('/dashboard/aide') }
   )
 

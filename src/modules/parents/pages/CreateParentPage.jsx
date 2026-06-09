@@ -128,7 +128,7 @@ const CreateParentPage = () => {
             {returnTo ? 'Retour a l inscription' : 'Retour aux parents'}
           </Link>
           <h1>Nouveau parent</h1>
-          
+
         </div>
       </header>
 
