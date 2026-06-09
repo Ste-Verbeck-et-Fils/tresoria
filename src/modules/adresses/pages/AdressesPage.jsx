@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import EntityListPage from '../../inscriptions/components/EntityListPage'
+import FilterPanel from '../../../components/ui/FilterPanel'
 import SelectField from '../../inscriptions/components/SelectField'
 import { normalizeCollection } from '../../inscriptions/utils/data'
 import {
@@ -126,60 +127,35 @@ const AdressesPage = () => {
     setOwnerId('')
   }
 
-  const filterPanel = (
-    <section className='module-filter-panel'>
-      <div>
-        <h2>Filtrer par proprietaire</h2>
-        <p>Affichez toutes les adresses ou limitez la liste a un parent ou a un eleve.</p>
-      </div>
+  const [filters, setFilters] = useState({
+    parent: false,
+    eleve: false,
+    actif: false,
+    inactif: false,
+  })
 
-      <div className='module-filter-panel__fields'>
-        <SelectField
-          id='adresse-owner-type-filter'
-          label='Type de proprietaire'
-          value={ownerType}
-          options={OWNER_TYPE_OPTIONS}
-          placeholder='Tous les proprietaires'
-          disabled={isLoadingOwners}
-          onChange={handleOwnerTypeChange}
-        />
-        {ownerType && (
-          <SelectField
-            id='adresse-owner-filter'
-            label={ownerType === 'parent' ? 'Parent' : 'Eleve'}
-            value={ownerId}
-            options={ownerOptions}
-            placeholder={ownerType === 'parent' ? 'Selectionner un parent' : 'Selectionner un eleve'}
-            disabled={isLoadingOwners}
-            onChange={(event) => setOwnerId(event.target.value)}
-          />
-        )}
-        {(ownerType || ownerId) && (
-          <Button
-            type='button'
-            variant='ghost'
-            label='Effacer le filtre'
-            onClick={clearFilter}
-            className='inscription-action inscription-action--secondary module-filter-panel__clear'
-          />
-        )}
-      </div>
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }))
+  }
 
-      {isLoadingOwners && <Loader message='Chargement des proprietaires...' />}
-      {!isLoadingOwners && ownersError && (
-        <div className='module-filter-panel__warning'>
-          <Feedback type='warning' message={ownersError} />
-          <Button
-            type='button'
-            variant='ghost'
-            label='Reessayer'
-            onClick={loadOwners}
-            className='inscription-action inscription-action--secondary'
-          />
-        </div>
-      )}
-    </section>
-  )
+  const localFilter = (item) => {
+    // parent / eleve
+    if (filters.parent && !filters.eleve) {
+      if (!item.parent_id) return false
+    }
+    if (filters.eleve && !filters.parent) {
+      if (!item.student_id) return false
+    }
+
+    // actif / inactif
+    if (filters.actif || filters.inactif) {
+      const status = item.statut || item.parent?.statut || item.student?.statut || 'ACTIF'
+      if (filters.actif && !filters.inactif && status !== 'ACTIF') return false
+      if (filters.inactif && !filters.actif && status !== 'INACTIF') return false
+    }
+
+    return true
+  }
 
   return (
     <EntityListPage
@@ -199,7 +175,38 @@ const AdressesPage = () => {
         getAdresseText(item),
       ].join(' ')}
       successMessage={location.state?.successMessage}
-      beforePanel={isParent ? null : filterPanel}
+      localFilter={localFilter}
+      renderFilterPanel={({ isOpen, onClose }) => !isParent && (
+        <FilterPanel
+          isOpen={isOpen}
+          onClose={onClose}
+          onApply={onClose}
+          onClear={() => setFilters({ parent: false, eleve: false, actif: false, inactif: false })}
+        >
+          <div className='filter-field'>
+            <label>Type de propriétaire</label>
+            <label className='filter-checkbox'>
+              <input type='checkbox' checked={filters.parent} onChange={(e) => handleFilterChange('parent', e.target.checked)} />
+              <span>Parent</span>
+            </label>
+            <label className='filter-checkbox'>
+              <input type='checkbox' checked={filters.eleve} onChange={(e) => handleFilterChange('eleve', e.target.checked)} />
+              <span>Elève</span>
+            </label>
+          </div>
+          <div className='filter-field'>
+            <label>Statut</label>
+            <label className='filter-checkbox'>
+              <input type='checkbox' checked={filters.actif} onChange={(e) => handleFilterChange('actif', e.target.checked)} />
+              <span>Actif</span>
+            </label>
+            <label className='filter-checkbox'>
+              <input type='checkbox' checked={filters.inactif} onChange={(e) => handleFilterChange('inactif', e.target.checked)} />
+              <span>Inactif</span>
+            </label>
+          </div>
+        </FilterPanel>
+      )}
     />
   )
 }

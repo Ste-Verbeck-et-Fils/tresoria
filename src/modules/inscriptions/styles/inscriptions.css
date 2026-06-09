@@ -253,7 +253,7 @@
 
 .inscription-table th,
 .inscription-table td {
-  padding: 15px 18px;
+  padding: 10px 14px;
   border-bottom: 1px solid #edf0f4;
   color: #334155;
   font-size: 0.84rem;
@@ -311,28 +311,23 @@
   min-height: 25px;
   padding: 4px 9px;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: #475569;
+  background: transparent;
+  color: var(--color-text-muted);
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.04em;
 }
 
-.inscription-status--actif {
-  background: #d1fae5;
-  color: #047857;
-}
-
+.inscription-status--actif,
 .inscription-status--valide,
 .inscription-status--validee,
 .inscription-status--confirme {
-  background: #d1fae5;
-  color: #047857;
+  color: var(--color-success);
 }
 
-.inscription-status--en-attente {
-  background: #fef3c7;
-  color: #b45309;
+.inscription-status--en-attente,
+.inscription-status--suspendu {
+  color: var(--color-warning);
 }
 
 .inscription-status--cloture,
@@ -343,13 +338,7 @@
 .inscription-status--renvoye,
 .inscription-status--annule,
 .inscription-status--annulee {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-.inscription-status--suspendu {
-  background: #fef3c7;
-  color: #b45309;
+  color: var(--color-error);
 }
 
 .inscription-loading,
@@ -525,7 +514,7 @@
   gap: 8px;
 }
 
-.inscription-searchable-field > label {
+.inscription-searchable-field>label {
   color: #64748b;
   font-size: 0.82rem;
   font-weight: 700;
@@ -726,7 +715,7 @@
   position: relative;
 }
 
-.parent-create-gender-field > label {
+.parent-create-gender-field>label {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -894,7 +883,7 @@
   gap: 16px;
 }
 
-.student-form-section + .student-form-section {
+.student-form-section+.student-form-section {
   padding-top: 20px;
   border-top: 1px solid #edf0f4;
 }
@@ -1141,6 +1130,7 @@
 }
 
 @media (max-width: 900px) {
+
   .inscription-form-grid,
   .inscription-detail-grid,
   .parent-address-form-grid,
@@ -1159,6 +1149,7 @@
 }
 
 @media (max-width: 640px) {
+
   .inscription-page-header,
   .inscription-toolbar,
   .inscription-form-actions {
@@ -1248,6 +1239,23 @@
 
   .parent-address-card__actions {
     width: 100%;
-    justify-content: flex-start;
+    justify-content: flex-end;
+  }
+
+  .pagination-info {
+    font-size: 12px;
+  }
+
+  #text-show {
+    display: none;
+  }
+
+  .pagination-btn .btn-label,
+  .filter-toggle-btn .btn-label {
+    display: none;
+  }
+
+  .pagination-btn {
+    padding: 6px;
   }
 }

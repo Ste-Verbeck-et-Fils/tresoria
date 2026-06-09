@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, Search, MoreVertical, Eye } from 'lucide-react'
+import { Plus, Search, MoreVertical, Eye, ChevronLeft, ChevronRight, Filter, X } from 'lucide-react'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
@@ -73,6 +73,10 @@ const EntityListPage = ({
   rowActions,
   extraActions,
   isLoadingDependencies = false,
+  localFilter,
+  renderFilterPanel,
+  hasActiveFilters,
+  onClearFilters,
 }) => {
   const navigate = useNavigate()
   const [items, setItems] = useState([])
@@ -81,7 +85,8 @@ const EntityListPage = ({
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false)
+  const itemsPerPage = 6
 
   const load = useCallback(async () => {
     setIsLoading(true)
@@ -210,22 +215,31 @@ const EntityListPage = ({
     }
   }, [socketEvents])
 
+  // Reset page when local filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [localFilter])
+
   const filteredItems = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase()
     const sourceItems = searchedItems ?? items
 
-    if (!normalizedSearch) {
-      return sourceItems
-    }
-
     return sourceItems.filter((item) => {
+      if (localFilter && !localFilter(item)) {
+        return false
+      }
+
+      if (!normalizedSearch) {
+        return true
+      }
+
       const searchableValue = getSearchText
         ? getSearchText(item)
         : columns.map((column) => column.render(item)).join(' ')
 
       return String(searchableValue).toLowerCase().includes(normalizedSearch)
     })
-  }, [columns, getSearchText, items, search, searchedItems])
+  }, [columns, getSearchText, items, search, searchedItems, localFilter])
 
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage))
 
@@ -234,7 +248,6 @@ const EntityListPage = ({
     return filteredItems.slice(startIndex, startIndex + itemsPerPage)
   }, [filteredItems, currentPage, itemsPerPage])
 
-  // Fix current page if it exceeds total pages after filtering
   useEffect(() => {
     if (currentPage > totalPages) {
       setCurrentPage(totalPages)
@@ -266,23 +279,49 @@ const EntityListPage = ({
 
       <div className='inscription-panel' style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
         <div className='inscription-toolbar'>
-          <Input
-            id={`${title.toLowerCase().replace(/\s+/g, '-')}-search`}
-            type='search'
-            variant='searchbox'
-            placeholder={searchPlaceholder}
-            value={search}
-            icon={<Search size={18} />}
-            onChange={handleSearchChange}
-            onSearch={searchItems ? handleSearch : undefined}
-            onKeyDown={(event) => {
-              if (searchItems && event.key === 'Enter') {
-                event.preventDefault()
-                handleSearch()
-              }
-            }}
-            className='inscription-search'
-          />
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', width: 'min(100%, 620px)' }}>
+            <Input
+              id={`${title.toLowerCase().replace(/\s+/g, '-')}-search`}
+              type='search'
+              variant='searchbox'
+              placeholder={searchPlaceholder}
+              value={search}
+              icon={<Search size={18} />}
+              onChange={handleSearchChange}
+              onSearch={searchItems ? handleSearch : undefined}
+              onKeyDown={(event) => {
+                if (searchItems && event.key === 'Enter') {
+                  event.preventDefault()
+                  handleSearch()
+                }
+              }}
+              style={{ width: '100%', marginBottom: 0 }}
+            />
+            {renderFilterPanel && (
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Button
+                  variant='super'
+                  label='Filtres'
+                  icon={<Filter size={17} />}
+                  onClick={() => setIsFilterPanelOpen(true)}
+                  title='Filtres'
+                  className={`inscription-action inscription-action--primary filter-toggle-btn ${hasActiveFilters ? 'has-filters' : ''}`}
+                  style={{ flexShrink: 0, borderTopRightRadius: hasActiveFilters ? 0 : undefined, borderBottomRightRadius: hasActiveFilters ? 0 : undefined }}
+                />
+                {hasActiveFilters && (
+                  <Button
+                    variant='super'
+                    icon={<X size={17} />}
+                    onClick={onClearFilters}
+                    title='Effacer les filtres'
+                    className='inscription-action inscription-action--primary filter-clear-btn'
+                    style={{ flexShrink: 0, padding: '10px', borderLeft: '1px solid rgba(255,255,255,0.2)', borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                  />
+                )}
+              </div>
+            )}
+
+          </div>
           <span className='inscription-count'>{filteredItems.length} element(s)</span>
         </div>
 
@@ -336,9 +375,9 @@ const EntityListPage = ({
               </table>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderTop: '1px solid #edf0f4' }}>
-              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                Affichage de {((currentPage - 1) * itemsPerPage) + 1} à {Math.min(currentPage * itemsPerPage, filteredItems.length)} sur {filteredItems.length}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px', borderTop: '1px solid #edf0f4' }}>
+              <span className='pagination-info' style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                <span id='text-show'>Affichage de </span> {((currentPage - 1) * itemsPerPage) + 1} à {Math.min(currentPage * itemsPerPage, filteredItems.length)} sur {filteredItems.length}
               </span>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <Button
@@ -346,6 +385,8 @@ const EntityListPage = ({
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   label='Precedent'
+                  icon={<ChevronLeft size={16} />}
+                  className='pagination-btn'
                 />
                 <span style={{ display: 'flex', alignItems: 'center', padding: '0 12px', fontSize: '0.85rem', color: '#334155', fontWeight: 'bold' }}>
                   {currentPage} / {totalPages}
@@ -355,12 +396,19 @@ const EntityListPage = ({
                   disabled={currentPage >= totalPages}
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   label='Suivant'
+                  icon={<ChevronRight size={16} />}
+                  className='pagination-btn pagination-btn--right'
                 />
               </div>
             </div>
           </>
         )}
       </div>
+
+      {renderFilterPanel && renderFilterPanel({
+        isOpen: isFilterPanelOpen,
+        onClose: () => setIsFilterPanelOpen(false)
+      })}
     </section>
   )
 }

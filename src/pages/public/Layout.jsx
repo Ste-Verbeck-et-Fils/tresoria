@@ -90,7 +90,7 @@ const Layout = () => {
   const isComptable = normalizedRole === 'COMPTABLE'
   const isParent = normalizedRole === 'PARENT'
 
-  const canAccessInscriptions = isAdmin || isComptable
+  const canAccessInscriptions = isAdmin
   const canAccessClasses = isAdmin
   const canAccessAnneesScolaires = isAdmin
   const canAccessPaiements = isAdmin || isComptable
@@ -142,7 +142,7 @@ const Layout = () => {
     links.push({ label: 'Parents', href: '/parents', icon: <UsersRound size={20} />, active: isPathActive('/parents') })
   }
 
-  if (isAdmin || isParent || isComptable) {
+  if (isAdmin || isParent) {
     links.push({ label: 'Adresses', href: '/adresses', icon: <MapPin size={20} />, active: isPathActive('/adresses') })
   }
 

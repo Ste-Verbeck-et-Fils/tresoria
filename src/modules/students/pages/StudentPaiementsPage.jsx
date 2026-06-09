@@ -164,35 +164,35 @@ const StudentPaiementsPage = () => {
                       <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead>
                           <tr style={{ background: 'var(--color-light)', color: 'var(--color-text-muted)', fontSize: '0.85rem', textTransform: 'uppercase' }}>
-                  <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Date</th>
-                  <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Montant</th>
-                  <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Motif</th>
-                  <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Mode</th>
-                  <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Statut</th>
-                </tr>
+                            <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Date</th>
+                            <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Montant</th>
+                            <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Motif</th>
+                            <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Mode</th>
+                            <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)' }}>Statut</th>
+                          </tr>
                         </thead>
                         <tbody>
                           {paiements.map(p => (
-                  <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                            <td style={{ padding: '16px' }}>{new Date(p.created_at).toLocaleDateString('fr-FR')}</td>
-                            <td style={{ padding: '16px', fontWeight: 'bold' }}>{formatMoney(p.montant)}</td>
-                            <td style={{ padding: '16px' }}>{p.motif?.replace('_', ' ')}</td>
-                            <td style={{ padding: '16px' }}>{p.mode_paiement}</td>
-                            <td style={{ padding: '16px' }}>
-                              <span style={{
-                                padding: '4px 8px',
-                                borderRadius: '999px',
-                                fontSize: '0.8rem',
-                                fontWeight: '600',
-                                background: p.statut === 'CONFIRME' ? 'var(--color-success-bg)' : p.statut === 'ANNULE' ? 'var(--color-error-bg)' : '#fef08a',
-                                color: p.statut === 'CONFIRME' ? 'var(--color-success)' : p.statut === 'ANNULE' ? 'var(--color-error)' : '#854d0e'
-                              }}
-                              >
-                                {p.statut}
-                              </span>
-                            </td>
-                          </tr>
-                ))}
+                            <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                              <td style={{ padding: '16px' }}>{new Date(p.created_at).toLocaleDateString('fr-FR')}</td>
+                              <td style={{ padding: '16px', fontWeight: 'bold' }}>{formatMoney(p.montant)}</td>
+                              <td style={{ padding: '16px' }}>{p.motif?.replace('_', ' ')}</td>
+                              <td style={{ padding: '16px' }}>{p.mode_paiement}</td>
+                              <td style={{ padding: '16px' }}>
+                                <span style={{
+                                  padding: '4px 8px',
+                                  borderRadius: '999px',
+                                  fontSize: '0.8rem',
+                                  fontWeight: '600',
+                                  background: p.statut === 'CONFIRME' ? 'var(--color-success-bg)' : p.statut === 'ANNULE' ? 'var(--color-error-bg)' : '#fef08a',
+                                  color: p.statut === 'CONFIRME' ? 'var(--color-success)' : p.statut === 'ANNULE' ? 'var(--color-error)' : '#854d0e'
+                                }}
+                                >
+                                  {p.statut}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     </div>

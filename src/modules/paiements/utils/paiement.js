@@ -77,11 +77,11 @@ export const DEFAULT_PAIEMENT_FILTERS = {
   mode_paiement: '',
   date_debut: '',
   date_fin: '',
-  inscription_id: '',
-  student_id: '',
-  class_id: '',
+  montant_min: '',
+  montant_max: '',
   annee_scolaire_id: '',
-  reference: '',
+  maternelle: false,
+  primaire: false,
 }
 
 export const normalizePaiementForm = (paiement = {}) => ({
@@ -253,16 +253,30 @@ export const getPaiementSearchText = (paiement) => {
   ].join(' ')
 }
 
+const LOCAL_ONLY_FILTER_KEYS = ['maternelle', 'primaire', 'montant_min', 'montant_max']
+
+const FILTER_KEY_MAP = {
+  date_debut: 'start_date',
+  date_fin: 'end_date',
+}
+
 export const getPaiementFilterParams = (filters = {}) => (
   Object.fromEntries(
     Object.entries(filters)
-      .map(([key, value]) => [key, typeof value === 'string' ? value.trim() : value])
-      .filter(([, value]) => value !== null && value !== undefined && value !== '')
+      .filter(([key]) => !LOCAL_ONLY_FILTER_KEYS.includes(key))
+      .map(([key, value]) => [FILTER_KEY_MAP[key] || key, typeof value === 'string' ? value.trim() : value])
+      .filter(([, value]) => value !== null && value !== undefined && value !== '' && value !== false)
   )
 )
 
-export const hasActivePaiementFilters = (filters = {}) => (
-  Object.values(getPaiementFilterParams(filters)).length > 0
-)
+export const hasActivePaiementFilters = (filters = {}) => {
+  const serverParams = getPaiementFilterParams(filters)
+  if (Object.values(serverParams).length > 0) return true
+  // Check local-only fields
+  return LOCAL_ONLY_FILTER_KEYS.some((key) => {
+    const v = filters[key]
+    return v !== '' && v !== false && v !== null && v !== undefined
+  })
+}
 
 export const unwrapPaiementEntity = (payload) => unwrapEntity(payload, 'paiement')

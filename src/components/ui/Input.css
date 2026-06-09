@@ -140,7 +140,7 @@
 
 /* Searchbox specific styling */
 .wrapper--searchbox {
-  gap: 14px;
+  gap: 10px;
   padding: 0;
   border: none;
   border-radius: 0;
@@ -154,18 +154,18 @@
 }
 
 .input--searchbox {
-  min-height: 54px;
-  padding: 0 22px;
+  min-height: 42px;
+  padding: 0 16px;
   border: 1px solid #e5e7eb;
-  border-radius: 17px;
+  border-radius: 8px;
   background: #ffffff;
-  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.05);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .input--searchbox:focus {
   border-color: #173f5f;
-  box-shadow: 0 0 0 3px rgba(23, 63, 95, 0.16), 0 3px 8px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 0 0 3px rgba(23, 63, 95, 0.16), 0 3px 8px rgba(15, 23, 42, 0.05);
 }
 
 .input--searchbox::placeholder {
@@ -174,13 +174,13 @@
 
 .input-icon-right-action {
   display: flex;
-  width: 54px;
-  height: 54px;
-  flex: 0 0 54px;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 15px;
+  border-radius: 8px;
   background: linear-gradient(180deg, #315f82 0%, #173f5f 100%);
   color: var(--color-text-inverse);
   box-shadow: 0 3px 7px rgba(23, 63, 95, 0.24);
@@ -204,6 +204,6 @@
 }
 
 .input-icon-right-action svg {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
 }

@@ -1,19 +1,12 @@
-import Loader from '../../../components/ui/Loader'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import Button from '../../../components/ui/Button'
-import Feedback from '../../../components/ui/Feedback'
-import Input from '../../../components/ui/Input'
-import { getAnneesScolaires } from '../../../services/anneeScolaireService'
-import { getClasses } from '../../../services/classeService'
-import { getInscriptions } from '../../../services/inscriptionService'
-import { getPaiements } from '../../../services/paiementService'
-import { getStudents } from '../../../services/studentService'
-import DetailField from '../../inscriptions/components/DetailField'
 import EntityListPage from '../../inscriptions/components/EntityListPage'
-import SearchableSelectField from '../../inscriptions/components/SearchableSelectField'
-import SelectField from '../../inscriptions/components/SelectField'
+import FilterPanel from '../../../components/ui/FilterPanel'
+import Input from '../../../components/ui/Input'
 import StatusBadge from '../../inscriptions/components/StatusBadge'
+import { getAnneesScolaires } from '../../../services/anneeScolaireService'
+import { getPaiements } from '../../../services/paiementService'
+import { normalizeRole } from '../../../utils/roles'
 import {
   formatDate,
   getDesignation,
@@ -25,9 +18,6 @@ import {
 } from '../../inscriptions/utils/data'
 import { formatAmount } from '../../inscriptions/utils/amounts'
 import {
-  DEFAULT_PAIEMENT_FILTERS,
-  getPaiementFilterParams,
-  getInscriptionOptionLabel,
   getPaiementDate,
   getPaiementInscription,
   getPaiementModeLabel,
@@ -35,10 +25,6 @@ import {
   getPaiementMotifLabel,
   getPaiementSearchText,
   getPaiementStatus,
-  hasActivePaiementFilters,
-  MODE_PAIEMENT_OPTIONS,
-  MOTIF_PAIEMENT_OPTIONS,
-  STATUT_PAIEMENT_OPTIONS,
 } from '../utils/paiement'
 
 const columns = [
@@ -78,71 +64,36 @@ const columns = [
 
 const PaiementsPage = () => {
   const location = useLocation()
-  const [inscriptions, setInscriptions] = useState([])
-  const [students, setStudents] = useState([])
-  const [classes, setClasses] = useState([])
+
+  const userStr = localStorage.getItem('user')
+  const user = userStr ? JSON.parse(userStr) : {}
+  const normalizedUserRole = normalizeRole(user?.role)
+  // Conserver les contraintes : seul les rôles autorisés (ex: pas PARENT) peuvent créer.
+  // Ajustez selon la logique stricte souhaitée.
+  const isParent = normalizedUserRole === 'PARENT'
+  const canCreate = !isParent
+
   const [anneesScolaires, setAnneesScolaires] = useState([])
-  const [draftFilters, setDraftFilters] = useState(DEFAULT_PAIEMENT_FILTERS)
-  const [appliedFilters, setAppliedFilters] = useState(DEFAULT_PAIEMENT_FILTERS)
   const [isLoadingOptions, setIsLoadingOptions] = useState(true)
-  const [optionsError, setOptionsError] = useState('')
-  const [filterError, setFilterError] = useState('')
-  const [refreshNonce, setRefreshNonce] = useState(0)
 
-  const applyOptionsResults = useCallback((inscriptionsResult, studentsResult, classesResult, anneesResult) => {
-    if (inscriptionsResult.status === 'fulfilled') {
-      setInscriptions(normalizeCollection(inscriptionsResult.value))
-    }
-
-    if (studentsResult.status === 'fulfilled') {
-      setStudents(normalizeCollection(studentsResult.value))
-    }
-
-    if (classesResult.status === 'fulfilled') {
-      setClasses(normalizeCollection(classesResult.value))
-    }
-
-    if (anneesResult.status === 'fulfilled') {
-      setAnneesScolaires(normalizeCollection(anneesResult.value))
-    }
-
-    if (
-      inscriptionsResult.status === 'rejected' ||
-      studentsResult.status === 'rejected' ||
-      classesResult.status === 'rejected' ||
-      anneesResult.status === 'rejected'
-    ) {
-      setOptionsError('Certains filtres sont indisponibles. Rechargez les listes avant d appliquer un filtre.')
-    }
-  }, [])
-
-  const loadOptions = useCallback(async () => {
-    setIsLoadingOptions(true)
-    setOptionsError('')
-
-    const results = await Promise.allSettled([
-      getInscriptions(),
-      getStudents(),
-      getClasses(),
-      getAnneesScolaires(),
-    ])
-
-    applyOptionsResults(...results)
-    setIsLoadingOptions(false)
-  }, [applyOptionsResults])
+  const [filters, setFilters] = useState({
+    status: [],
+    modePaiement: [],
+    motif: [],
+    dateMin: '',
+    dateMax: '',
+    montantMin: '',
+    montantMax: '',
+    anneeScolaireId: '',
+    classes: [],
+  })
 
   useEffect(() => {
     let isCancelled = false
-
-    Promise.allSettled([
-      getInscriptions(),
-      getStudents(),
-      getClasses(),
-      getAnneesScolaires(),
-    ])
-      .then((results) => {
+    getAnneesScolaires()
+      .then((payload) => {
         if (!isCancelled) {
-          applyOptionsResults(...results)
+          setAnneesScolaires(normalizeCollection(payload))
         }
       })
       .finally(() => {
@@ -150,258 +101,272 @@ const PaiementsPage = () => {
           setIsLoadingOptions(false)
         }
       })
-
     return () => {
       isCancelled = true
     }
-  }, [applyOptionsResults])
+  }, [])
 
-  const loadPaiements = useCallback(() => {
-    return getPaiements(getPaiementFilterParams(appliedFilters))
-  }, [appliedFilters, refreshNonce])
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }))
+  }
 
-  const inscriptionOptions = useMemo(
-    () => inscriptions.map((inscription) => ({
-      value: inscription.id,
-      label: getInscriptionOptionLabel(inscription),
-      searchText: [
-        getStudentName(getInscriptionStudent(inscription)),
-        getDesignation(getInscriptionClasse(inscription)),
-        getDesignation(getInscriptionAnnee(inscription)),
-      ].join(' '),
-    })),
-    [inscriptions]
-  )
-  const studentOptions = useMemo(
-    () => students.map((student) => ({
-      value: student.id,
-      label: getStudentName(student),
-      searchText: student.contact || student.phone || '',
-    })),
-    [students]
-  )
-  const classeOptions = useMemo(
-    () => classes.map((classe) => ({
-      value: classe.id,
-      label: getDesignation(classe, `Classe #${classe.id}`),
-      searchText: classe.responsable || '',
-    })),
-    [classes]
-  )
-  const anneeOptions = useMemo(
-    () => anneesScolaires.map((annee) => ({
-      value: annee.id,
-      label: getDesignation(annee, `Annee #${annee.id}`),
-      searchText: annee.statut || '',
-    })),
-    [anneesScolaires]
-  )
+  const handleArrayToggle = (key, value) => {
+    setFilters(prev => {
+      const arr = prev[key]
+      const isSelected = arr.includes(value)
+      return {
+        ...prev,
+        [key]: isSelected ? arr.filter(v => v !== value) : [...arr, value]
+      }
+    })
+  }
 
-  const handleFilterChange = (event) => {
-    const { id, value } = event.target
-    setDraftFilters((currentFilters) => ({ ...currentFilters, [id]: value }))
+  const abbreviateClass = (designation) => {
+    if (!designation) return ''
+    const d = designation.toLowerCase()
+    let num = ''
+    if (d.includes('1') || d.includes('premi')) num = '1'
+    else if (d.includes('2') || d.includes('deux')) num = '2'
+    else if (d.includes('3') || d.includes('trois')) num = '3'
+    else if (d.includes('4') || d.includes('quatr')) num = '4'
+    else if (d.includes('5') || d.includes('cinq')) num = '5'
+    else if (d.includes('6') || d.includes('six')) num = '6'
+    else if (d.includes('7') || d.includes('sept')) num = '7'
+    else if (d.includes('8') || d.includes('huit')) num = '8'
 
-    if (filterError) {
-      setFilterError('')
+    let type = ''
+    if (d.includes('maternelle')) type = 'M'
+    else if (d.includes('primaire')) type = 'P'
+    else if (d.includes('secondaire') || d.includes('humanit')) type = 'S'
+
+    if (num && type) return num + type
+    return designation
+  }
+
+  const localFilter = (item) => {
+    const status = getPaiementStatus(item)
+    if (filters.status.length > 0 && !filters.status.includes(status)) return false
+
+    const mode = item.mode_paiement || item.modePaiement || item.mode
+    if (filters.modePaiement.length > 0 && !filters.modePaiement.includes(mode)) return false
+
+    const motif = item.motif || item.type
+    if (filters.motif.length > 0 && !filters.motif.includes(motif)) return false
+
+    const date = getPaiementDate(item)
+    if (filters.dateMin || filters.dateMax) {
+      if (date) {
+        const itemDate = new Date(date)
+        // Normalize to midnight to avoid timezone issues when comparing date only
+        itemDate.setHours(0, 0, 0, 0)
+
+        if (filters.dateMin) {
+          const dMin = new Date(filters.dateMin)
+          dMin.setHours(0, 0, 0, 0)
+          if (itemDate < dMin) return false
+        }
+        if (filters.dateMax) {
+          const dMax = new Date(filters.dateMax)
+          dMax.setHours(0, 0, 0, 0)
+          if (itemDate > dMax) return false
+        }
+      } else {
+        return false
+      }
     }
-  }
 
-  const handleApplyFilters = () => {
-    if (
-      draftFilters.date_debut &&
-      draftFilters.date_fin &&
-      new Date(draftFilters.date_debut) > new Date(draftFilters.date_fin)
-    ) {
-      setFilterError('La date de debut doit etre anterieure ou egale a la date de fin.')
-      return
+    const montant = parseFloat(getPaiementMontant(item))
+    if (filters.montantMin || filters.montantMax) {
+      if (filters.montantMin && montant < parseFloat(filters.montantMin)) return false
+      if (filters.montantMax && montant > parseFloat(filters.montantMax)) return false
     }
 
-    setFilterError('')
-    setAppliedFilters({ ...draftFilters })
+    const inscription = getPaiementInscription(item)
+    if (filters.anneeScolaireId) {
+      const annee = getInscriptionAnnee(inscription)
+      if (!annee || annee.id.toString() !== filters.anneeScolaireId.toString()) return false
+    }
+
+    if (filters.classes.length > 0) {
+      const classe = getInscriptionClasse(inscription)
+      if (!classe) return false
+      const abbr = abbreviateClass(getDesignation(classe))
+      if (!filters.classes.includes(abbr)) return false
+    }
+
+    return true
   }
 
-  const handleResetFilters = () => {
-    setDraftFilters(DEFAULT_PAIEMENT_FILTERS)
-    setAppliedFilters(DEFAULT_PAIEMENT_FILTERS)
-    setFilterError('')
+  const hasActiveFilters = filters.status.length > 0 ||
+    filters.modePaiement.length > 0 ||
+    filters.motif.length > 0 ||
+    filters.dateMin !== '' ||
+    filters.dateMax !== '' ||
+    filters.montantMin !== '' ||
+    filters.montantMax !== '' ||
+    filters.anneeScolaireId !== '' ||
+    filters.classes.length > 0
+
+  const handleClearFilters = () => {
+    setFilters({
+      status: [], modePaiement: [], motif: [], dateMin: '', dateMax: '', montantMin: '', montantMax: '', anneeScolaireId: '', classes: []
+    })
   }
 
-  const hasDraftFilters = hasActivePaiementFilters(draftFilters)
-  const hasAppliedFilters = hasActivePaiementFilters(appliedFilters)
-
-  const filterPanel = (
-    <section className='module-filter-panel paiement-filter-panel'>
-      <div>
-        <h2>Filtrer les entrées</h2>
-        <p>
-          Affichez toutes les entrées ou limitez les résultats par statut, motif, mode, période,
-          inscription, élève, classe, année scolaire ou référence.
-        </p>
-      </div>
-
-      <div className='module-filter-panel__fields paiement-filter-panel__fields'>
-        <Input
-          id='reference'
-          type='search'
-          label='Reference'
-          placeholder='Reference'
-          value={draftFilters.reference}
-          disabled={isLoadingOptions}
-          onChange={handleFilterChange}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              event.preventDefault()
-              handleApplyFilters()
-            }
-          }}
-        />
-        <SelectField
-          id='statut'
-          label='Statut'
-          value={draftFilters.statut}
-          options={STATUT_PAIEMENT_OPTIONS}
-          placeholder='Tous les statuts'
-          disabled={isLoadingOptions}
-          onChange={handleFilterChange}
-        />
-        <SelectField
-          id='motif'
-          label='Motif'
-          value={draftFilters.motif}
-          options={MOTIF_PAIEMENT_OPTIONS}
-          placeholder='Tous les motifs'
-          disabled={isLoadingOptions}
-          onChange={handleFilterChange}
-        />
-        <SelectField
-          id='mode_paiement'
-          label='Mode de paiement'
-          value={draftFilters.mode_paiement}
-          options={MODE_PAIEMENT_OPTIONS}
-          placeholder='Tous les modes'
-          disabled={isLoadingOptions}
-          onChange={handleFilterChange}
-        />
-        <Input
-          id='date_debut'
-          type='date'
-          label='Date debut'
-          placeholder='Date debut'
-          value={draftFilters.date_debut}
-          disabled={isLoadingOptions}
-          onChange={handleFilterChange}
-        />
-        <Input
-          id='date_fin'
-          type='date'
-          label='Date fin'
-          placeholder='Date fin'
-          value={draftFilters.date_fin}
-          disabled={isLoadingOptions}
-          onChange={handleFilterChange}
-        />
-        <SearchableSelectField
-          id='inscription_id'
-          label='Inscription'
-          value={draftFilters.inscription_id}
-          options={inscriptionOptions}
-          placeholder='Rechercher une inscription'
-          emptyMessage='Aucune inscription ne correspond a votre recherche.'
-          disabled={isLoadingOptions}
-          onChange={handleFilterChange}
-        />
-        <SearchableSelectField
-          id='student_id'
-          label='Eleve'
-          value={draftFilters.student_id}
-          options={studentOptions}
-          placeholder='Rechercher un eleve'
-          emptyMessage='Aucun eleve ne correspond a votre recherche.'
-          disabled={isLoadingOptions}
-          onChange={handleFilterChange}
-        />
-        <SearchableSelectField
-          id='class_id'
-          label='Classe'
-          value={draftFilters.class_id}
-          options={classeOptions}
-          placeholder='Rechercher une classe'
-          emptyMessage='Aucune classe ne correspond a votre recherche.'
-          disabled={isLoadingOptions}
-          onChange={handleFilterChange}
-        />
-        <SearchableSelectField
-          id='annee_scolaire_id'
-          label='Annee scolaire'
-          value={draftFilters.annee_scolaire_id}
-          options={anneeOptions}
-          placeholder='Rechercher une annee scolaire'
-          emptyMessage='Aucune annee scolaire ne correspond a votre recherche.'
-          disabled={isLoadingOptions}
-          onChange={handleFilterChange}
-        />
-        <div className='paiement-filter-panel__actions'>
-          {hasDraftFilters && (
-            <Button
-              type='button'
-              variant='ghost'
-              label='Reinitialiser'
-              disabled={isLoadingOptions}
-              onClick={handleResetFilters}
-              className='inscription-action inscription-action--secondary'
-            />
-          )}
-          <Button
-            type='button'
-            variant='super'
-            label='Appliquer les filtres'
-            disabled={isLoadingOptions}
-            onClick={handleApplyFilters}
-            className='inscription-action inscription-action--primary'
-          />
-        </div>
-      </div>
-
-      {filterError && <Feedback type='error' message={filterError} />}
-      {hasAppliedFilters && !filterError && (
-        <Feedback type='info' message='Filtres appliques. Les resultats affiches viennent de la recherche serveur.' />
-      )}
-      {isLoadingOptions && <Loader message='Chargement des filtres...' />}
-      {!isLoadingOptions && optionsError && (
-        <div className='module-filter-panel__warning'>
-          <Feedback type='warning' message={optionsError} />
-          <Button
-            type='button'
-            variant='ghost'
-            label='Reessayer'
-            onClick={loadOptions}
-            className='inscription-action inscription-action--secondary'
-          />
-        </div>
-      )}
-    </section>
-  )
+  const hardcodedClasses = ['1M', '2M', '3M', '1P', '2P', '3P', '4P', '5P', '6P', '1S', '2S', '3S', '4S', '5S', '6S']
 
   return (
     <EntityListPage
       isLoadingDependencies={isLoadingOptions}
       title='Entrées'
       description='Consultez les entrées, filtrez les résultats et suivez leur statut.'
-      loadItems={loadPaiements}
+      loadItems={getPaiements}
       columns={columns}
       emptyMessage='Aucune entrée enregistrée.'
-      createPath='/paiements/create'
-      createLabel='Nouvelle entrée'
+      createPath={canCreate ? '/paiements/create' : null}
+      createLabel={canCreate ? 'Nouvelle entrée' : null}
       getRowPath={(item) => `/paiements/${item.id}`}
       searchPlaceholder='Recherche rapide dans les entrées affichées'
       getSearchText={getPaiementSearchText}
       successMessage={location.state?.successMessage}
-      beforePanel={filterPanel}
+      localFilter={localFilter}
+      hasActiveFilters={hasActiveFilters}
+      onClearFilters={handleClearFilters}
       socketEvents={{
         created: 'paiement_created',
         updated: 'paiement_updated',
         deleted: 'paiement_deleted'
       }}
+      renderFilterPanel={({ isOpen, onClose }) => (
+        <FilterPanel
+          isOpen={isOpen}
+          onClose={onClose}
+          onApply={onClose}
+          onClear={handleClearFilters}
+        >
+          <div className='filter-field'>
+            <label>Statut</label>
+            <select
+              className='inscription-select'
+              value={filters.status[0] || ''}
+              onChange={(e) => {
+                const val = e.target.value
+                setFilters(prev => ({ ...prev, status: val ? [val] : [] }))
+              }}
+            >
+              <option value=''>Tous les statuts</option>
+              <option value='CONFIRME'>CONFIRME</option>
+              <option value='EN_ATTENTE'>EN ATTENTE</option>
+              <option value='ANNULE'>ANNULE</option>
+            </select>
+          </div>
+
+          <div className='filter-field'>
+            <label>Mode de paiement</label>
+            <div className='filter-field-row' style={{ flexWrap: 'wrap', gap: '8px' }}>
+              {['CASH', 'MOBILE_MONEY'].map(m => (
+                <label className='filter-checkbox' key={m}>
+                  <input type='checkbox' checked={filters.modePaiement.includes(m)} onChange={() => handleArrayToggle('modePaiement', m)} />
+                  <span>{m.replace(/_/g, ' ')}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className='filter-field'>
+            <label>Motif de paiement</label>
+            <select
+              className='inscription-select'
+              value={filters.motif[0] || ''}
+              onChange={(e) => {
+                const val = e.target.value
+                setFilters(prev => ({ ...prev, motif: val ? [val] : [] }))
+              }}
+            >
+              <option value=''>Tous les motifs</option>
+              <option value='FRAIS_TRANSPORT'>FRAIS TRANSPORT</option>
+              <option value='FRAIS_SCOLAIRE'>FRAIS SCOLAIRE</option>
+              <option value='FRAIS_ETAT'>FRAIS ETAT</option>
+              <option value='FRAIS_ETUDE'>FRAIS ETUDE</option>
+              <option value='AUTRE'>AUTRE</option>
+            </select>
+          </div>
+
+          <div className='filter-field'>
+            <label>Période de paiement</label>
+            <div className='filter-field-row' style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ flex: 1 }}>
+                <Input
+                  type='date'
+                  value={filters.dateMin}
+                  onChange={(e) => handleFilterChange('dateMin', e.target.value)}
+                  style={{ marginBottom: 0, width: '1rem' }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <Input
+                  type='date'
+                  value={filters.dateMax}
+                  onChange={(e) => handleFilterChange('dateMax', e.target.value)}
+                  style={{ marginBottom: 0, width: '1rem' }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className='filter-field'>
+            <label>Total payé (Min - Max)</label>
+            <div className='filter-field-row' style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ flex: 1 }}>
+                <Input
+                  type='number'
+                  value={filters.montantMin}
+                  onChange={(e) => handleFilterChange('montantMin', e.target.value)}
+                  placeholder='Min'
+                  min='0'
+                  style={{ marginBottom: 0, width: '50%' }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <Input
+                  type='number'
+                  value={filters.montantMax}
+                  onChange={(e) => handleFilterChange('montantMax', e.target.value)}
+                  placeholder='Max'
+                  min='0'
+                  style={{ marginBottom: 0, width: '50%' }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className='filter-field'>
+            <label>Année scolaire</label>
+            <select
+              className='inscription-select'
+              value={filters.anneeScolaireId}
+              onChange={(e) => handleFilterChange('anneeScolaireId', e.target.value)}
+            >
+              <option value=''>Toutes les années</option>
+              {anneesScolaires.map(a => (
+                <option key={a.id} value={a.id}>{getDesignation(a)}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className='filter-field'>
+            <label>Classes</label>
+            <div className='filter-field-row' style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', maxHeight: '150px', overflowY: 'auto' }}>
+              {hardcodedClasses.map(c => (
+                <label className='filter-checkbox' key={c} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <input type='checkbox' checked={filters.classes.includes(c)} onChange={() => handleArrayToggle('classes', c)} />
+                  <span style={{ fontSize: '0.85rem' }}>{c}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </FilterPanel>
+      )}
     />
   )
 }

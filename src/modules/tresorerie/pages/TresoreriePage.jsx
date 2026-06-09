@@ -1,13 +1,12 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Filter } from 'lucide-react'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
+import FilterPanel from '../../../components/ui/FilterPanel'
 import { getAnneesScolaires } from '../../../services/anneeScolaireService'
 import { getTresorerieDashboard } from '../../../services/tresorerieService'
-import DetailField from '../../inscriptions/components/DetailField'
-import DetailSection from '../../inscriptions/components/DetailSection'
 import ModuleState from '../../inscriptions/components/ModuleState'
 import SearchableSelectField from '../../inscriptions/components/SearchableSelectField'
 import { formatAmount } from '../../inscriptions/utils/amounts'
@@ -22,8 +21,31 @@ import {
   validateTresorerieFilters,
 } from '../utils/tresorerie'
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Chart } from 'react-chartjs-2'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+)
+
 const TresoreriePage = () => {
-  const navigate = useNavigate()
   const [anneesScolaires, setAnneesScolaires] = useState([])
   const [draftFilters, setDraftFilters] = useState(DEFAULT_TRESORERIE_FILTERS)
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_TRESORERIE_FILTERS)
@@ -37,6 +59,9 @@ const TresoreriePage = () => {
   const [filterError, setFilterError] = useState('')
   const [isForbidden, setIsForbidden] = useState(false)
   const [forbiddenMessage, setForbiddenMessage] = useState('')
+
+  const [activeTab, setActiveTab] = useState('COURANTE')
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const loadDashboard = useCallback(async () => {
     setIsLoading(true)
@@ -79,10 +104,12 @@ const TresoreriePage = () => {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadDashboard()
   }, [loadDashboard])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadAnnees()
   }, [loadAnnees])
 
@@ -105,15 +132,8 @@ const TresoreriePage = () => {
     appliedFilters.start_date ||
     appliedFilters.end_date
   )
-  const hasDraftFilters = Boolean(
-    draftFilters.annee_scolaire_id ||
-    draftFilters.start_date ||
-    draftFilters.end_date
-  )
 
-  const handleFilterChange = (event) => {
-    const { id, value } = event.target
-
+  const handleFilterChange = (id, value) => {
     setDraftFilters((currentFilters) => {
       const nextFilters = { ...currentFilters, [id]: value }
 
@@ -148,9 +168,10 @@ const TresoreriePage = () => {
     setDashboardData(null)
     setIsLoading(true)
     setAppliedFilters({ ...draftFilters })
+    setIsFilterOpen(false)
   }
 
-  const handleResetFilters = () => {
+  const handleClearFilters = () => {
     setDraftFilters(DEFAULT_TRESORERIE_FILTERS)
     setAppliedFilters(DEFAULT_TRESORERIE_FILTERS)
     setFilterError('')
@@ -160,129 +181,266 @@ const TresoreriePage = () => {
     setIsLoading(true)
   }
 
-  const renderSummaryCards = (summary, title, subtitle) => {
-    if (!summary) return null
+  const renderCard = (title, amount, isTotal = false) => (
+    <div style={{
+      background: isTotal ? 'var(--color-primary)' : 'var(--color-surface)',
+      color: isTotal ? 'var(--color-background)' : 'var(--color-text-primary)',
+      padding: '24px',
+      borderRadius: '16px',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '8px',
+      minWidth: '200px',
+      flex: 1,
+      border: isTotal ? 'none' : '1px solid var(--color-border)'
+    }}
+    >
+      <span style={{ fontSize: '0.9rem', color: isTotal ? 'var(--color-background)' : 'var(--color-text-muted)' }}>{title}</span>
+      <strong style={{ fontSize: '1.8rem', fontWeight: 700 }}>{formatAmount(amount)}</strong>
+    </div>
+  )
+
+  const renderChart = (labels, entreesData, sortiesData, chartTitle) => {
+    const data = {
+      labels,
+      datasets: [
+        {
+          type: 'line',
+          label: 'Sorties',
+          data: sortiesData,
+          borderColor: '#111827', // Dark contrast color for line
+          backgroundColor: '#111827',
+          borderWidth: 2,
+          fill: false,
+          tension: 0.1,
+          pointBackgroundColor: '#111827',
+        },
+        {
+          type: 'bar',
+          label: 'Entrées',
+          data: entreesData,
+          backgroundColor: '#C6F53D', // Primary color
+        },
+      ],
+    }
+
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: !!chartTitle,
+          text: chartTitle,
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+    }
+
     return (
-      <section className='inscription-amount-panel' style={{ marginBottom: '24px' }}>
-        <div>
-          <h2>{title}</h2>
-          {subtitle && <p>{subtitle}</p>}
-        </div>
-        <div className='inscription-amount-grid tresorerie-amount-grid'>
-          <article className='inscription-amount-card'>
-            <span>Entrées comptabilisables</span>
-            <strong>{formatAmount(summary.entreesComptabilisables)}</strong>
-          </article>
-          <article className='inscription-amount-card'>
-            <span>Sorties confirmées</span>
-            <strong>{formatAmount(summary.sortiesConfirmees)}</strong>
-          </article>
-          <article className='inscription-amount-card inscription-amount-card--total'>
-            <span>Solde de trésorerie</span>
-            <strong>{formatAmount(summary.soldeTresorerie)}</strong>
-          </article>
-        </div>
-      </section>
+      <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', marginTop: '24px' }}>
+        <Chart type='bar' options={options} data={data} />
+      </div>
     )
   }
 
-  return (
-    <section className='inscription-page'>
-      <header className='inscription-page-header'>
+  const renderActiveTabContent = () => {
+    if (!dashboardData) return null
+
+    if (activeTab === 'COURANTE') {
+      const labels = []
+      const entreesData = []
+      const sortiesData = []
+
+      dashboardData.entreesParCategorie?.forEach(e => {
+        if (!labels.includes(e.categorie)) labels.push(e.categorie)
+      })
+      dashboardData.sortiesParCategorie?.forEach(s => {
+        if (!labels.includes(s.categorie)) labels.push(s.categorie)
+      })
+
+      labels.forEach(label => {
+        const e = dashboardData.entreesParCategorie?.find(x => x.categorie === label)
+        const s = dashboardData.sortiesParCategorie?.find(x => x.categorie === label)
+        entreesData.push(e ? e.montant : 0)
+        sortiesData.push(s ? s.montant : 0)
+      })
+
+      return (
         <div>
-          <h1>Tableau de bord tresorerie</h1>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+            {renderCard('Entrées', dashboardData.vueCourante.entreesComptabilisables)}
+            {renderCard('Sorties', dashboardData.vueCourante.sortiesConfirmees)}
+            {renderCard('Solde Courant', dashboardData.vueCourante.soldeTresorerie, true)}
+          </div>
+          {renderChart(labels, entreesData, sortiesData, 'Comparaison par catégorie (Vue courante)')}
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+      )
+    }
+
+    if (activeTab === 'GLOBAL') {
+      return (
+        <div>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+            {renderCard('Total Entrées', dashboardData.resumeGlobal.entreesComptabilisables)}
+            {renderCard('Total Sorties', dashboardData.resumeGlobal.sortiesConfirmees)}
+            {renderCard('Solde Global', dashboardData.resumeGlobal.soldeTresorerie, true)}
+          </div>
+          {renderChart(['Global'], [dashboardData.resumeGlobal.entreesComptabilisables], [dashboardData.resumeGlobal.sortiesConfirmees], 'Bilan Global (Toutes périodes)')}
+        </div>
+      )
+    }
+
+    if (activeTab === 'SOLDE') {
+      const data = {
+        labels: ['Caisse', 'Mobile Money'],
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Solde Réel',
+            data: [dashboardData.soldesReels.caisse, dashboardData.soldesReels.mobileMoney],
+            backgroundColor: '#C6F53D', // Primary Color
+          }
+        ],
+      }
+      return (
+        <div>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+            {renderCard('Caisse', dashboardData.soldesReels.caisse)}
+            {renderCard('Mobile Money', dashboardData.soldesReels.mobileMoney)}
+            {renderCard('Solde Total Disponible', dashboardData.soldesReels.soldeDisponible, true)}
+          </div>
+          <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', marginTop: '24px' }}>
+            <Chart type='bar' options={{ maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Répartition des soldes réels' } }, scales: { y: { beginAtZero: true } } }} data={data} />
+          </div>
+        </div>
+      )
+    }
+
+    if (activeTab === 'TRANSPORT') {
+      return (
+        <div>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+            {renderCard('Entrées Transport', dashboardData.transport.entreesTransport)}
+            {renderCard('Sorties Transport', dashboardData.transport.sortiesTransport)}
+            {renderCard('Solde Transport', dashboardData.transport.soldeTransport, true)}
+          </div>
+
+          <div style={{ marginTop: '24px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            {renderCard('Chauffeur', dashboardData.transport.detailsSorties.chauffeur)}
+            {renderCard('Carburant', dashboardData.transport.detailsSorties.carburant)}
+            {renderCard('Entretien', dashboardData.transport.detailsSorties.entretien)}
+          </div>
+
+          {renderChart(
+            ['Transport'],
+            [dashboardData.transport.entreesTransport],
+            [dashboardData.transport.sortiesTransport],
+            'Bilan Transport'
+          )}
+        </div>
+      )
+    }
+
+    return null
+  }
+
+  const tabStyle = (isActive) => ({
+    padding: '12px 24px',
+    background: isActive ? 'var(--color-primary)' : 'transparent',
+    color: isActive ? 'var(--color-background)' : 'var(--color-text-primary)',
+    border: isActive ? '1px solid var(--color-primary)' : '1px solid var(--color-border)',
+    borderRadius: '30px',
+    cursor: 'pointer',
+    fontWeight: isActive ? 600 : 500,
+    boxShadow: isActive ? '0 2px 8px rgba(198, 245, 61, 0.4)' : 'none',
+    transition: 'all 0.2s ease',
+  })
+
+  return (
+    <section className='inscription-page' style={{ padding: '24px' }}>
+      <header className='inscription-page-header' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <button style={tabStyle(activeTab === 'COURANTE')} onClick={() => setActiveTab('COURANTE')}>Vue courante</button>
+          <button style={tabStyle(activeTab === 'GLOBAL')} onClick={() => setActiveTab('GLOBAL')}>Résumé global</button>
+          <button style={tabStyle(activeTab === 'SOLDE')} onClick={() => setActiveTab('SOLDE')}>Solde disponible</button>
+          <button style={tabStyle(activeTab === 'TRANSPORT')} onClick={() => setActiveTab('TRANSPORT')}>Résumé transport</button>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {hasActiveFilters && (
+            <span className='inscription-active-filter-badge'>
+              Filtres actifs
+            </span>
+          )}
           <Button
             type='button'
-            variant='super'
-            label='Nouvelle entrée'
-            onClick={() => navigate('/paiements/create')}
-            className='inscription-action inscription-action--primary'
-          />
-          <Button
-            type='button'
-            variant='ghost'
-            label='Nouvelle sortie'
-            onClick={() => navigate('/depenses/create')}
+            variant='outline'
+            icon={<Filter size={16} />}
+            label='Filtrer'
+            onClick={() => setIsFilterOpen(true)}
             className='inscription-action inscription-action--secondary'
           />
         </div>
       </header>
 
-      <section className='module-filter-panel tresorerie-filter-panel'>
-        <div>
-          <h2>Filtrer la tresorerie</h2>
-          <p>
-            Filtrez la vue courante par annee scolaire ou par periode. Le resume global reste affiche separement.
-          </p>
-        </div>
-
-        <div className='module-filter-panel__fields tresorerie-filter-panel__fields'>
+      <FilterPanel
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        onApply={handleApplyFilters}
+        onClear={handleClearFilters}
+      >
+        <div className='filter-field'>
+          <label>Annee scolaire</label>
           <SearchableSelectField
             id='annee_scolaire_id'
-            label='Annee scolaire'
             value={draftFilters.annee_scolaire_id}
             options={anneeOptions}
             placeholder='Rechercher une annee scolaire'
             emptyMessage='Aucune annee scolaire ne correspond a votre recherche.'
             disabled={isLoadingOptions}
-            onChange={handleFilterChange}
+            onChange={(e) => handleFilterChange('annee_scolaire_id', e.target.value)}
           />
-          <Input
-            id='start_date'
-            type='date'
-            label='Date debut'
-            placeholder='Date debut'
-            value={draftFilters.start_date}
-            disabled={isLoadingOptions}
-            onChange={handleFilterChange}
-          />
-          <Input
-            id='end_date'
-            type='date'
-            label='Date fin'
-            placeholder='Date fin'
-            value={draftFilters.end_date}
-            disabled={isLoadingOptions}
-            onChange={handleFilterChange}
-          />
-          <div className='tresorerie-filter-panel__actions'>
-            {(hasActiveFilters || hasDraftFilters) && (
-              <Button
-                type='button'
-                variant='ghost'
-                label='Reinitialiser'
-                disabled={isLoading || isLoadingOptions}
-                onClick={handleResetFilters}
-                className='inscription-action inscription-action--secondary'
+        </div>
+
+        <div className='filter-field'>
+          <label>Période d'analyse</label>
+          <div className='filter-field-row' style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ flex: 1 }}>
+              <Input
+                type='date'
+                value={draftFilters.start_date}
+                disabled={isLoadingOptions}
+                onChange={(e) => handleFilterChange('start_date', e.target.value)}
+                style={{ marginBottom: 0, width: '100%' }}
               />
-            )}
-            <Button
-              type='button'
-              variant='super'
-              label='Appliquer'
-              disabled={isLoading || isLoadingOptions}
-              onClick={handleApplyFilters}
-              className='inscription-action inscription-action--primary'
-            />
+            </div>
+            <div style={{ flex: 1 }}>
+              <Input
+                type='date'
+                value={draftFilters.end_date}
+                disabled={isLoadingOptions}
+                onChange={(e) => handleFilterChange('end_date', e.target.value)}
+                style={{ marginBottom: 0, width: '100%' }}
+              />
+            </div>
           </div>
         </div>
 
         {filterError && <Feedback type='error' message={filterError} />}
         {optionsError && (
-          <div className='module-filter-panel__warning'>
+          <div style={{ marginTop: '16px' }}>
             <Feedback type='warning' message={optionsError} />
-            <Button
-              type='button'
-              variant='ghost'
-              label='Reessayer'
-              onClick={loadAnnees}
-              className='inscription-action inscription-action--secondary'
-            />
           </div>
         )}
-      </section>
+      </FilterPanel>
 
       {isLoading && <Loader message='Chargement de la tresorerie...' />}
 
@@ -305,62 +463,15 @@ const TresoreriePage = () => {
       )}
 
       {!isLoading && !isForbidden && !loadError && dashboardData && (
-        <div className='detail-page-stack'>
-          {/* Vue Courante */}
-          {renderSummaryCards(dashboardData.vueCourante, 'Vue courante', scopeLabel)}
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            {activeTab === 'COURANTE' && <h2>Vue courante - {scopeLabel}</h2>}
+            {activeTab === 'GLOBAL' && <h2>Résumé global - Toutes périodes</h2>}
+            {activeTab === 'SOLDE' && <h2>Soldes réels disponibles</h2>}
+            {activeTab === 'TRANSPORT' && <h2>Résumé Transport</h2>}
+          </div>
 
-          {/* Résumé Global */}
-          {renderSummaryCards(dashboardData.resumeGlobal, 'Résumé global', 'Toutes les années et périodes confondues')}
-
-          {/* Soldes réels disponibles */}
-          <DetailSection title='Soldes réels disponibles' description='Montants réellement disponibles en possession de l école.'>
-            <DetailField label='Caisse' value={formatAmount(dashboardData.soldesReels.caisse)} />
-            <DetailField label='Mobile Money' value={formatAmount(dashboardData.soldesReels.mobileMoney)} />
-            <DetailField label='Solde disponible' value={formatAmount(dashboardData.soldesReels.soldeDisponible)} className='inscription-detail-field--highlight' />
-          </DetailSection>
-
-          {/* Transport */}
-          <DetailSection title='Résumé Transport'>
-            <DetailField label='Entrées transport' value={formatAmount(dashboardData.transport.entreesTransport)} />
-            <DetailField label='Sorties transport' value={formatAmount(dashboardData.transport.sortiesTransport)} />
-            <DetailField label='Solde transport' value={formatAmount(dashboardData.transport.soldeTransport)} className='inscription-detail-field--highlight' />
-
-            <div className='inscription-detail-field inscription-detail-field--wide' style={{ marginTop: '16px' }}>
-              <dt>Détail des sorties transport</dt>
-              <dd>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Chauffeur:</span> <strong>{formatAmount(dashboardData.transport.detailsSorties.chauffeur)}</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Carburant:</span> <strong>{formatAmount(dashboardData.transport.detailsSorties.carburant)}</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                     <span>Entretien:</span> <strong>{formatAmount(dashboardData.transport.detailsSorties.entretien)}</strong>
-                  </div>
-                </div>
-              </dd>
-            </div>
-          </DetailSection>
-
-          {/* Entrées par catégorie */}
-          {dashboardData.entreesParCategorie && dashboardData.entreesParCategorie.length > 0 && (
-            <DetailSection title='Entrées par catégorie'>
-              {dashboardData.entreesParCategorie.map((item, index) => (
-                <DetailField key={index} label={item.categorie} value={formatAmount(item.montant)} />
-              ))}
-            </DetailSection>
-          )}
-
-          {/* Sorties par catégorie */}
-          {dashboardData.sortiesParCategorie && dashboardData.sortiesParCategorie.length > 0 && (
-            <DetailSection title='Sorties par catégorie'>
-              {dashboardData.sortiesParCategorie.map((item, index) => (
-                <DetailField key={index} label={item.categorie} value={formatAmount(item.montant)} />
-              ))}
-            </DetailSection>
-          )}
-
+          {renderActiveTabContent()}
         </div>
       )}
     </section>
