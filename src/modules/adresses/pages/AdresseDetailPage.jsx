@@ -22,6 +22,7 @@ import {
   getAdresse,
   updateAdresse,
 } from '../../../services/adresseService'
+import PasswordConfirmModal from '../../../components/ui/PasswordConfirmModal'
 import { getParents } from '../../../services/parentService'
 import { getStudents } from '../../../services/studentService'
 import {
@@ -52,6 +53,7 @@ const AdresseDetailPage = () => {
   const [ownerType, setOwnerType] = useState('')
   const [editForm, setEditForm] = useState(normalizeOwnedAdresseForm())
   const [editErrors, setEditErrors] = useState({})
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
 
   const userStr = localStorage.getItem('user')
   const user = userStr ? JSON.parse(userStr) : {}
@@ -226,12 +228,12 @@ const AdresseDetailPage = () => {
     }
   }
 
-  const handleDelete = async () => {
-    const isConfirmed = window.confirm(`Supprimer l adresse #${id} ? Cette action est irreversible.`)
+  const handleDelete = () => {
+    setShowPasswordModal(true)
+  }
 
-    if (!isConfirmed) {
-      return
-    }
+  const executeDelete = async () => {
+    setShowPasswordModal(false)
 
     setFeedback({ type: '', message: '' })
     setIsDeleting(true)
@@ -355,6 +357,15 @@ const AdresseDetailPage = () => {
           </DetailSection>
         </div>
       )}
+
+      <PasswordConfirmModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onConfirm={executeDelete}
+        title='Confirmation requise'
+        message='Veuillez saisir votre mot de passe pour confirmer la suppression de cette adresse.'
+        actionLabel='Supprimer'
+      />
     </section>
   )
 }

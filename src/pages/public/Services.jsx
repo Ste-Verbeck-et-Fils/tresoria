@@ -4,6 +4,7 @@ import FeatureCard from '../../components/ui/FeatureCard'
 import '../../styles/public/Services.css'
 import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
+import HeroBanner from '../../assets/images/advice-for-student-banner.webp'
 
 const servicesData = [
   {
@@ -54,6 +55,9 @@ const Services = () => {
   return (
     <div className='public-site-theme'>
       <Header />
+      <div className="hero-banner">
+        <img src={HeroBanner} alt="hero banner" className='hero-banner-img' />
+      </div>
       <div className='services-page'>
         <div className='services-header'>
           <h1 className='section-title'>

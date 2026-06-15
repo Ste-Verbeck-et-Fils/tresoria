@@ -2,6 +2,7 @@ import React from 'react'
 import '../../styles/public/Help.css'
 import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
+import HeroBanner from '../../assets/images/advice-for-student-banner.webp'
 
 const faqData = [
   {
@@ -30,6 +31,9 @@ const Help = () => {
   return (
     <main className='public-site-theme'>
       <Header />
+      <div className="hero-banner">
+        <img src={HeroBanner} alt="hero banner" className='hero-banner-img' />
+      </div>
       <div className='help-page'>
 
         <div className='faq-section'>

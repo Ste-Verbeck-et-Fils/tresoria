@@ -12,12 +12,22 @@ import {
   validateParentForm,
 } from '../../parents/utils/parent'
 
-const QuickParentForm = ({ parentRole, onCancel, onCreated }) => {
+const QuickParentForm = ({ parentRole, initialSearch, onCancel, onCreated }) => {
   const expectedGender = parentRole === 'pere_id' ? 'MASCULIN' : 'FEMININ'
-  const [form, setForm] = useState(() => ({
-    ...normalizeParentForm(),
-    gender: expectedGender,
-  }))
+  const [form, setForm] = useState(() => {
+    const defaultForm = normalizeParentForm()
+    if (initialSearch) {
+      if (/^[\d\s\+\-\(\)]+$/.test(initialSearch.trim())) {
+        defaultForm.phone = initialSearch.trim()
+      } else {
+        defaultForm.full_name = initialSearch.trim()
+      }
+    }
+    return {
+      ...defaultForm,
+      gender: expectedGender,
+    }
+  })
   const [errors, setErrors] = useState({})
   const [feedback, setFeedback] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -94,16 +104,18 @@ const QuickParentForm = ({ parentRole, onCancel, onCreated }) => {
           disabled={isSubmitting}
           onChange={handleChange}
         />
-        <SelectField
-          id='gender'
-          label='Genre'
-          value={form.gender}
-          options={GENDER_OPTIONS.filter((option) => option.value === expectedGender)}
-          placeholder='Genre du parent'
-          error={errors.gender}
-          disabled
-          onChange={handleChange}
-        />
+        <div className={`inscription-radio-group ${errors.gender ? 'has-error' : ''}`}>
+          <label className='inscription-field-label' style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>Genre</label>
+          <div className='inscription-radio-options' style={{ display: 'flex', gap: '15px' }}>
+            {GENDER_OPTIONS.map((opt) => (
+              <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.9rem' }}>
+                <input type='radio' id='gender' name='gender' value={opt.value} checked={form.gender === opt.value} onChange={handleChange} disabled />
+                {opt.label}
+              </label>
+            ))}
+          </div>
+          {errors.gender && <span className='inscription-field-error'>{errors.gender}</span>}
+        </div>
         <Input
           id='profession'
           type='text'

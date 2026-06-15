@@ -19,6 +19,7 @@ import {
   updateAdresse,
   updateParent,
 } from '../../../services/parentService'
+import PasswordConfirmModal from '../../../components/ui/PasswordConfirmModal'
 import {
 
   GENDER_OPTIONS,
@@ -51,6 +52,18 @@ const ParentDetailPage = () => {
   const [adresseErrors, setAdresseErrors] = useState({})
   const [isSavingAdresse, setIsSavingAdresse] = useState(false)
   const [deletingAdresseId, setDeletingAdresseId] = useState(null)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [pendingAction, setPendingAction] = useState(null)
+
+  const handlePasswordConfirm = () => {
+    setShowPasswordModal(false)
+    if (pendingAction?.type === 'deleteParent') {
+      executeDeleteParent()
+    } else if (pendingAction?.type === 'deleteAdresse') {
+      executeDeleteAdresse(pendingAction.adresse)
+    }
+    setPendingAction(null)
+  }
 
   const loadParentData = async () => {
     setIsLoading(true)
@@ -155,12 +168,12 @@ const ParentDetailPage = () => {
     }
   }
 
-  const handleDeleteParent = async () => {
-    const isConfirmed = window.confirm(`Supprimer le parent "${parent.full_name}" ? Cette action est irreversible.`)
+  const handleDeleteParent = () => {
+    setPendingAction({ type: 'deleteParent' })
+    setShowPasswordModal(true)
+  }
 
-    if (!isConfirmed) {
-      return
-    }
+  const executeDeleteParent = async () => {
 
     setFeedback({ type: '', message: '' })
     setIsDeleting(true)
@@ -247,12 +260,12 @@ const ParentDetailPage = () => {
     }
   }
 
-  const handleDeleteAdresse = async (adresse) => {
-    const isConfirmed = window.confirm(`Supprimer l adresse #${adresse.id} ? Cette action est irreversible.`)
+  const handleDeleteAdresse = (adresse) => {
+    setPendingAction({ type: 'deleteAdresse', adresse })
+    setShowPasswordModal(true)
+  }
 
-    if (!isConfirmed) {
-      return
-    }
+  const executeDeleteAdresse = async (adresse) => {
 
     setFeedback({ type: '', message: '' })
     setDeletingAdresseId(adresse.id)
@@ -425,10 +438,33 @@ const ParentDetailPage = () => {
                 )}
           </DetailSection>
 
+          <DetailSection title='Enfants (Eleves)'>
+            {parent.enfants_pere?.length > 0 || parent.enfants_mere?.length > 0 ? (
+              <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
+                {parent.enfants_pere?.map(enfant => (
+                  <li key={`pere-${enfant.id}`}>
+                    <Link to={`/students/${enfant.id}`} style={{ color: '#173f5f', textDecoration: 'none', fontWeight: '500' }}>
+                      {enfant.nom} {enfant.postnom} {enfant.prenom}
+                    </Link> (Père)
+                  </li>
+                ))}
+                {parent.enfants_mere?.map(enfant => (
+                  <li key={`mere-${enfant.id}`}>
+                    <Link to={`/students/${enfant.id}`} style={{ color: '#173f5f', textDecoration: 'none', fontWeight: '500' }}>
+                      {enfant.nom} {enfant.postnom} {enfant.prenom}
+                    </Link> (Mère)
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p style={{ margin: '10px 0', color: '#6b7280' }}>Aucun enfant enregistré pour ce parent.</p>
+            )}
+          </DetailSection>
+
           <article className='detail-section-card parent-address-section'>
             <header className='detail-section-card__header'>
               <h2>Adresses du parent</h2>
-              {!adresseMode && (
+              {!adresseMode && adresses.length < 3 && (
                 <Button
                   type='button'
                   variant='ghost'
@@ -571,6 +607,15 @@ const ParentDetailPage = () => {
           </DetailSection>
         </div>
       )}
+
+      <PasswordConfirmModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onConfirm={handlePasswordConfirm}
+        title='Confirmation requise'
+        message='Veuillez saisir votre mot de passe pour confirmer cette suppression.'
+        actionLabel='Supprimer'
+      />
     </section>
   )
 }

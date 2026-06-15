@@ -15,6 +15,7 @@ import {
   getPaiement,
   updatePaiement,
 } from '../../../services/paiementService'
+import PasswordConfirmModal from '../../../components/ui/PasswordConfirmModal'
 import DetailField from '../../inscriptions/components/DetailField'
 import DetailSection from '../../inscriptions/components/DetailSection'
 import DetailSummaryCard from '../../inscriptions/components/DetailSummaryCard'
@@ -98,6 +99,18 @@ const PaiementDetailPage = () => {
   const [isSaving, setIsSaving] = useState(false)
   const [isCancelling, setIsCancelling] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [pendingAction, setPendingAction] = useState(null)
+
+  const handlePasswordConfirm = () => {
+    setShowPasswordModal(false)
+    if (pendingAction === 'annuler') {
+      executeAnnuler()
+    } else if (pendingAction === 'delete') {
+      executeDelete()
+    }
+    setPendingAction(null)
+  }
 
   const loadPaiementData = async () => {
     setIsLoading(true)
@@ -208,13 +221,12 @@ const PaiementDetailPage = () => {
     }
   }
 
-  const handleAnnuler = async () => {
-    const isConfirmed = window.confirm(`Annuler l'entrée #${id} ?`)
+  const handleAnnuler = () => {
+    setPendingAction('annuler')
+    setShowPasswordModal(true)
+  }
 
-    if (!isConfirmed) {
-      return
-    }
-
+  const executeAnnuler = async () => {
     setFeedback({ type: '', message: '' })
     setIsCancelling(true)
 
@@ -228,12 +240,12 @@ const PaiementDetailPage = () => {
     }
   }
 
-  const handleDelete = async () => {
-    const isConfirmed = window.confirm(`Supprimer l'entrée #${id} ? Cette action est irreversible.`)
+  const handleDelete = () => {
+    setPendingAction('delete')
+    setShowPasswordModal(true)
+  }
 
-    if (!isConfirmed) {
-      return
-    }
+  const executeDelete = async () => {
 
     setFeedback({ type: '', message: '' })
     setIsDeleting(true)
@@ -487,6 +499,15 @@ const PaiementDetailPage = () => {
           </DetailSection>
         </div>
       )}
+
+      <PasswordConfirmModal
+        isOpen={showPasswordModal}
+        onClose={() => { setShowPasswordModal(false); setPendingAction(null) }}
+        onConfirm={handlePasswordConfirm}
+        title='Confirmation requise'
+        message={pendingAction === 'annuler' ? 'Veuillez saisir votre mot de passe pour confirmer l annulation.' : 'Veuillez saisir votre mot de passe pour confirmer la suppression.'}
+        actionLabel={pendingAction === 'annuler' ? 'Annuler l entrée' : 'Supprimer'}
+      />
     </section>
   )
 }

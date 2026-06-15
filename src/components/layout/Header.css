@@ -301,6 +301,7 @@
     display: none;
   }
 }
+
 .header-logo-clickable {
   cursor: pointer;
 }
@@ -312,4 +313,3 @@
 .mobile-nav-action-btn {
   width: 100%;
 }
-

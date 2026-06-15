@@ -29,6 +29,16 @@ import {
   validateDepenseForm,
 } from '../utils/depense'
 
+const getTransactionDateConstraints = () => {
+  const today = new Date()
+  const maxDate = today.toISOString().split('T')[0]
+  const pastDate = new Date()
+  pastDate.setDate(today.getDate() - 3)
+  const minDate = pastDate.toISOString().split('T')[0]
+  return { minDate, maxDate }
+}
+const { minDate: minDateTransaction, maxDate: maxDateTransaction } = getTransactionDateConstraints()
+
 const CreateDepensePage = () => {
   const navigate = useNavigate()
   const [form, setForm] = useState(DEFAULT_DEPENSE_FORM)
@@ -259,6 +269,8 @@ const CreateDepensePage = () => {
                 id='date_depense'
                 type='date'
                 label='Date de la sortie'
+                min={minDateTransaction}
+                max={maxDateTransaction}
                 value={form.date_depense}
                 error={errors.date_depense}
                 disabled={isFormDisabled || isSelectedAnneeClosed}

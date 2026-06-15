@@ -38,6 +38,16 @@ import {
   calculateDateFin,
 } from '../utils/paiement'
 
+const getTransactionDateConstraints = () => {
+  const today = new Date()
+  const maxDate = today.toISOString().split('T')[0]
+  const pastDate = new Date()
+  pastDate.setDate(today.getDate() - 3)
+  const minDate = pastDate.toISOString().split('T')[0]
+  return { minDate, maxDate }
+}
+const { minDate: minDateTransaction, maxDate: maxDateTransaction } = getTransactionDateConstraints()
+
 const getInitialForm = (navigationState = {}) => normalizePaiementForm({
   inscription_id: navigationState?.inscriptionId || navigationState?.inscription_id || '',
 })
@@ -368,6 +378,8 @@ const CreatePaiementPage = () => {
                   id='date_paiement'
                   type='date'
                   label="Date de l'entrée"
+                  min={minDateTransaction}
+                  max={maxDateTransaction}
                   value={form.date_paiement}
                   error={errors.date_paiement}
                   disabled={isFormDisabled || isSelectedInscriptionClosed}

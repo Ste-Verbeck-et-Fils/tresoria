@@ -10,11 +10,29 @@
 }
 
 /* ---- Hero ---- */
+
+.hero-banner {
+  position: relative;
+  width: 100%;
+  height: 8rem;
+}
+
+.hero-banner-img {
+  filter: blur(2px);
+
+  width: 100%;
+  height: 15rem;
+
+  object-fit: cover;
+
+}
+
 .hero-section {
   text-align: center;
   padding: 80px 20px 40px;
   max-width: 800px;
   margin: 0 auto;
+  margin-top: -9rem;
 }
 
 .wheel-section,
@@ -27,6 +45,7 @@
   color: var(--color-text-muted);
   margin-bottom: 40px;
   line-height: 1.6;
+  margin-top: 7rem;
 }
 
 .hero-actions {
@@ -61,5 +80,20 @@
   .hero-subtitle {
     font-size: 1.05rem;
     margin-bottom: 28px;
+  }
+
+  .hero-banner {
+    position: relative;
+    width: 100%;
+    height: 7rem;
+  }
+
+  .hero-banner-img {
+
+    width: 100%;
+    height: 10rem;
+
+    object-fit: cover;
+
   }
 }

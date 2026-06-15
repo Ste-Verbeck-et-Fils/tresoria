@@ -6,6 +6,7 @@ import ServicesSection from '../../components/sections/ServicesSection'
 import '../../styles/public/Home.css'
 import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
+import HeroBanner from '../../assets/images/advice-for-student-banner.webp'
 
 const Home = () => {
   const navigate = useNavigate()
@@ -14,6 +15,9 @@ const Home = () => {
     <div className='public-site-theme'>
       <Header />
       <div className='home-page'>
+        <div className="hero-banner">
+          <img src={HeroBanner} alt="hero banner" className='hero-banner-img' />
+        </div>
         <section className='hero-section'>
           <h1 className='hero-title'>
             <span id='titre-gs'>GS Emmanuel</span>

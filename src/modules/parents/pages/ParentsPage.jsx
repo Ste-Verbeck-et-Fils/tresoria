@@ -21,8 +21,8 @@ const ParentsPage = () => {
       loadItems={getParents}
       columns={columns}
       emptyMessage='Aucun parent enregistre.'
-      createPath='/parents/create'
-      createLabel='Nouveau parent'
+      createPath={null}
+      createLabel={null}
       getRowPath={(item) => `/parents/${item.id}`}
       searchPlaceholder='Rechercher un parent par telephone'
       getSearchText={(item) => item.phone || ''}

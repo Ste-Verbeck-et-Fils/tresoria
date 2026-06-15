@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Plus, Search, X } from 'lucide-react'
 
 const normalizeValue = (value) => String(value ?? '')
@@ -19,6 +19,12 @@ const SearchableSelectField = ({
   const [search, setSearch] = useState('')
   const [hasTyped, setHasTyped] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    setSearch('')
+    setHasTyped(false)
+  }, [value])
+
   const selectedOption = options.find((option) => normalizeValue(option.value) === normalizeValue(value))
   const normalizedSearch = search.trim().toLowerCase()
   const inputValue = hasTyped ? search : selectedOption?.label || ''

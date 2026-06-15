@@ -18,6 +18,7 @@ import {
   getStudentAdresses,
   updateStudent,
 } from '../../../services/studentService'
+import PasswordConfirmModal from '../../../components/ui/PasswordConfirmModal'
 import StudentAdresseManager from '../components/StudentAdresseManager'
 import {
 
@@ -48,6 +49,7 @@ const StudentDetailPage = () => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [editForm, setEditForm] = useState(normalizeStudentForm())
   const [editErrors, setEditErrors] = useState({})
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
 
   const userStr = localStorage.getItem('user')
   const currentUser = userStr ? JSON.parse(userStr) : {}
@@ -200,12 +202,12 @@ const StudentDetailPage = () => {
     }
   }
 
-  const handleDelete = async () => {
-    const isConfirmed = window.confirm(`Supprimer l eleve "${getStudentName(student)}" ? Cette action est irreversible.`)
+  const handleDelete = () => {
+    setShowPasswordModal(true)
+  }
 
-    if (!isConfirmed) {
-      return
-    }
+  const executeDelete = async () => {
+    setShowPasswordModal(false)
 
     setFeedback({ type: '', message: '' })
     setIsDeleting(true)
@@ -376,6 +378,15 @@ const StudentDetailPage = () => {
           )}
         </div>
       )}
+
+      <PasswordConfirmModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onConfirm={executeDelete}
+        title='Confirmation requise'
+        message='Veuillez saisir votre mot de passe pour confirmer la suppression de cet eleve.'
+        actionLabel='Supprimer'
+      />
     </section>
   )
 }

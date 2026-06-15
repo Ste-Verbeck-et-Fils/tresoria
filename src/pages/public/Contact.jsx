@@ -7,6 +7,7 @@ import Feedback from '../../components/ui/Feedback'
 import '../../styles/public/Contact.css'
 import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
+import HeroBanner from '../../assets/images/advice-for-student-banner.webp'
 
 const Contact = () => {
   const navigate = useNavigate()
@@ -39,6 +40,9 @@ const Contact = () => {
   return (
     <div className='public-site-theme'>
       <Header onActionClick={() => navigate('/login')} />
+      <div className="hero-banner">
+        <img src={HeroBanner} alt="hero banner" className='hero-banner-img' />
+      </div>
       <div className='contact-page'>
         <div className='contact-header'>
           <h1 className='section-title'>

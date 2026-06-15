@@ -1,7 +1,7 @@
 .inscription-page {
   --inscription-accent: #173f5f;
   --inscription-accent-hover: #0f2f49;
-  --inscription-accent-soft: #f1f6fa;
+  --inscription-accent-soft: #ffffff;
   --inscription-accent-border: #a9bfd1;
 
   display: flex;
@@ -406,6 +406,7 @@
   border: 1px solid var(--inscription-accent-border);
   border-radius: 8px;
   background: var(--inscription-accent-soft);
+  margin-top: 1rem;
 }
 
 .inscription-amount-panel h2,

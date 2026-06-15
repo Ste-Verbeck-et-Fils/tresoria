@@ -240,7 +240,7 @@ const DepensesPage = () => {
                   type='date'
                   value={filters.dateMin}
                   onChange={(e) => handleFilterChange('dateMin', e.target.value)}
-                  style={{ marginBottom: 0 }}
+                  style={{ marginBottom: 0, width: '1rem' }}
                 />
               </div>
               <div style={{ flex: 1 }}>
@@ -248,7 +248,7 @@ const DepensesPage = () => {
                   type='date'
                   value={filters.dateMax}
                   onChange={(e) => handleFilterChange('dateMax', e.target.value)}
-                  style={{ marginBottom: 0 }}
+                  style={{ marginBottom: 0, width: '1rem' }}
                 />
               </div>
             </div>
@@ -264,7 +264,7 @@ const DepensesPage = () => {
                   onChange={(e) => handleFilterChange('montantMin', e.target.value)}
                   placeholder='Min'
                   min='0'
-                  style={{ marginBottom: 0 }}
+                  style={{ marginBottom: 0, width: '50%' }}
                 />
               </div>
               <div style={{ flex: 1 }}>
@@ -274,7 +274,7 @@ const DepensesPage = () => {
                   onChange={(e) => handleFilterChange('montantMax', e.target.value)}
                   placeholder='Max'
                   min='0'
-                  style={{ marginBottom: 0 }}
+                  style={{ marginBottom: 0, width: '50%' }}
                 />
               </div>
             </div>

@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
+import PasswordConfirmModal from '../../../components/ui/PasswordConfirmModal'
 import { createAnneeScolaire } from '../../../services/anneeScolaireService'
 import {
   getAnneeScolairePayload,
@@ -19,6 +20,12 @@ const CreateAnneeScolairePage = () => {
   const [feedback, setFeedback] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const { state } = useLocation()
+  const isClosing = state?.closing
+  const oldAnneeName = state?.oldAnneeName
+
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+
   const handleChange = (event) => {
     const { id, value } = event.target
     setForm((currentForm) => ({ ...currentForm, [id]: value }))
@@ -28,7 +35,7 @@ const CreateAnneeScolairePage = () => {
     }
   }
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault()
     setFeedback('')
 
@@ -39,6 +46,11 @@ const CreateAnneeScolairePage = () => {
       return
     }
 
+    setShowPasswordModal(true)
+  }
+
+  const handlePasswordConfirm = async () => {
+    setShowPasswordModal(false)
     setIsSubmitting(true)
 
     try {
@@ -47,7 +59,7 @@ const CreateAnneeScolairePage = () => {
 
       navigate(anneeScolaire?.id ? `/annees-scolaires/${anneeScolaire.id}` : '/annees-scolaires', {
         replace: true,
-        state: { successMessage: 'Annee scolaire creee avec succes.' },
+        state: { successMessage: isClosing ? `Annee scolaire ${oldAnneeName} cloturee et nouvelle annee creee.` : 'Annee scolaire creee avec succes.' },
       })
     } catch (error) {
       setFeedback(error.message || 'Impossible de creer cette annee scolaire.')
@@ -65,10 +77,18 @@ const CreateAnneeScolairePage = () => {
             Retour aux annees scolaires
           </Link>
 
-          <h1>Nouvelle annee scolaire</h1>
+          <h1>{isClosing ? 'Cloturer et creer une nouvelle annee' : 'Nouvelle annee scolaire'}</h1>
 
         </div>
       </header>
+
+      {isClosing && (
+        <Feedback
+          type='warning'
+          title={`Cloture de l annee ${oldAnneeName}`}
+          message={`Renseignez les informations de la nouvelle annee scolaire. L annee ${oldAnneeName} sera automatiquement cloturee a la creation.`}
+        />
+      )}
 
       <form className='inscription-form-panel' onSubmit={handleSubmit}>
         {feedback && (
@@ -135,6 +155,15 @@ const CreateAnneeScolairePage = () => {
           />
         </div>
       </form>
+
+      <PasswordConfirmModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onConfirm={handlePasswordConfirm}
+        title='Confirmation requise'
+        message='Veuillez saisir votre mot de passe pour confirmer la création de cette année scolaire.'
+        actionLabel='Créer l année'
+      />
     </section>
   )
 }

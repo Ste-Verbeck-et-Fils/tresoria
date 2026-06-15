@@ -10,6 +10,8 @@ import photoNaomie from '../../assets/images/photo_naomie.jpeg'
 import photoVerbeck from '../../assets/images/photo_verbeck.jpeg'
 import photoGrace from '../../assets/images/photo_grace.jpeg'
 import photoJemimah from '../../assets/images/photo_jemimah.jpeg'
+import HeroBanner from '../../assets/images/advice-for-student-banner.webp'
+
 
 const About = () => {
   const navigate = useNavigate()
@@ -24,6 +26,9 @@ const About = () => {
 
     <div className='public-site-theme'>
       <Header onActionClick={() => navigate('/login')} />
+      <div className="hero-banner">
+        <img src={HeroBanner} alt="hero banner" className='hero-banner-img' />
+      </div>
       <div className='about-page'>
         <div className='about-header-wrapper'>
           <div className='about-header-glow' />

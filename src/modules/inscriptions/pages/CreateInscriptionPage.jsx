@@ -90,7 +90,17 @@ const CreateInscriptionPage = () => {
     }
 
     if (anneesResult.status === 'fulfilled') {
-      setAnneesScolaires(normalizeCollection(anneesResult.value))
+      const anneeData = normalizeCollection(anneesResult.value)
+      setAnneesScolaires(anneeData)
+      setForm((prev) => {
+        if (!prev.annee_scolaire_id) {
+          const activeAnnee = anneeData.find((a) => a.statut === 'ACTIF')
+          if (activeAnnee) {
+            return { ...prev, annee_scolaire_id: String(activeAnnee.id) }
+          }
+        }
+        return prev
+      })
     }
 
     if (
@@ -192,11 +202,12 @@ const CreateInscriptionPage = () => {
     }
   }
 
-  const openCreationPage = (path) => {
+  const openCreationPage = (path, searchParams = {}) => {
     navigate(path, {
       state: {
         returnTo: '/inscriptions/create',
         inscriptionDraft: form,
+        ...searchParams,
       },
     })
   }
@@ -320,20 +331,7 @@ const CreateInscriptionPage = () => {
               error={errors.student_id}
               disabled={isFormDisabled}
               onChange={handleChange}
-              onCreate={() => openCreationPage('/students/create')}
-            />
-
-            <SearchableSelectField
-              id='parent_id'
-              label='Parent responsable (optionnel)'
-              value={form.parent_id}
-              options={parentOptions}
-              placeholder='Rechercher un parent'
-              emptyMessage='Aucun parent ne correspond a votre recherche.'
-              createLabel='Creer un nouveau parent'
-              disabled={isSubmitting}
-              onChange={handleChange}
-              onCreate={() => openCreationPage('/parents/create')}
+              onCreate={(searchQuery) => openCreationPage('/students/create', { initialStudentSearch: searchQuery })}
             />
 
             <SearchableSelectField

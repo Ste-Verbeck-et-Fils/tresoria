@@ -6,6 +6,7 @@ import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
 import { deleteClasse, getClasse, updateClasse } from '../../../services/classeService'
+import PasswordConfirmModal from '../../../components/ui/PasswordConfirmModal'
 import DetailField from '../../inscriptions/components/DetailField'
 import DetailSection from '../../inscriptions/components/DetailSection'
 import DetailSummaryCard from '../../inscriptions/components/DetailSummaryCard'
@@ -32,6 +33,7 @@ const ClasseDetailPage = () => {
   const [editForm, setEditForm] = useState(normalizeForm())
   const [editErrors, setEditErrors] = useState({})
   const [editFeedback, setEditFeedback] = useState('')
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
 
   const loadClasse = async () => {
     setIsLoading(true)
@@ -72,12 +74,12 @@ const ClasseDetailPage = () => {
     }
   }, [id])
 
-  const handleDelete = async () => {
-    const isConfirmed = window.confirm(`Supprimer la classe "${classe.designation}" ? Cette action est irreversible.`)
+  const handleDelete = () => {
+    setShowPasswordModal(true)
+  }
 
-    if (!isConfirmed) {
-      return
-    }
+  const executeDelete = async () => {
+    setShowPasswordModal(false)
 
     setDeleteError('')
     setIsDeleting(true)
@@ -329,6 +331,15 @@ const ClasseDetailPage = () => {
           </DetailSection>
         </div>
       )}
+
+      <PasswordConfirmModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onConfirm={executeDelete}
+        title='Confirmation requise'
+        message='Veuillez saisir votre mot de passe pour confirmer la suppression de cette classe.'
+        actionLabel='Supprimer'
+      />
     </section>
   )
 }

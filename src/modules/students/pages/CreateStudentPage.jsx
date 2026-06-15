@@ -7,6 +7,7 @@ import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
 import ModuleState from '../../inscriptions/components/ModuleState'
 import SelectField from '../../inscriptions/components/SelectField'
+import SearchableSelectField from '../../inscriptions/components/SearchableSelectField'
 import { normalizeCollection, getParentName } from '../../inscriptions/utils/data'
 import {
   getStudentAdressePayload,
@@ -28,6 +29,14 @@ import {
   validateStudentForm,
 } from '../utils/student'
 
+const getBirthDateConstraints = () => {
+  const today = new Date()
+  const maxDate = new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()).toISOString().split('T')[0]
+  const minDate = new Date(today.getFullYear() - 40, today.getMonth(), today.getDate()).toISOString().split('T')[0]
+  return { minDate, maxDate }
+}
+const { minDate: minDateNaissance, maxDate: maxDateNaissance } = getBirthDateConstraints()
+
 const CreateStudentPage = () => {
   const location = useLocation()
   const navigate = useNavigate()
@@ -35,7 +44,16 @@ const CreateStudentPage = () => {
   const returnState = returnTo
     ? { inscriptionDraft: location.state?.inscriptionDraft }
     : undefined
-  const [form, setForm] = useState(normalizeStudentForm())
+  const [form, setForm] = useState(() => {
+    const initialForm = normalizeStudentForm()
+    if (location.state?.initialStudentSearch) {
+      const parts = location.state.initialStudentSearch.trim().split(/\s+/)
+      initialForm.nom = parts[0] || ''
+      initialForm.postnom = parts[1] || ''
+      initialForm.prenom = parts.slice(2).join(' ') || ''
+    }
+    return initialForm
+  })
   const [adresseForm, setAdresseForm] = useState(normalizeAdresseForm())
   const [withAdresse, setWithAdresse] = useState(false)
   const [parents, setParents] = useState([])
@@ -47,6 +65,7 @@ const CreateStudentPage = () => {
   const [adresseErrors, setAdresseErrors] = useState({})
   const [feedback, setFeedback] = useState('')
   const [quickParentRole, setQuickParentRole] = useState('')
+  const [quickParentSearch, setQuickParentSearch] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const loadParents = async () => {
@@ -116,8 +135,32 @@ const CreateStudentPage = () => {
       ...currentParents.filter((item) => item.id !== parent.id),
       parent,
     ])
-    setForm((currentForm) => ({ ...currentForm, [quickParentRole]: String(parent.id) }))
+    setForm((currentForm) => {
+      const nextForm = { ...currentForm, [quickParentRole]: String(parent.id) }
+      if (!nextForm.contact && parent.phone) {
+        nextForm.contact = parent.phone
+      }
+      return nextForm
+    })
     setQuickParentRole('')
+  }
+
+  const handleParentSelect = (event) => {
+    const { id, value } = event.target
+    setForm((currentForm) => {
+      const nextForm = { ...currentForm, [id]: value }
+      if (!nextForm.contact && value) {
+        const selectedParent = parents.find(p => String(p.id) === String(value))
+        if (selectedParent?.phone) {
+          nextForm.contact = selectedParent.phone
+        }
+      }
+      return nextForm
+    })
+
+    if (errors[id]) {
+      setErrors((currentErrors) => ({ ...currentErrors, [id]: '' }))
+    }
   }
 
   const handleParentSearch = async () => {
@@ -209,6 +252,7 @@ const CreateStudentPage = () => {
   const getParentOptions = (gender) => parents.filter((parent) => parent.gender === gender).map((parent) => ({
     value: parent.id,
     label: `${getParentName(parent)}${parent.phone ? ` - ${parent.phone}` : ''}`,
+    searchText: parent.phone || '',
   }))
   const pereOptions = getParentOptions('MASCULIN')
   const mereOptions = getParentOptions('FEMININ')
@@ -252,49 +296,71 @@ const CreateStudentPage = () => {
               <Input id='nom' type='text' label='Nom' placeholder='Nom' value={form.nom} error={errors.nom} disabled={isSubmitting} onChange={handleChange} />
               <Input id='postnom' type='text' label='Postnom' placeholder='Postnom' value={form.postnom} error={errors.postnom} disabled={isSubmitting} onChange={handleChange} />
               <Input id='prenom' type='text' label='Prenom' placeholder='Prenom' value={form.prenom} error={errors.prenom} disabled={isSubmitting} onChange={handleChange} />
-              <SelectField id='sexe' label='Sexe' value={form.sexe} options={SEXE_OPTIONS} placeholder='Selectionner le sexe' error={errors.sexe} disabled={isSubmitting} onChange={handleChange} />
+              
+              <div className={`inscription-radio-group ${errors.sexe ? 'has-error' : ''}`}>
+                <label className='inscription-field-label' style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>Sexe</label>
+                <div className='inscription-radio-options' style={{ display: 'flex', gap: '15px' }}>
+                  {SEXE_OPTIONS.map((opt) => (
+                    <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.9rem' }}>
+                      <input type='radio' id='sexe' name='sexe' value={opt.value} checked={form.sexe === opt.value} onChange={handleChange} disabled={isSubmitting} />
+                      {opt.label}
+                    </label>
+                  ))}
+                </div>
+                {errors.sexe && <span className='inscription-field-error'>{errors.sexe}</span>}
+              </div>
+
               <Input id='lieu_naissance' type='text' label='Lieu de naissance' placeholder='Lieu de naissance' value={form.lieu_naissance} error={errors.lieu_naissance} disabled={isSubmitting} onChange={handleChange} />
-              <Input id='date_naissance' type='date' label='Date de naissance' placeholder='Date de naissance' value={form.date_naissance} error={errors.date_naissance} disabled={isSubmitting} onChange={handleChange} />
+              <Input id='date_naissance' type='date' label='Date de naissance' min={minDateNaissance} max={maxDateNaissance} placeholder='Date de naissance' value={form.date_naissance} error={errors.date_naissance} disabled={isSubmitting} onChange={handleChange} />
               <Input id='contact' type='tel' label='Contact (optionnel)' placeholder='Contact (optionnel)' value={form.contact} disabled={isSubmitting} onChange={handleChange} />
             </div>
           </section>
 
           <section className='student-form-section'>
             <h2>Parents</h2>
-            <Input
-              id='student-parent-search'
-              type='search'
-              variant='searchbox'
-              placeholder='Rechercher un parent par telephone'
-              value={parentPhoneSearch}
-              icon={<Search size={18} />}
-              disabled={isSubmitting || isSearchingParent}
-              onChange={(event) => setParentPhoneSearch(event.target.value)}
-              onSearch={handleParentSearch}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault()
-                  handleParentSearch()
-                }
-              }}
-              className='student-parent-search'
-            />
             <div className='student-parent-grid'>
-              <div className='student-parent-picker'>
-                <SelectField id='pere_id' label='Pere (optionnel)' value={form.pere_id} options={pereOptions} placeholder='Selectionner le pere' disabled={isSubmitting} onChange={handleChange} />
-                <Button type='button' variant='ghost' label='Creer le pere' icon={<Plus size={15} />} disabled={isSubmitting} onClick={() => setQuickParentRole('pere_id')} className='inscription-action inscription-action--secondary' />
-              </div>
-              <div className='student-parent-picker'>
-                <SelectField id='mere_id' label='Mere (optionnel)' value={form.mere_id} options={mereOptions} placeholder='Selectionner la mere' error={errors.mere_id} disabled={isSubmitting} onChange={handleChange} />
-                <Button type='button' variant='ghost' label='Creer la mere' icon={<Plus size={15} />} disabled={isSubmitting} onClick={() => setQuickParentRole('mere_id')} className='inscription-action inscription-action--secondary' />
-              </div>
+              <SearchableSelectField
+                id='pere_id'
+                label='Pere (optionnel)'
+                value={form.pere_id}
+                options={pereOptions}
+                placeholder='Rechercher un pere'
+                emptyMessage='Aucun pere ne correspond.'
+                createLabel='Creer le pere'
+                disabled={isSubmitting}
+                onChange={handleParentSelect}
+                onCreate={(searchQuery) => {
+                  setQuickParentSearch(searchQuery)
+                  setQuickParentRole('pere_id')
+                }}
+              />
+              <SearchableSelectField
+                id='mere_id'
+                label='Mere (optionnel)'
+                value={form.mere_id}
+                options={mereOptions}
+                placeholder='Rechercher une mere'
+                emptyMessage='Aucune mere ne correspond.'
+                createLabel='Creer la mere'
+                error={errors.mere_id}
+                disabled={isSubmitting}
+                onChange={handleParentSelect}
+                onCreate={(searchQuery) => {
+                  setQuickParentSearch(searchQuery)
+                  setQuickParentRole('mere_id')
+                }}
+              />
             </div>
 
             {quickParentRole && (
               <QuickParentForm
                 key={quickParentRole}
                 parentRole={quickParentRole}
-                onCancel={() => setQuickParentRole('')}
+                initialSearch={quickParentSearch}
+                onCancel={() => {
+                  setQuickParentRole('')
+                  setQuickParentSearch('')
+                }}
                 onCreated={handleQuickParentCreated}
               />
             )}

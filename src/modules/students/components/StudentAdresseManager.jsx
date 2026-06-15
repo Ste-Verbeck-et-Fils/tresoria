@@ -8,6 +8,7 @@ import {
   deleteAdresse,
   updateAdresse,
 } from '../../../services/studentService'
+import PasswordConfirmModal from '../../../components/ui/PasswordConfirmModal'
 import {
   getStudentAdressePayload,
   normalizeAdresseForm,
@@ -28,6 +29,8 @@ const StudentAdresseManager = ({
   const [feedback, setFeedback] = useState({ type: '', message: '' })
   const [isSaving, setIsSaving] = useState(false)
   const [deletingAdresseId, setDeletingAdresseId] = useState(null)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [pendingDeleteAdresse, setPendingDeleteAdresse] = useState(null)
 
   const handleStartCreate = () => {
     setMode('create')
@@ -98,12 +101,15 @@ const StudentAdresseManager = ({
     }
   }
 
-  const handleDelete = async (adresse) => {
-    const isConfirmed = window.confirm(`Supprimer l adresse #${adresse.id} ? Cette action est irreversible.`)
+  const handleDelete = (adresse) => {
+    setPendingDeleteAdresse(adresse)
+    setShowPasswordModal(true)
+  }
 
-    if (!isConfirmed) {
-      return
-    }
+  const executeDelete = async () => {
+    const adresse = pendingDeleteAdresse
+    setShowPasswordModal(false)
+    setPendingDeleteAdresse(null)
 
     setFeedback({ type: '', message: '' })
     setDeletingAdresseId(adresse.id)
@@ -122,10 +128,11 @@ const StudentAdresseManager = ({
   const isPending = isSaving || Boolean(deletingAdresseId)
 
   return (
+    <>
     <article className='detail-section-card parent-address-section'>
       <header className='detail-section-card__header'>
         <h2>Adresses de l eleve</h2>
-        {!mode && !readOnly && (
+        {!mode && !readOnly && adresses.length < 3 && (
           <Button
             type='button'
             variant='ghost'
@@ -256,6 +263,16 @@ const StudentAdresseManager = ({
         </div>
       )}
     </article>
+
+    <PasswordConfirmModal
+      isOpen={showPasswordModal}
+      onClose={() => { setShowPasswordModal(false); setPendingDeleteAdresse(null) }}
+      onConfirm={executeDelete}
+      title='Confirmation requise'
+      message='Veuillez saisir votre mot de passe pour confirmer la suppression de cette adresse.'
+      actionLabel='Supprimer'
+    />
+    </>
   )
 }
 

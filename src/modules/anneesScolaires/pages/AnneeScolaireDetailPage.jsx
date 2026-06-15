@@ -11,6 +11,7 @@ import {
   getAnneeScolaire,
   updateAnneeScolaire,
 } from '../../../services/anneeScolaireService'
+import PasswordConfirmModal from '../../../components/ui/PasswordConfirmModal'
 import DetailField from '../../inscriptions/components/DetailField'
 import DetailSection from '../../inscriptions/components/DetailSection'
 import DetailSummaryCard from '../../inscriptions/components/DetailSummaryCard'
@@ -39,6 +40,7 @@ const AnneeScolaireDetailPage = () => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [editForm, setEditForm] = useState(normalizeAnneeScolaireForm())
   const [editErrors, setEditErrors] = useState({})
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
 
   const loadAnneeScolaire = async () => {
     setIsLoading(true)
@@ -130,32 +132,14 @@ const AnneeScolaireDetailPage = () => {
   }
 
   const handleClose = async () => {
-    const isConfirmed = window.confirm(`Cloturer l annee scolaire "${anneeScolaire.designation}" ?`)
-
-    if (!isConfirmed) {
-      return
-    }
-
-    setFeedback({ type: '', message: '' })
-    setIsClosing(true)
-
-    try {
-      const response = await cloturerAnneeScolaire(id)
-      setAnneeScolaire(unwrapAnneeScolaire(response))
-      setFeedback({ type: 'success', message: 'Annee scolaire cloturee avec succes.' })
-    } catch (error) {
-      setFeedback({ type: 'error', message: error.message || 'Impossible de cloturer cette annee scolaire.' })
-    } finally {
-      setIsClosing(false)
-    }
+    navigate('/annees-scolaires/create', { state: { closing: true, oldAnneeName: anneeScolaire.designation } })
   }
 
-  const handleDelete = async () => {
-    const isConfirmed = window.confirm(`Supprimer l annee scolaire "${anneeScolaire.designation}" ? Cette action est irreversible.`)
+  const handleDelete = () => {
+    setShowPasswordModal(true)
+  }
 
-    if (!isConfirmed) {
-      return
-    }
+  const executeDelete = async () => {
 
     setFeedback({ type: '', message: '' })
     setIsDeleting(true)
@@ -351,6 +335,15 @@ const AnneeScolaireDetailPage = () => {
           </DetailSection>
         </div>
       )}
+
+      <PasswordConfirmModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onConfirm={executeDelete}
+        title='Confirmation requise'
+        message='Veuillez saisir votre mot de passe pour confirmer la suppression de cette année.'
+        actionLabel='Supprimer'
+      />
     </section>
   )
 }

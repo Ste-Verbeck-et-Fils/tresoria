@@ -163,17 +163,18 @@ const CreateParentPage = () => {
             disabled={isSubmitting}
             onChange={handleChange}
           />
-          <SelectField
-            id='gender'
-            label='Genre'
-            value={form.gender}
-            options={GENDER_OPTIONS}
-            placeholder='Selectionner un genre'
-            error={errors.gender}
-            disabled={isSubmitting}
-            onChange={handleChange}
-            className='parent-create-gender-field'
-          />
+          <div className={`inscription-radio-group ${errors.gender ? 'has-error' : ''}`}>
+            <label className='inscription-field-label' style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>Genre</label>
+            <div className='inscription-radio-options' style={{ display: 'flex', gap: '15px' }}>
+              {GENDER_OPTIONS.map((opt) => (
+                <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.9rem' }}>
+                  <input type='radio' id='gender' name='gender' value={opt.value} checked={form.gender === opt.value} onChange={handleChange} disabled={isSubmitting} />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+            {errors.gender && <span className='inscription-field-error'>{errors.gender}</span>}
+          </div>
           <Input
             id='profession'
             type='text'

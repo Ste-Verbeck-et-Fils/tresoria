@@ -81,8 +81,8 @@ const AnneesScolairesPage = () => {
       loadItems={getAnneesScolaires}
       columns={columns}
       emptyMessage='Aucune annee scolaire enregistree.'
-      createPath='/annees-scolaires/create'
-      createLabel='Nouvelle annee scolaire'
+      createPath={!activeAnnee?.id ? '/annees-scolaires/create' : null}
+      createLabel={!activeAnnee?.id ? 'Nouvelle annee scolaire' : null}
       getRowPath={(item) => `/annees-scolaires/${item.id}`}
       searchPlaceholder='Rechercher une annee scolaire'
       getSearchText={(item) => [

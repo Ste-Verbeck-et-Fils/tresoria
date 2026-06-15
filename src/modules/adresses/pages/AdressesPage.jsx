@@ -165,8 +165,8 @@ const AdressesPage = () => {
       loadItems={loadAdresses}
       columns={columns}
       emptyMessage='Aucune adresse enregistree.'
-      createPath={isParent ? null : '/adresses/create'}
-      createLabel={isParent ? null : 'Nouvelle adresse'}
+      createPath={null}
+      createLabel={null}
       getRowPath={(item) => `/adresses/${item.id}`}
       searchPlaceholder='Rechercher une adresse'
       getSearchText={(item) => [

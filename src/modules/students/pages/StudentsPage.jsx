@@ -88,8 +88,8 @@ const StudentsPage = () => {
       loadItems={getStudents}
       columns={columns}
       emptyMessage='Aucun eleve enregistre.'
-      createPath={canCreate ? '/students/create' : null}
-      createLabel={canCreate ? 'Nouvel eleve' : null}
+      createPath={null}
+      createLabel={null}
       getRowPath={(item) => `/students/${item.id}`}
       searchPlaceholder='Rechercher un eleve'
       getSearchText={(item) => [

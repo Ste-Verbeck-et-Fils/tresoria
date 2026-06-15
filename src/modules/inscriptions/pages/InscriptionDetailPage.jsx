@@ -10,6 +10,7 @@ import {
   getInscriptionSolde,
   updateInscriptionStatut,
 } from '../../../services/inscriptionService'
+import PasswordConfirmModal from '../../../components/ui/PasswordConfirmModal'
 import DetailField from '../components/DetailField'
 import DetailSection from '../components/DetailSection'
 import DetailSummaryCard from '../components/DetailSummaryCard'
@@ -53,6 +54,7 @@ const InscriptionDetailPage = () => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [statut, setStatut] = useState('')
   const [statutError, setStatutError] = useState('')
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
 
   const loadInscription = async () => {
     setIsLoading(true)
@@ -157,12 +159,12 @@ const InscriptionDetailPage = () => {
     }
   }
 
-  const handleDelete = async () => {
-    const isConfirmed = window.confirm(`Supprimer l inscription #${id} ? Cette action est irreversible.`)
+  const handleDelete = () => {
+    setShowPasswordModal(true)
+  }
 
-    if (!isConfirmed) {
-      return
-    }
+  const executeDelete = async () => {
+    setShowPasswordModal(false)
 
     setFeedback({ type: '', message: '' })
     setIsDeleting(true)
@@ -328,6 +330,15 @@ const InscriptionDetailPage = () => {
           </DetailSection>
         </div>
       )}
+
+      <PasswordConfirmModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onConfirm={executeDelete}
+        title='Confirmation requise'
+        message='Veuillez saisir votre mot de passe pour confirmer la suppression de cette inscription.'
+        actionLabel='Supprimer'
+      />
     </section>
   )
 }
