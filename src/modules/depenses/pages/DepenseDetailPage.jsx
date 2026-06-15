@@ -81,6 +81,8 @@ const DepenseDetailPage = () => {
       executeAnnuler()
     } else if (pendingAction === 'delete') {
       executeDelete()
+    } else if (pendingAction === 'edit') {
+      executeEdit()
     }
     setPendingAction(null)
   }
@@ -210,6 +212,11 @@ const DepenseDetailPage = () => {
       return
     }
 
+    setPendingAction('edit')
+    setShowPasswordModal(true)
+  }
+
+  const executeEdit = async () => {
     setIsSaving(true)
 
     try {
@@ -493,8 +500,8 @@ const DepenseDetailPage = () => {
         onClose={() => { setShowPasswordModal(false); setPendingAction(null) }}
         onConfirm={handlePasswordConfirm}
         title='Confirmation requise'
-        message={pendingAction === 'annuler' ? 'Veuillez saisir votre mot de passe pour confirmer l annulation.' : 'Veuillez saisir votre mot de passe pour confirmer la suppression.'}
-        actionLabel={pendingAction === 'annuler' ? 'Annuler la sortie' : 'Supprimer'}
+        message={pendingAction === 'annuler' ? 'Veuillez saisir votre mot de passe pour confirmer l annulation.' : pendingAction === 'edit' ? 'Veuillez saisir votre mot de passe pour confirmer la modification.' : 'Veuillez saisir votre mot de passe pour confirmer la suppression.'}
+        actionLabel={pendingAction === 'annuler' ? 'Annuler la sortie' : pendingAction === 'edit' ? 'Enregistrer' : 'Supprimer'}
       />
     </section>
   )

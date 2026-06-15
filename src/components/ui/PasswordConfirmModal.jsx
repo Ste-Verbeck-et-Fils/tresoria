@@ -8,6 +8,13 @@ const PasswordConfirmModal = ({ isOpen, onClose, onConfirm, title, message, acti
   const [error, setError] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
 
+  React.useEffect(() => {
+    if (isOpen) {
+      setPassword('')
+      setError('')
+    }
+  }, [isOpen])
+
   if (!isOpen) return null
 
   const handleClose = () => {
@@ -27,8 +34,10 @@ const PasswordConfirmModal = ({ isOpen, onClose, onConfirm, title, message, acti
     setError('')
 
     try {
-      const response = await api.post('/auth/verify-password', { password })
+      const response = await api.post('/api/auth/verify-password', { password })
       if (response.data.success) {
+        setPassword('')
+        setError('')
         onConfirm()
       } else {
         setError('Mot de passe incorrect.')

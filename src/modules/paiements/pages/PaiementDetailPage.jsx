@@ -54,6 +54,16 @@ import {
   validatePaiementForm,
 } from '../utils/paiement'
 
+const getTransactionDateConstraints = () => {
+  const today = new Date()
+  const maxDate = today.toISOString().split('T')[0]
+  const pastDate = new Date()
+  pastDate.setDate(today.getDate() - 3)
+  const minDate = pastDate.toISOString().split('T')[0]
+  return { minDate, maxDate }
+}
+const { minDate: minDateTransaction, maxDate: maxDateTransaction } = getTransactionDateConstraints()
+
 const resolvePaiementBundle = async (id) => {
   const paiementPayload = await getPaiement(id)
   const paiement = unwrapPaiement(paiementPayload)
@@ -108,6 +118,8 @@ const PaiementDetailPage = () => {
       executeAnnuler()
     } else if (pendingAction === 'delete') {
       executeDelete()
+    } else if (pendingAction === 'edit') {
+      executeEdit()
     }
     setPendingAction(null)
   }
@@ -208,6 +220,11 @@ const PaiementDetailPage = () => {
       return
     }
 
+    setPendingAction('edit')
+    setShowPasswordModal(true)
+  }
+
+  const executeEdit = async () => {
     setIsSaving(true)
 
     try {
@@ -411,6 +428,21 @@ const PaiementDetailPage = () => {
                     </dd>
                   </div>
                   <div className='inscription-detail-field inscription-detail-field--editing'>
+                    <dt>Date de l entrée</dt>
+                    <dd>
+                      <Input
+                        id='date_paiement'
+                        type='date'
+                        min={minDateTransaction}
+                        max={maxDateTransaction}
+                        value={editForm.date_paiement}
+                        error={editErrors.date_paiement}
+                        disabled={isSaving}
+                        onChange={handleEditChange}
+                      />
+                    </dd>
+                  </div>
+                  <div className='inscription-detail-field inscription-detail-field--editing'>
                     <dt>Reference externe</dt>
                     <dd>
                       <Input
@@ -505,8 +537,8 @@ const PaiementDetailPage = () => {
         onClose={() => { setShowPasswordModal(false); setPendingAction(null) }}
         onConfirm={handlePasswordConfirm}
         title='Confirmation requise'
-        message={pendingAction === 'annuler' ? 'Veuillez saisir votre mot de passe pour confirmer l annulation.' : 'Veuillez saisir votre mot de passe pour confirmer la suppression.'}
-        actionLabel={pendingAction === 'annuler' ? 'Annuler l entrée' : 'Supprimer'}
+        message={pendingAction === 'annuler' ? 'Veuillez saisir votre mot de passe pour confirmer l annulation.' : pendingAction === 'edit' ? 'Veuillez saisir votre mot de passe pour confirmer la modification.' : 'Veuillez saisir votre mot de passe pour confirmer la suppression.'}
+        actionLabel={pendingAction === 'annuler' ? 'Annuler l entrée' : pendingAction === 'edit' ? 'Enregistrer' : 'Supprimer'}
       />
     </section>
   )

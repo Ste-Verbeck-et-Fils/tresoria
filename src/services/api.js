@@ -31,7 +31,8 @@ api.interceptors.response.use(
     const originalRequest = error.config
 
     // Si on reçoit une erreur 401 (Non autorisé) et que ce n'est pas déjà une tentative de retry
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    // et qu'on n'est pas sur la route de vérification de mot de passe
+    if (error.response && error.response.status === 401 && !originalRequest._retry && !originalRequest.url.includes('/verify-password')) {
       originalRequest._retry = true
 
       try {
