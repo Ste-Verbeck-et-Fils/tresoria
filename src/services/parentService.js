@@ -35,7 +35,7 @@ export const searchParentsByPhone = async (phone) => {
     return getParents()
   }
 
-  const payload = await getData(api.get('/api/parents/search', { params: { phone: phone.trim() } }))
+  const payload = await getData(api.get('/api/parents/search', { params: { q: phone.trim() } }))
 
   return normalizeSearchResult(payload)
 }

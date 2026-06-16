@@ -181,6 +181,25 @@ const TresoreriePage = () => {
     setIsLoading(true)
   }
 
+  const handleDailyStats = () => {
+    const today = new Date().toISOString().split('T')[0]
+    const nextFilters = {
+      ...DEFAULT_TRESORERIE_FILTERS,
+      start_date: today,
+      end_date: today
+    }
+    
+    setDraftFilters(nextFilters)
+    setAppliedFilters(nextFilters)
+    
+    setFilterError('')
+    setLoadError('')
+    setIsForbidden(false)
+    setDashboardData(null)
+    setIsLoading(true)
+    setIsFilterOpen(false)
+  }
+
   const renderCard = (title, amount, isTotal = false) => (
     <div style={{
       background: isTotal ? 'var(--color-primary)' : 'var(--color-surface)',
@@ -376,6 +395,13 @@ const TresoreriePage = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Button
+            type='button'
+            variant='outline'
+            label='Stats du jour'
+            onClick={handleDailyStats}
+            className='inscription-action inscription-action--secondary'
+          />
           {hasActiveFilters && (
             <span className='inscription-active-filter-badge'>
               Filtres actifs

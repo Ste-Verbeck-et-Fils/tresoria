@@ -29,12 +29,16 @@ import {
 } from '../../inscriptions/utils/data'
 import { formatAmount } from '../../inscriptions/utils/amounts'
 import {
+  CATEGORIE_DEPENSE_OPTIONS,
   getAnneeScolaireOptionLabel,
   getDepenseAnneeScolaire,
   getDepenseDate,
   getDepenseMontant,
   getDepensePayload,
   getDepenseStatus,
+  getDepenseModePaiement,
+  getDepenseBeneficiaire,
+  getDepenseCategorie,
   isAnneeScolaireCloturee,
   normalizeDepenseForm,
   unwrapDepense,
@@ -396,16 +400,22 @@ const DepenseDetailPage = () => {
                     </dd>
                   </div>
                   <div className='inscription-detail-field inscription-detail-field--editing'>
-                    <dt>Motif</dt>
+                    <dt>Catégorie</dt>
                     <dd>
-                      <Input
-                        id='motif'
-                        type='text'
-                        value={editForm.motif}
-                        error={editErrors.motif}
+                      <select
+                        id='categorie'
+                        className='inscription-select'
+                        value={editForm.categorie}
                         disabled={isSaving}
                         onChange={handleEditChange}
-                      />
+                        style={{ width: '100%' }}
+                      >
+                        <option value=''>Sélectionnez une catégorie</option>
+                        {CATEGORIE_DEPENSE_OPTIONS.map(opt => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                      {editErrors.categorie && <span className="inscription-error-text">{editErrors.categorie}</span>}
                     </dd>
                   </div>
                   <div className='inscription-detail-field inscription-detail-field--editing'>
@@ -451,7 +461,7 @@ const DepenseDetailPage = () => {
                 <>
                   <DetailField label='Annee scolaire' value={getDesignation(anneeScolaire, `Annee #${depense.annee_scolaire_id || '-'}`)} />
                   <DetailField label='Montant' value={formatAmount(getDepenseMontant(depense))} />
-                  <DetailField label='Motif' value={depense.motif || depense.type} />
+                  <DetailField label='Categorie' value={getDepenseCategorie(depense) || '-'} />
                   <DetailField label='Mode' value={getDepenseModePaiement(depense)} />
                   <DetailField label='Beneficiaire' value={getDepenseBeneficiaire(depense) || '-'} />
                   <DetailField label='Date de sortie' value={formatDate(getDepenseDate(depense))} />

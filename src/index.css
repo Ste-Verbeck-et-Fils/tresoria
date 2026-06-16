@@ -82,3 +82,173 @@ body {
 * {
     box-sizing: border-box;
 }
+/* Print Styles for Reports */
+@media print {
+    /* Hide layout shells */
+    .tresoria-sidebar, .dashboard-mobile-overlay, .app-header, nav, header { 
+        display: none !important; 
+    }
+    
+    /* Let containers flow naturally for multi-page printing */
+    html, body, #root, .dashboard-layout, .dashboard-main, .dashboard-content, .inscription-page {
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        display: block !important;
+        position: static !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+    }
+
+    /* Hide normal UI elements inside the page */
+    .inscription-page-header, 
+    .inscription-panel, 
+    .filter-panel,
+    .inscription-amount-panel,
+    .inscription-toolbar,
+    .module-filter-panel,
+    .pagination-info,
+    .pagination-btn,
+    .detail-page-stack > :not(.print-only) {
+        display: none !important;
+    }
+
+    .print-only {
+        display: block !important;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .print-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    
+    .print-table th, .print-table td {
+        border: 1px solid #000 !important;
+        padding: 10px !important;
+        text-align: left !important;
+        font-size: 12px !important;
+        color: #000 !important;
+    }
+
+    .print-table th {
+        background-color: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+        font-weight: bold !important;
+    }
+
+    .print-header {
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+    }
+
+    .print-header h1 {
+        font-size: 24px;
+        margin: 0 0 5px;
+        color: #000;
+    }
+
+    .print-header p {
+        font-size: 14px;
+        color: #333;
+        margin: 0;
+    }
+    
+    .print-meta {
+        text-align: right;
+        font-size: 12px;
+        margin-bottom: 20px;
+        color: #666;
+    }
+    
+    @page {
+        margin: 1.5cm;
+    }
+}
+
+.print-only {
+    display: none;
+}
+
+/* Receipt Print Styling */
+.receipt-container {
+    font-family: 'Courier New', Courier, monospace;
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    color: #000;
+    font-size: 14px;
+}
+
+.receipt-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.receipt-header h1 {
+    font-size: 24px;
+    margin: 0 0 5px 0;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.receipt-header p {
+    margin: 0;
+    font-size: 12px;
+    color: #555;
+}
+
+.receipt-divider {
+    border-top: 1px dashed #000;
+    margin: 15px 0;
+}
+
+.receipt-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    align-items: flex-start;
+}
+
+.receipt-row.total-row {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.receipt-label {
+    flex: 1;
+    color: #333;
+}
+
+.receipt-value {
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+    font-weight: bold;
+}
+
+.receipt-footer {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 30px;
+    color: #555;
+}
+
+@media print {
+    .receipt-container {
+        width: 100% !important;
+        max-width: 400px;
+        margin: 0;
+        padding: 0;
+    }
+}

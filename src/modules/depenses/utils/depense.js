@@ -36,6 +36,7 @@ export const CATEGORIE_DEPENSE_OPTIONS = [
 export const MODE_DEPENSE_OPTIONS = [
   { value: 'CASH', label: 'Espèces' },
   { value: 'MOBILE_MONEY', label: 'Mobile money' },
+  { value: 'BANQUE', label: 'Banque' },
 ]
 
 export const STATUT_DEPENSE_OPTIONS = [

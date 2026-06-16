@@ -20,6 +20,7 @@ export const MOTIF_PAIEMENT_OPTIONS = [
 export const MODE_PAIEMENT_OPTIONS = [
   { value: 'CASH', label: 'Cash' },
   { value: 'MOBILE_MONEY', label: 'Mobile Money' },
+  { value: 'BANQUE', label: 'Banque' },
 ]
 
 export const STATUT_PAIEMENT_OPTIONS = [

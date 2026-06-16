@@ -17,15 +17,15 @@ const ParentsPage = () => {
   return (
     <EntityListPage
       title='Parents'
-      description='Recherchez un parent par telephone et gerez ses informations ainsi que ses adresses.'
+      description='Recherchez un parent par téléphone ou par nom et gérez ses informations ainsi que ses adresses.'
       loadItems={getParents}
       columns={columns}
       emptyMessage='Aucun parent enregistre.'
       createPath={null}
       createLabel={null}
       getRowPath={(item) => `/parents/${item.id}`}
-      searchPlaceholder='Rechercher un parent par telephone'
-      getSearchText={(item) => item.phone || ''}
+      searchPlaceholder='Rechercher un parent par téléphone ou nom'
+      getSearchText={(item) => [item.phone || '', item.full_name || ''].join(' ')}
       searchItems={searchParentsByPhone}
       successMessage={location.state?.successMessage}
     />

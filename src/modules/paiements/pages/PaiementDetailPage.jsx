@@ -1,6 +1,6 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
-import { ArrowLeft, Ban, CreditCard, PencilLine, Trash2 } from 'lucide-react'
+import { ArrowLeft, Ban, CreditCard, PencilLine, Printer, Trash2 } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
@@ -111,6 +111,14 @@ const PaiementDetailPage = () => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [pendingAction, setPendingAction] = useState(null)
+  const [hasPrinted, setHasPrinted] = useState(false)
+
+  useEffect(() => {
+    if (paiement && inscription && location.state?.autoPrint && !hasPrinted) {
+      setHasPrinted(true)
+      setTimeout(() => window.print(), 500)
+    }
+  }, [paiement, inscription, location.state, hasPrinted])
 
   const handlePasswordConfirm = () => {
     setShowPasswordModal(false)
@@ -505,6 +513,14 @@ const PaiementDetailPage = () => {
               <>
                 <Button
                   type='button'
+                  variant='super'
+                  label='Imprimer le reçu'
+                  icon={<Printer size={16} />}
+                  onClick={() => window.print()}
+                  className='inscription-action inscription-action--primary'
+                />
+                <Button
+                  type='button'
                   variant='ghost'
                   label={isCancelling ? 'Annulation...' : 'Annuler l\'entrée'}
                   icon={<Ban size={16} />}
@@ -540,6 +556,60 @@ const PaiementDetailPage = () => {
         message={pendingAction === 'annuler' ? 'Veuillez saisir votre mot de passe pour confirmer l annulation.' : pendingAction === 'edit' ? 'Veuillez saisir votre mot de passe pour confirmer la modification.' : 'Veuillez saisir votre mot de passe pour confirmer la suppression.'}
         actionLabel={pendingAction === 'annuler' ? 'Annuler l entrée' : pendingAction === 'edit' ? 'Enregistrer' : 'Supprimer'}
       />
+
+      {/* Reçu d'impression */}
+      {!isLoading && !loadError && paiement && inscription && (
+        <div className='print-only receipt-container'>
+          <div className='receipt-header'>
+            <h1>TRESORIA</h1>
+            <p>REÇU DE PAIEMENT #{paiement.id || id}</p>
+          </div>
+          
+          <div className='receipt-divider' />
+
+          <div className='receipt-row'>
+            <span className='receipt-label'>Date :</span>
+            <span className='receipt-value'>{formatDate(getPaiementDate(paiement))}</span>
+          </div>
+          <div className='receipt-row'>
+            <span className='receipt-label'>Élève :</span>
+            <span className='receipt-value'>{getStudentName(student)}</span>
+          </div>
+          <div className='receipt-row'>
+            <span className='receipt-label'>Classe :</span>
+            <span className='receipt-value'>{getDesignation(classe, `Classe #${inscription?.class_id || '-'}`)}</span>
+          </div>
+          <div className='receipt-row'>
+            <span className='receipt-label'>Motif :</span>
+            <span className='receipt-value'>{getPaiementMotifLabel(paiement.motif || paiement.type)}</span>
+          </div>
+          <div className='receipt-row'>
+            <span className='receipt-label'>Mode :</span>
+            <span className='receipt-value'>{getPaiementModeLabel(paiement.mode_paiement || paiement.modePaiement || paiement.mode)}</span>
+          </div>
+
+          <div className='receipt-divider' />
+
+          <div className='receipt-row total-row'>
+            <span className='receipt-label'>MONTANT PAYÉ</span>
+            <span className='receipt-value'>{formatAmount(getPaiementMontant(paiement))}</span>
+          </div>
+
+          {(paiement.motif === 'FRAIS_SCOLAIRE' || paiement.type === 'FRAIS_SCOLAIRE') && (
+            <div className='receipt-row'>
+              <span className='receipt-label'>Reste à payer :</span>
+              <span className='receipt-value'>{formatAmount(financialSummary?.resteAPayer)}</span>
+            </div>
+          )}
+
+          <div className='receipt-divider' />
+
+          <div className='receipt-footer'>
+            <p>Merci de votre confiance !</p>
+            <p>Imprimé le {new Date().toLocaleString('fr-FR')}</p>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

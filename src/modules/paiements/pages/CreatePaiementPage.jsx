@@ -196,6 +196,15 @@ const CreatePaiementPage = () => {
       return
     }
 
+    if (form.motif === 'FRAIS_SCOLAIRE') {
+      const montantSaisi = Number(form.montant)
+      const reste = financialSummary.resteAPayer
+      if (reste !== null && montantSaisi - reste > 0.000001) {
+        setFeedback(`Le montant depasse le reste à payer pour les frais scolaires (${formatAmount(reste)}).`)
+        return
+      }
+    }
+
     setIsSubmitting(true)
 
     try {
@@ -204,7 +213,7 @@ const CreatePaiementPage = () => {
 
       navigate(paiement?.id ? `/paiements/${paiement.id}` : '/paiements', {
         replace: true,
-        state: { successMessage: 'Entrée enregistrée avec succès.' },
+        state: { successMessage: 'Entrée enregistrée avec succès.', autoPrint: true },
       })
     } catch (error) {
       setFeedback(error.message || "Impossible d'enregistrer l'entrée.")
@@ -279,10 +288,10 @@ const CreatePaiementPage = () => {
             )}
           </section>
 
-          {selectedInscription && (
+          {selectedInscription && form.motif === 'FRAIS_SCOLAIRE' && (
             <section className='inscription-amount-panel'>
               <div>
-                <h2>Solde de l inscription</h2>
+                <h2>Solde des frais scolaires</h2>
                 <p>
                   Les anciennes dettes sont reglees sur la nouvelle inscription ou elles ont ete reportees.
                 </p>

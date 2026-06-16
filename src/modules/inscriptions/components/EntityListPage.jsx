@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, Search, MoreVertical, Eye, ChevronLeft, ChevronRight, Filter, X } from 'lucide-react'
+import { Plus, Search, MoreVertical, Eye, ChevronLeft, ChevronRight, Filter, X, Printer } from 'lucide-react'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
@@ -320,7 +320,15 @@ const EntityListPage = ({
                 )}
               </div>
             )}
-
+            <Button
+              variant='outline'
+              label='Imprimer'
+              icon={<Printer size={17} />}
+              onClick={() => window.print()}
+              title='Imprimer le rapport'
+              className='inscription-action inscription-action--secondary'
+              style={{ flexShrink: 0 }}
+            />
           </div>
           <span className='inscription-count'>{filteredItems.length} element(s)</span>
         </div>
@@ -409,6 +417,31 @@ const EntityListPage = ({
         isOpen: isFilterPanelOpen,
         onClose: () => setIsFilterPanelOpen(false)
       })}
+
+      <div className='print-only'>
+        <div className='print-header'>
+          <h1>{title}</h1>
+          <p>{description}</p>
+        </div>
+        <div className='print-meta'>
+          Généré le : {new Date().toLocaleString('fr-FR')} <br/>
+          Total éléments : {filteredItems.length}
+        </div>
+        <table className='print-table'>
+          <thead>
+            <tr>
+              {columns.map((column) => <th key={column.label}>{column.label}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {filteredItems.map((item) => (
+              <tr key={item.id}>
+                {columns.map((column) => <td key={column.label}>{column.render(item)}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   )
 }

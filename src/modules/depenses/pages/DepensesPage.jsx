@@ -22,10 +22,11 @@ import {
   getDepenseMontant,
   getDepenseSearchText,
   getDepenseStatus,
+  CATEGORIE_DEPENSE_OPTIONS,
 } from '../utils/depense'
 
 const columns = [
-  { label: 'Reference', render: (item) => `#${item.id}` },
+  { label: 'Reference', render: (item) => item.reference || `#${item.id}` },
   {
     label: 'Annee scolaire',
     render: (item) => getDesignation(getDepenseAnneeScolaire(item), `Annee #${item.annee_scolaire_id || '-'}`),
@@ -223,12 +224,9 @@ const DepensesPage = () => {
               }}
             >
               <option value=''>Toutes les catégories</option>
-              <option value='SALAIRE'>SALAIRE</option>
-              <option value='EQUIPEMENT'>EQUIPEMENT</option>
-              <option value='ENTRETIEN'>ENTRETIEN</option>
-              <option value='FOURNITURE'>FOURNITURE</option>
-              <option value='EVENEMENT'>EVENEMENT</option>
-              <option value='AUTRE'>AUTRE</option>
+              {CATEGORIE_DEPENSE_OPTIONS.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
+              ))}
             </select>
           </div>
 
