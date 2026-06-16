@@ -44,6 +44,13 @@ import CreateDepensePage from './modules/depenses/pages/CreateDepensePage'
 import DepenseDetailPage from './modules/depenses/pages/DepenseDetailPage'
 import TresoreriePage from './modules/tresorerie/pages/TresoreriePage'
 import RapportFinancierAnneePage from './modules/tresorerie/pages/RapportFinancierAnneePage'
+import TransfertsPage from './modules/tresorerie/pages/TransfertsPage'
+import CreateTransfertPage from './modules/tresorerie/pages/CreateTransfertPage'
+import TransfertDetailPage from './modules/tresorerie/pages/TransfertDetailPage'
+import UsersPage from './modules/users/pages/UsersPage'
+import CreateUserPage from './modules/users/pages/CreateUserPage'
+import UserDetailPage from './modules/users/pages/UserDetailPage'
+import SmsPage from './modules/sms/pages/SmsPage'
 import { ADMIN_ROLES, EXPENSE_ROLES, INSCRIPTION_SOLDE_ROLES, PAYMENT_ROLES, TREASURY_ROLES } from './utils/roles'
 import './App.css'
 import './styles/public/PublicTheme.css'
@@ -97,11 +104,22 @@ function AppLayout () {
               <Route element={<RoleProtectedRoute allowedRoles={TREASURY_ROLES} />}>
                 <Route path='/tresorerie' element={<TresoreriePage />} />
                 <Route path='/tresorerie/rapport-annee' element={<RapportFinancierAnneePage />} />
+                <Route path='/tresorerie/transferts' element={<TransfertsPage />} />
+                <Route path='/tresorerie/transferts/create' element={<CreateTransfertPage />} />
+                <Route path='/tresorerie/transferts/:id' element={<TransfertDetailPage />} />
               </Route>
               <Route element={<RoleProtectedRoute allowedRoles={ADMIN_ROLES} />}>
                 <Route path='/parents' element={<ParentsPage />} />
                 <Route path='/parents/create' element={<CreateParentPage />} />
                 <Route path='/parents/:id' element={<ParentDetailPage />} />
+              </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={ADMIN_ROLES} />}>
+                <Route path='/users' element={<UsersPage />} />
+                <Route path='/users/create' element={<CreateUserPage />} />
+                <Route path='/users/:id' element={<UserDetailPage />} />
+              </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={[...ADMIN_ROLES, 'COMPTABLE']} />}>
+                <Route path='/sms' element={<SmsPage />} />
               </Route>
               <Route element={<RoleProtectedRoute allowedRoles={[...ADMIN_ROLES, 'PARENT', 'COMPTABLE']} />}>
                 <Route path='/students' element={<StudentsPage />} />

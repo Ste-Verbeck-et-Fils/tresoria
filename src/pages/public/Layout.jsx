@@ -15,6 +15,8 @@ import {
   SwatchBook,
   UserRound,
   UsersRound,
+  ArrowRightLeft,
+  MessageSquare
 } from 'lucide-react'
 import { logoutUser } from '../../services/authService'
 import { getUserProfile, normalizeProfile } from '../../services/profileService'
@@ -156,6 +158,18 @@ const Layout = () => {
 
   if (canAccessTresorerie) {
     links.push({ label: 'Rapport financier', href: '/tresorerie/rapport-annee', icon: <FileText size={20} />, active: isPathActive('/tresorerie/rapport-annee') })
+  }
+
+  if (canAccessTresorerie) {
+    links.push({ label: 'Transfert Interne', href: '/tresorerie/transferts', icon: <ArrowRightLeft size={20} />, active: isPathActive('/tresorerie/transferts') })
+  }
+
+  if (isAdmin) {
+    links.push({ label: 'Utilisateurs', href: '/users', icon: <UsersRound size={20} />, active: isPathActive('/users') })
+  }
+
+  if (isAdmin || isComptable) {
+    links.push({ label: 'Envoie SMS', href: '/sms', icon: <MessageSquare size={20} />, active: isPathActive('/sms') })
   }
 
   links.push(

@@ -1,0 +1,69 @@
+/* Toggle Switch for status */
+.user-status-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.user-status-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.user-status-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.user-status-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.user-status-switch input:checked + .user-status-slider {
+  background-color: #173f5f;
+}
+
+.user-status-switch input:checked + .user-status-slider:before {
+  transform: translateX(20px);
+}
+
+.user-status-switch input:disabled + .user-status-slider {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive Grid for User Forms */
+.user-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .user-form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .user-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

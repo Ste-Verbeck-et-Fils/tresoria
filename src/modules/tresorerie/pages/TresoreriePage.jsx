@@ -300,12 +300,12 @@ const TresoreriePage = () => {
 
     if (activeTab === 'SOLDE') {
       const data = {
-        labels: ['Caisse', 'Mobile Money'],
+        labels: ['Banque', 'Caisse', 'Mobile Money'],
         datasets: [
           {
             type: 'bar',
             label: 'Solde Réel',
-            data: [dashboardData.soldesReels.caisse, dashboardData.soldesReels.mobileMoney],
+            data: [dashboardData.soldesReels.banque, dashboardData.soldesReels.caisse, dashboardData.soldesReels.mobileMoney],
             backgroundColor: '#C6F53D', // Primary Color
           }
         ],
@@ -313,6 +313,7 @@ const TresoreriePage = () => {
       return (
         <div>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+            {renderCard('Banque', dashboardData.soldesReels.banque)}
             {renderCard('Caisse', dashboardData.soldesReels.caisse)}
             {renderCard('Mobile Money', dashboardData.soldesReels.mobileMoney)}
             {renderCard('Solde Total Disponible', dashboardData.soldesReels.soldeDisponible, true)}

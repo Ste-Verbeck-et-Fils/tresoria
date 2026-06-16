@@ -31,7 +31,6 @@ export const changeUserPassword = async (payload) => {
 export const updateUserProfileFormData = async (formData) => {
   const response = await api.patch('/api/users/profile', formData, {
     headers: {
-      // Axios définira automatiquement le bon Content-Type multipart/form-data avec le boundary
       'Content-Type': 'multipart/form-data'
     }
   })
