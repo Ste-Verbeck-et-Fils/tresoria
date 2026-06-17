@@ -9,6 +9,7 @@ import { getAnneesScolaires } from '../../../services/anneeScolaireService'
 import { getTresorerieDashboard } from '../../../services/tresorerieService'
 import ModuleState from '../../inscriptions/components/ModuleState'
 import SearchableSelectField from '../../inscriptions/components/SearchableSelectField'
+import TresorerieAnalyticsDashboard from '../components/dashboard/TresorerieAnalyticsDashboard'
 import { formatAmount } from '../../inscriptions/utils/amounts'
 import {
   getDesignation,
@@ -60,7 +61,7 @@ const TresoreriePage = () => {
   const [isForbidden, setIsForbidden] = useState(false)
   const [forbiddenMessage, setForbiddenMessage] = useState('')
 
-  const [activeTab, setActiveTab] = useState('COURANTE')
+  const [activeTab, setActiveTab] = useState('VUE_ENSEMBLE')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const loadDashboard = useCallback(async () => {
@@ -188,10 +189,10 @@ const TresoreriePage = () => {
       start_date: today,
       end_date: today
     }
-    
+
     setDraftFilters(nextFilters)
     setAppliedFilters(nextFilters)
-    
+
     setFilterError('')
     setLoadError('')
     setIsForbidden(false)
@@ -202,21 +203,21 @@ const TresoreriePage = () => {
 
   const renderCard = (title, amount, isTotal = false) => (
     <div style={{
-      background: isTotal ? 'var(--color-primary)' : 'var(--color-surface)',
-      color: isTotal ? 'var(--color-background)' : 'var(--color-text-primary)',
-      padding: '24px',
-      borderRadius: '16px',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+      background: isTotal ? 'var(--color-secondary)' : 'var(--color-surface)',
+      color: isTotal ? '#ffffff' : 'var(--color-text-primary)',
+      padding: '16px',
+      borderRadius: '12px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
       display: 'flex',
       flexDirection: 'column',
-      gap: '8px',
-      minWidth: '200px',
+      gap: '4px',
+      minWidth: '180px',
       flex: 1,
       border: isTotal ? 'none' : '1px solid var(--color-border)'
     }}
     >
-      <span style={{ fontSize: '0.9rem', color: isTotal ? 'var(--color-background)' : 'var(--color-text-muted)' }}>{title}</span>
-      <strong style={{ fontSize: '1.8rem', fontWeight: 700 }}>{formatAmount(amount)}</strong>
+      <span style={{ fontSize: '0.85rem', color: isTotal ? '#e2e8f0' : 'var(--color-text-muted)' }}>{title}</span>
+      <strong style={{ fontSize: '1.4rem', fontWeight: 700 }}>{formatAmount(amount)}</strong>
     </div>
   )
 
@@ -228,18 +229,18 @@ const TresoreriePage = () => {
           type: 'line',
           label: 'Sorties',
           data: sortiesData,
-          borderColor: '#111827', // Dark contrast color for line
-          backgroundColor: '#111827',
+          borderColor: '#173f5f', // Dark contrast color for line
+          backgroundColor: '#173f5f',
           borderWidth: 2,
           fill: false,
-          tension: 0.1,
-          pointBackgroundColor: '#111827',
+          tension: 0.4,
+          pointBackgroundColor: '#173f5f',
         },
         {
           type: 'bar',
           label: 'Entrées',
           data: entreesData,
-          backgroundColor: '#C6F53D', // Primary color
+          backgroundColor: '#26B6FF', // Primary color
         },
       ],
     }
@@ -264,13 +265,19 @@ const TresoreriePage = () => {
     }
 
     return (
-      <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', marginTop: '24px' }}>
-        <Chart type='bar' options={options} data={data} />
+      <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', marginTop: '24px', width: '100%' }}>
+        <div style={{ position: 'relative', height: '100%', width: '100%' }}>
+          <Chart type='bar' options={options} data={data} />
+        </div>
       </div>
     )
   }
 
   const renderActiveTabContent = () => {
+    if (activeTab === 'VUE_ENSEMBLE') {
+      return <TresorerieAnalyticsDashboard filters={appliedFilters} />
+    }
+
     if (!dashboardData) return null
 
     if (activeTab === 'COURANTE') {
@@ -294,10 +301,10 @@ const TresoreriePage = () => {
 
       return (
         <div>
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
             {renderCard('Entrées', dashboardData.vueCourante.entreesComptabilisables)}
             {renderCard('Sorties', dashboardData.vueCourante.sortiesConfirmees)}
-            {renderCard('Solde Courant', dashboardData.vueCourante.soldeTresorerie, true)}
+            {renderCard('Solde Courant', dashboardData.vueCourante.soldeTresorerie)}
           </div>
           {renderChart(labels, entreesData, sortiesData, 'Comparaison par catégorie (Vue courante)')}
         </div>
@@ -307,10 +314,10 @@ const TresoreriePage = () => {
     if (activeTab === 'GLOBAL') {
       return (
         <div>
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
             {renderCard('Total Entrées', dashboardData.resumeGlobal.entreesComptabilisables)}
             {renderCard('Total Sorties', dashboardData.resumeGlobal.sortiesConfirmees)}
-            {renderCard('Solde Global', dashboardData.resumeGlobal.soldeTresorerie, true)}
+            {renderCard('Solde Global', dashboardData.resumeGlobal.soldeTresorerie)}
           </div>
           {renderChart(['Global'], [dashboardData.resumeGlobal.entreesComptabilisables], [dashboardData.resumeGlobal.sortiesConfirmees], 'Bilan Global (Toutes périodes)')}
         </div>
@@ -325,20 +332,22 @@ const TresoreriePage = () => {
             type: 'bar',
             label: 'Solde Réel',
             data: [dashboardData.soldesReels.banque, dashboardData.soldesReels.caisse, dashboardData.soldesReels.mobileMoney],
-            backgroundColor: '#C6F53D', // Primary Color
+            backgroundColor: '#26B6FF',
           }
         ],
       }
       return (
         <div>
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
             {renderCard('Banque', dashboardData.soldesReels.banque)}
             {renderCard('Caisse', dashboardData.soldesReels.caisse)}
             {renderCard('Mobile Money', dashboardData.soldesReels.mobileMoney)}
-            {renderCard('Solde Total Disponible', dashboardData.soldesReels.soldeDisponible, true)}
+            {renderCard('Solde Total Disponible', dashboardData.soldesReels.soldeDisponible)}
           </div>
-          <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', marginTop: '24px' }}>
-            <Chart type='bar' options={{ maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Répartition des soldes réels' } }, scales: { y: { beginAtZero: true } } }} data={data} />
+          <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', marginTop: '24px', width: '100%' }}>
+            <div style={{ position: 'relative', height: '100%', width: '100%' }}>
+              <Chart type='bar' options={{ maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Répartition des soldes réels' } }, scales: { y: { beginAtZero: true } } }} data={data} />
+            </div>
           </div>
         </div>
       )
@@ -347,10 +356,10 @@ const TresoreriePage = () => {
     if (activeTab === 'TRANSPORT') {
       return (
         <div>
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
             {renderCard('Entrées Transport', dashboardData.transport.entreesTransport)}
             {renderCard('Sorties Transport', dashboardData.transport.sortiesTransport)}
-            {renderCard('Solde Transport', dashboardData.transport.soldeTransport, true)}
+            {renderCard('Solde Transport', dashboardData.transport.soldeTransport)}
           </div>
 
           <div style={{ marginTop: '24px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
@@ -372,26 +381,40 @@ const TresoreriePage = () => {
     return null
   }
 
-  const tabStyle = (isActive) => ({
-    padding: '12px 24px',
-    background: isActive ? 'var(--color-primary)' : 'transparent',
-    color: isActive ? 'var(--color-background)' : 'var(--color-text-primary)',
-    border: isActive ? '1px solid var(--color-primary)' : '1px solid var(--color-border)',
-    borderRadius: '30px',
-    cursor: 'pointer',
-    fontWeight: isActive ? 600 : 500,
-    boxShadow: isActive ? '0 2px 8px rgba(198, 245, 61, 0.4)' : 'none',
-    transition: 'all 0.2s ease',
-  })
-
   return (
-    <section className='inscription-page' style={{ padding: '24px' }}>
-      <header className='inscription-page-header' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+    <section className='inscription-page' style={{ padding: '12px' }}>
+      <header className='inscription-page-header' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <button style={tabStyle(activeTab === 'COURANTE')} onClick={() => setActiveTab('COURANTE')}>Vue courante</button>
-          <button style={tabStyle(activeTab === 'GLOBAL')} onClick={() => setActiveTab('GLOBAL')}>Résumé global</button>
-          <button style={tabStyle(activeTab === 'SOLDE')} onClick={() => setActiveTab('SOLDE')}>Solde disponible</button>
-          <button style={tabStyle(activeTab === 'TRANSPORT')} onClick={() => setActiveTab('TRANSPORT')}>Résumé transport</button>
+          <Button
+            label="Vue d'ensemble"
+            variant={activeTab === 'VUE_ENSEMBLE' ? 'secondary' : 'outline'}
+            onClick={() => setActiveTab('VUE_ENSEMBLE')}
+            className={`inscription-action ${activeTab !== 'VUE_ENSEMBLE' ? 'inscription-action--secondary' : ''}`}
+          />
+          <Button
+            label="Vue courante"
+            variant={activeTab === 'COURANTE' ? 'secondary' : 'outline'}
+            onClick={() => setActiveTab('COURANTE')}
+            className={`inscription-action ${activeTab !== 'COURANTE' ? 'inscription-action--secondary' : ''}`}
+          />
+          <Button
+            label="Résumé global"
+            variant={activeTab === 'GLOBAL' ? 'secondary' : 'outline'}
+            onClick={() => setActiveTab('GLOBAL')}
+            className={`inscription-action ${activeTab !== 'GLOBAL' ? 'inscription-action--secondary' : ''}`}
+          />
+          <Button
+            label="Solde disponible"
+            variant={activeTab === 'SOLDE' ? 'secondary' : 'outline'}
+            onClick={() => setActiveTab('SOLDE')}
+            className={`inscription-action ${activeTab !== 'SOLDE' ? 'inscription-action--secondary' : ''}`}
+          />
+          <Button
+            label="Résumé transport"
+            variant={activeTab === 'TRANSPORT' ? 'secondary' : 'outline'}
+            onClick={() => setActiveTab('TRANSPORT')}
+            className={`inscription-action ${activeTab !== 'TRANSPORT' ? 'inscription-action--secondary' : ''}`}
+          />
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -491,13 +514,6 @@ const TresoreriePage = () => {
 
       {!isLoading && !isForbidden && !loadError && dashboardData && (
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            {activeTab === 'COURANTE' && <h2>Vue courante - {scopeLabel}</h2>}
-            {activeTab === 'GLOBAL' && <h2>Résumé global - Toutes périodes</h2>}
-            {activeTab === 'SOLDE' && <h2>Soldes réels disponibles</h2>}
-            {activeTab === 'TRANSPORT' && <h2>Résumé Transport</h2>}
-          </div>
-
           {renderActiveTabContent()}
         </div>
       )}
