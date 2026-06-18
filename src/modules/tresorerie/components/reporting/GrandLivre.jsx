@@ -3,12 +3,12 @@ import { getGrandLivre } from '../../../../services/comptabiliteService'
 import Loader from '../../../../components/ui/Loader'
 import Button from '../../../../components/ui/Button'
 import { formatAmount } from '../../../inscriptions/utils/amounts'
-import { formatDateForApi } from '../../../inscriptions/utils/data'
 import * as XLSX from 'xlsx'
 
 const GrandLivre = ({ filters }) => {
   const [grandLivre, setGrandLivre] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     loadGrandLivre()
@@ -17,107 +17,253 @@ const GrandLivre = ({ filters }) => {
   const loadGrandLivre = async () => {
     try {
       setLoading(true)
+      setError('')
       const params = {}
       if (filters?.start_date) params.dateDebut = filters.start_date
       if (filters?.end_date) params.dateFin = filters.end_date
-      
+      if (filters?.exercice_id) params.exerciceId = filters.exercice_id
+      if (filters?.journal_id) params.journalId = filters.journal_id
+
+
+
       const payload = await getGrandLivre(params)
       if (payload.success) setGrandLivre(payload.data)
+      else setError('Impossible de charger le grand livre.')
     } catch (e) {
       console.error(e)
+      setError('Erreur lors du chargement du grand livre.')
     } finally {
       setLoading(false)
     }
   }
 
+
+
   const exportToExcel = () => {
     if (!grandLivre) return
-    const headers = ['Date', 'Journal', 'Référence', 'Compte', 'Libellé', 'Débit', 'Crédit', 'Solde']
     const rows = grandLivre.map(l => ({
-      Date: new Date(l.date).toLocaleDateString(),
+      Date: new Date(l.date).toLocaleDateString('fr-FR'),
       Journal: l.journal,
-      'Référence': l.reference || '',
-      Compte: l.compte,
-      'Libellé': l.libelle,
-      'Débit': l.debit,
-      'Crédit': l.credit,
-      Solde: l.solde
+      Référence: l.reference || '',
+      'Compte N°': l.compte.numero,
+      'Intitulé compte': l.compte.intitule,
+      Libellé: l.libelle,
+      Débit: l.debit || '',
+      Crédit: l.credit || '',
+      'Solde cumulé': l.solde
     }))
 
-    const worksheet = XLSX.utils.json_to_sheet(rows, { header: headers })
+    const worksheet = XLSX.utils.json_to_sheet(rows)
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Grand Livre')
     XLSX.writeFile(workbook, 'grand_livre.xlsx')
   }
 
-  const handlePrint = () => {
-    window.print()
-  }
+  const handlePrint = () => window.print()
 
-  if (loading) return <Loader message='Chargement du grand livre...' />
-  if (!grandLivre) return <div>Erreur de chargement.</div>
+  // Grouper les lignes par compte pour l'affichage
+  const comptesSections = React.useMemo(() => {
+    if (!grandLivre) return []
+    const map = {}
+    grandLivre.forEach(l => {
+      const num = l.compte.numero
+      if (!map[num]) {
+        map[num] = { compte: l.compte, lignes: [] }
+      }
+      map[num].lignes.push(l)
+    })
+    return Object.values(map).sort((a, b) => a.compte.numero.localeCompare(b.compte.numero))
+  }, [grandLivre])
 
   return (
-    <div style={{ padding: '24px', background: 'var(--color-surface)', borderRadius: '12px', border: '1px solid var(--color-border)', marginTop: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
-        <h2 style={{ margin: 0, color: 'var(--color-text-primary)' }}>Grand Livre Comptable</h2>
-        <div style={{ display: 'flex', gap: '12px' }}>
+    <div
+      style={{
+        padding: '24px',
+        background: 'var(--color-surface)',
+        borderRadius: '12px',
+        border: '1px solid var(--color-border)',
+        marginTop: '24px'
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          marginBottom: '20px',
+          flexWrap: 'wrap',
+          gap: '12px'
+        }}
+      >
+        <div>
+          <h2 style={{ margin: 0, color: 'var(--color-text-primary)' }}>Grand Livre Comptable</h2>
+          {grandLivre && (
+            <p style={{ margin: '4px 0 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+              {grandLivre.length} ligne{grandLivre.length !== 1 ? 's' : ''}
+            </p>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <Button label='Exporter Excel' variant='secondary' className='inscription-action' onClick={exportToExcel} />
           <Button label='Imprimer (PDF)' variant='secondary' className='inscription-action' onClick={handlePrint} />
         </div>
       </div>
 
-      <div style={{ overflowX: 'auto' }} className='grand-livre-print-area'>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
-          <thead>
-            <tr style={{ background: '#f8fafc', borderBottom: '2px solid var(--color-border)' }}>
-              <th style={{ padding: '10px' }}>Date</th>
-              <th style={{ padding: '10px' }}>Jrn</th>
-              <th style={{ padding: '10px' }}>Réf</th>
-              <th style={{ padding: '10px' }}>Compte</th>
-              <th style={{ padding: '10px' }}>Libellé</th>
-              <th style={{ padding: '10px', textAlign: 'right' }}>Débit</th>
-              <th style={{ padding: '10px', textAlign: 'right' }}>Crédit</th>
-              <th style={{ padding: '10px', textAlign: 'right' }}>Solde Cumulé</th>
-            </tr>
-          </thead>
-          <tbody>
-            {grandLivre.length === 0 ? (
-              <tr>
-                <td colSpan={8} style={{ padding: '20px', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-                  Aucune écriture trouvée sur cette période.
-                </td>
-              </tr>
-            ) : grandLivre.map((l, index) => (
-              <tr key={index} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                <td style={{ padding: '10px' }}>{new Date(l.date).toLocaleDateString()}</td>
-                <td style={{ padding: '10px' }}>{l.journal}</td>
-                <td style={{ padding: '10px' }}>{l.reference || '-'}</td>
-                <td style={{ padding: '10px', fontWeight: 'bold' }}>{l.compte}</td>
-                <td style={{ padding: '10px' }}>{l.libelle}</td>
-                <td style={{ padding: '10px', textAlign: 'right' }}>{l.debit > 0 ? formatAmount(l.debit) : '-'}</td>
-                <td style={{ padding: '10px', textAlign: 'right' }}>{l.credit > 0 ? formatAmount(l.credit) : '-'}</td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: 'bold' }}>{formatAmount(l.solde)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+
+
+      {/* Contenu */}
+      {loading ? (
+        <Loader message='Chargement du grand livre...' />
+      ) : error ? (
+        <div style={{ textAlign: 'center', color: 'var(--color-danger)', padding: '24px' }}>{error}</div>
+      ) : (
+        <div className='grand-livre-print-area'>
+          {comptesSections.length === 0 ? (
+            <div
+              style={{
+                padding: '40px',
+                textAlign: 'center',
+                color: 'var(--color-text-muted)',
+                background: '#f8fafc',
+                borderRadius: '8px'
+              }}
+            >
+              Aucune écriture trouvée.
+            </div>
+          ) : (
+            comptesSections.map(({ compte, lignes }) => {
+              const totalDebit = lignes.reduce((s, l) => s + l.debit, 0)
+              const totalCredit = lignes.reduce((s, l) => s + l.credit, 0)
+              const soldeFinal = lignes[lignes.length - 1]?.solde ?? 0
+
+              return (
+                <div
+                  key={compte.numero}
+                  style={{
+                    marginBottom: '24px',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: '8px',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {/* Titre du compte */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '10px 16px',
+                      background: 'var(--color-info-bg, #DBEAFE)',
+                      borderBottom: '1px solid var(--color-border)'
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: 'monospace',
+                        fontWeight: 700,
+                        fontSize: '1rem',
+                        color: 'var(--color-secondary, #173f5f)'
+                      }}
+                    >
+                      {compte.numero}
+                    </span>
+                    <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                      {compte.intitule}
+                    </span>
+                  </div>
+
+                  {/* Table des mouvements */}
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+                      <thead>
+                        <tr style={{ background: '#f8fafc', borderBottom: '2px solid var(--color-border)' }}>
+                          <th style={{ padding: '8px 12px', textAlign: 'left' }}>Date</th>
+                          <th style={{ padding: '8px', textAlign: 'left' }}>Jrn</th>
+                          <th style={{ padding: '8px', textAlign: 'left' }}>Réf</th>
+                          <th style={{ padding: '8px', textAlign: 'left' }}>Libellé</th>
+                          <th style={{ padding: '8px 12px', textAlign: 'right' }}>Débit</th>
+                          <th style={{ padding: '8px 12px', textAlign: 'right' }}>Crédit</th>
+                          <th style={{ padding: '8px 12px', textAlign: 'right' }}>Solde cumulé</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {lignes.map((l, i) => (
+                          <tr
+                            key={i}
+                            style={{ borderBottom: '1px solid var(--color-border)' }}
+                          >
+                            <td style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>
+                              {new Date(l.date).toLocaleDateString('fr-FR')}
+                            </td>
+                            <td style={{ padding: '8px', color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>
+                              {l.journal}
+                            </td>
+                            <td style={{ padding: '8px', color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>
+                              {l.reference || '—'}
+                            </td>
+                            <td style={{ padding: '8px' }}>{l.libelle}</td>
+                            <td
+                              style={{
+                                padding: '8px 12px',
+                                textAlign: 'right',
+                                color: l.debit > 0 ? 'var(--color-success, #16a34a)' : 'var(--color-text-muted)',
+                                fontWeight: l.debit > 0 ? 600 : 400
+                              }}
+                            >
+                              {l.debit > 0 ? formatAmount(l.debit) : '—'}
+                            </td>
+                            <td
+                              style={{
+                                padding: '8px 12px',
+                                textAlign: 'right',
+                                color: l.credit > 0 ? 'var(--color-danger, #dc2626)' : 'var(--color-text-muted)',
+                                fontWeight: l.credit > 0 ? 600 : 400
+                              }}
+                            >
+                              {l.credit > 0 ? formatAmount(l.credit) : '—'}
+                            </td>
+                            <td
+                              style={{
+                                padding: '8px 12px',
+                                textAlign: 'right',
+                                fontWeight: 700,
+                                color: l.solde >= 0 ? 'var(--color-text-primary)' : 'var(--color-danger, #dc2626)'
+                              }}
+                            >
+                              {formatAmount(l.solde)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr style={{ background: '#f1f5f9', fontWeight: 700, borderTop: '2px solid var(--color-border)' }}>
+                          <td colSpan={4} style={{ padding: '8px 12px' }}>Totaux</td>
+                          <td style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--color-success, #16a34a)' }}>
+                            {formatAmount(totalDebit)}
+                          </td>
+                          <td style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--color-danger, #dc2626)' }}>
+                            {formatAmount(totalCredit)}
+                          </td>
+                          <td style={{ padding: '8px 12px', textAlign: 'right', color: soldeFinal >= 0 ? 'var(--color-text-primary)' : 'var(--color-danger, #dc2626)' }}>
+                            {formatAmount(soldeFinal)}
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              )
+            })
+          )}
+        </div>
+      )}
 
       <style>{`
         @media print {
-          body * {
-            visibility: hidden;
-          }
-          .grand-livre-print-area, .grand-livre-print-area * {
-            visibility: visible;
-          }
-          .grand-livre-print-area {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-          }
+          body * { visibility: hidden; }
+          .grand-livre-print-area, .grand-livre-print-area * { visibility: visible; }
+          .grand-livre-print-area { position: absolute; left: 0; top: 0; width: 100%; }
         }
       `}</style>
     </div>

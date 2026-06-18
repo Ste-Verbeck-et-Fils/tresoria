@@ -50,7 +50,7 @@ const CreateTransfertPage = () => {
   const compteOptions = useMemo(() => {
     const options = []
     
-    const banque = comptes.find(c => c.nom === 'Banque')
+    const banque = comptes.find(c => c.type === 'BANQUE' || c.nom === 'Banque' || c.nom === 'Banque Principale')
     if (banque) options.push({ value: banque.id, label: 'Banque' })
 
     const caisse = comptes.find(c => c.nom === 'CAISSE_GENERAL') || comptes.find(c => c.type === 'CAISSE' && c.nature === 'GENERAL' && c.nom !== 'Banque')

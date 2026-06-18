@@ -1,5 +1,10 @@
 import api from './api'
 
+export const getJournal = async (params = {}) => {
+  const { data } = await api.get('/api/comptabilite/journal', { params })
+  return data
+}
+
 export const getBilan = async (params = {}) => {
   const { data } = await api.get('/api/comptabilite/bilan', { params })
   return data

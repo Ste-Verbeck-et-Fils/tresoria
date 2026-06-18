@@ -5,21 +5,30 @@ import Button from '../../../../components/ui/Button'
 import { formatAmount } from '../../../inscriptions/utils/amounts'
 import * as XLSX from 'xlsx'
 
-const Bilan = () => {
+const Bilan = ({ filters }) => {
   const [bilan, setBilan] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     loadBilan()
-  }, [])
+  }, [filters])
 
   const loadBilan = async () => {
     try {
       setLoading(true)
-      const payload = await getBilan()
+      setError('')
+      const params = {}
+      if (filters?.start_date) params.dateDebut = filters.start_date
+      if (filters?.end_date) params.dateFin = filters.end_date
+      if (filters?.exercice_id) params.exerciceId = filters.exercice_id
+
+      const payload = await getBilan(params)
       if (payload.success) setBilan(payload.data)
+      else setError('Impossible de charger le bilan.')
     } catch (e) {
       console.error(e)
+      setError('Erreur lors du chargement du bilan.')
     } finally {
       setLoading(false)
     }
@@ -27,18 +36,15 @@ const Bilan = () => {
 
   const exportToExcel = () => {
     if (!bilan) return
-    
-    // Create rows for Excel combining Actif and Passif side by side
+
     const actifEntries = Object.entries(bilan.actif)
     const passifEntries = Object.entries(bilan.passif)
     const maxLen = Math.max(actifEntries.length, passifEntries.length)
-    
     const rows = []
-    
+
     for (let i = 0; i < maxLen; i++) {
       const a = actifEntries[i] || [null, { intitule: '', montant: '' }]
       const p = passifEntries[i] || [null, { intitule: '', montant: '' }]
-      
       rows.push({
         'Compte Actif': a[0] || '',
         'Intitulé Actif': a[1].intitule,
@@ -49,8 +55,7 @@ const Bilan = () => {
         'Montant Passif': p[1].montant !== '' ? p[1].montant : ''
       })
     }
-    
-    // Totaux
+
     rows.push({
       'Compte Actif': 'TOTAL ACTIF',
       'Intitulé Actif': '',
@@ -67,93 +72,173 @@ const Bilan = () => {
     XLSX.writeFile(workbook, 'bilan_comptable.xlsx')
   }
 
-  const handlePrint = () => {
-    window.print()
-  }
+  const handlePrint = () => window.print()
 
   if (loading) return <Loader message='Chargement du bilan...' />
-  if (!bilan) return <div>Erreur de chargement.</div>
+  if (error) {
+    return (
+      <div style={{ padding: '24px', textAlign: 'center', color: 'var(--color-danger)' }}>
+        {error}
+      </div>
+    )
+  }
+  if (!bilan) return null
+
+  const BilanTable = ({ titre, entries, total, colorAccent }) => (
+    <div
+      style={{
+        flex: 1,
+        minWidth: '300px',
+        border: '1px solid var(--color-border)',
+        borderRadius: '8px',
+        overflow: 'hidden'
+      }}
+    >
+      <div
+        style={{
+          background: colorAccent,
+          color: '#fff',
+          padding: '12px 16px',
+          fontWeight: 700,
+          textAlign: 'center',
+          letterSpacing: '0.05em'
+        }}
+      >
+        {titre}
+      </div>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <tbody>
+          {Object.entries(entries).length === 0 ? (
+            <tr>
+              <td
+                colSpan={2}
+                style={{
+                  padding: '20px',
+                  textAlign: 'center',
+                  color: 'var(--color-text-muted)',
+                  fontStyle: 'italic'
+                }}
+              >
+                Aucun mouvement
+              </td>
+            </tr>
+          ) : (
+            Object.entries(entries).map(([compte, details]) => (
+              <tr key={compte} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                <td style={{ padding: '10px 12px' }}>
+                  <span
+                    style={{
+                      fontFamily: 'monospace',
+                      fontWeight: 700,
+                      color: colorAccent,
+                      marginRight: '8px'
+                    }}
+                  >
+                    {compte}
+                  </span>
+                  {details.intitule}
+                </td>
+                <td
+                  style={{
+                    padding: '10px 12px',
+                    textAlign: 'right',
+                    fontWeight: 700,
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {formatAmount(details.montant)}
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+        <tfoot>
+          <tr
+            style={{
+              background: '#f8fafc',
+              borderTop: '2px solid var(--color-border)',
+              fontWeight: 700
+            }}
+          >
+            <td style={{ padding: '12px' }}>TOTAL</td>
+            <td
+              style={{
+                padding: '12px',
+                textAlign: 'right',
+                color: colorAccent,
+                fontSize: '1rem'
+              }}
+            >
+              {formatAmount(total)}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  )
 
   return (
-    <div style={{ padding: '24px', background: 'var(--color-surface)', borderRadius: '12px', border: '1px solid var(--color-border)', marginTop: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
-        <h2 style={{ margin: 0, color: 'var(--color-text-primary)' }}>Bilan (Système OHADA Simplifié)</h2>
+    <div
+      style={{
+        padding: '24px',
+        background: 'var(--color-surface)',
+        borderRadius: '12px',
+        border: '1px solid var(--color-border)',
+        marginTop: '24px'
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+          flexWrap: 'wrap',
+          gap: '12px'
+        }}
+      >
+        <div>
+          <h2 style={{ margin: 0, color: 'var(--color-text-primary)' }}>
+            Bilan Comptable (Système OHADA Simplifié)
+          </h2>
+          <p style={{ margin: '4px 0 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+            Résultat net : {bilan.resultat >= 0 ? '+' : ''}{formatAmount(bilan.resultat)}
+            {' '}(Produits {formatAmount(bilan.totalProduits)} – Charges {formatAmount(bilan.totalCharges)})
+          </p>
+        </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <Button label='Exporter Excel' variant='secondary' className='inscription-action' onClick={exportToExcel} />
           <Button label='Imprimer (PDF)' variant='secondary' className='inscription-action' onClick={handlePrint} />
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }} className='bilan-print-area'>
-        {/* ACTIF */}
-        <div style={{ flex: 1, minWidth: '300px', border: '1px solid var(--color-border)', borderRadius: '8px', overflow: 'hidden' }}>
-          <div style={{ background: 'var(--color-secondary)', color: 'white', padding: '12px', fontWeight: 'bold', textAlign: 'center' }}>
-            ACTIF (Emplois)
-          </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <tbody>
-              {Object.entries(bilan.actif).map(([compte, details]) => (
-                <tr key={compte} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '12px' }}>{compte} - {details.intitule}</td>
-                  <td style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>{formatAmount(details.montant)}</td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr style={{ background: '#f8fafc' }}>
-                <td style={{ padding: '12px', fontWeight: 'bold' }}>TOTAL ACTIF</td>
-                <td style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold', color: 'var(--color-secondary)' }}>{formatAmount(bilan.totalActif)}</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
 
-        {/* PASSIF */}
-        <div style={{ flex: 1, minWidth: '300px', border: '1px solid var(--color-border)', borderRadius: '8px', overflow: 'hidden' }}>
-          <div style={{ background: 'var(--color-secondary)', color: 'white', padding: '12px', fontWeight: 'bold', textAlign: 'center' }}>
-            PASSIF (Ressources)
-          </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <tbody>
-              {Object.entries(bilan.passif).map(([compte, details]) => (
-                <tr key={compte} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '12px' }}>{compte} - {details.intitule}</td>
-                  <td style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>{formatAmount(details.montant)}</td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr style={{ background: '#f8fafc' }}>
-                <td style={{ padding: '12px', fontWeight: 'bold' }}>TOTAL PASSIF</td>
-                <td style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold', color: 'var(--color-secondary)' }}>{formatAmount(bilan.totalPassif)}</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+
+      {/* Tableaux Actif / Passif */}
+      <div
+        style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}
+        className='bilan-print-area'
+      >
+        <BilanTable
+          titre='ACTIF (Emplois)'
+          entries={bilan.actif}
+          total={bilan.totalActif}
+          colorAccent='var(--color-secondary, #173f5f)'
+        />
+        <BilanTable
+          titre='PASSIF (Ressources)'
+          entries={bilan.passif}
+          total={bilan.totalPassif}
+          colorAccent='var(--color-secondary, #173f5f)'
+        />
       </div>
-      
-      <div style={{ marginTop: '24px', textAlign: 'center', padding: '16px', background: '#f1f5f9', borderRadius: '8px' }}>
-        <strong>Équilibre du Bilan : </strong>
-        <span style={{ color: Math.abs(bilan.totalActif - bilan.totalPassif) < 0.01 ? 'green' : 'red' }}>
-          {Math.abs(bilan.totalActif - bilan.totalPassif) < 0.01 ? 'ÉQUILIBRÉ' : 'DÉSÉQUILIBRÉ'}
-        </span>
-      </div>
-      
-      {/* Styles for printing */}
+
       <style>{`
         @media print {
-          body * {
-            visibility: hidden;
-          }
-          .bilan-print-area, .bilan-print-area * {
-            visibility: visible;
-          }
-          .bilan-print-area {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-          }
+          body * { visibility: hidden; }
+          .bilan-print-area, .bilan-print-area * { visibility: visible; }
+          .bilan-print-area { position: absolute; left: 0; top: 0; width: 100%; }
         }
       `}</style>
     </div>
