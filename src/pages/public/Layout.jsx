@@ -160,6 +160,10 @@ const Layout = () => {
     links.push({ label: 'Rapport financier', href: '/tresorerie/rapport-annee', icon: <FileText size={20} />, active: isPathActive('/tresorerie/rapport-annee') })
   }
 
+  if (isAdmin || isComptable) {
+    links.push({ label: 'Rapport Comptable', href: '/tresorerie/rapports-comptables', icon: <FileText size={20} />, active: isPathActive('/tresorerie/rapports-comptables') })
+  }
+
   if (canAccessTresorerie) {
     links.push({ label: 'Transfert Interne', href: '/tresorerie/transferts', icon: <ArrowRightLeft size={20} />, active: isPathActive('/tresorerie/transferts') })
   }

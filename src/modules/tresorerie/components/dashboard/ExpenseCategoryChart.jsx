@@ -37,7 +37,7 @@ const ExpenseCategoryChart = ({ data }) => {
     plugins: {
       legend: { position: 'right' },
     },
-    cutout: '70%', // Makes it a doughnut
+    cutout: '70%',  
   };
 
   return (

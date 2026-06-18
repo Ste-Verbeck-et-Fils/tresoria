@@ -155,23 +155,11 @@ const Login = () => {
 
             <Button
               type='submit'
-              variant='super'
+              variant='secondary'
               label={isLoading ? 'Connexion...' : 'Se connecter'}
               className='auth-submit-btn'
               disabled={isLoading || isWebAuthnLoading}
             />
-
-            {isSupported && (
-              <Button
-                type='button'
-                variant='secondary'
-                label={isWebAuthnLoading ? 'Connexion biométrique...' : 'Connexion biométrique'}
-                className='auth-submit-btn'
-                disabled={isLoading || isWebAuthnLoading}
-                loading={isWebAuthnLoading}
-                onClick={handleBiometricLogin}
-              />
-            )}
 
             <div className='auth-footer-text'>
               <span className='auth-text-muted'>Vous n'avez pas de compte ? </span>

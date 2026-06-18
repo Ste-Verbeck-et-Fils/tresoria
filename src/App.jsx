@@ -44,6 +44,7 @@ import CreateDepensePage from './modules/depenses/pages/CreateDepensePage'
 import DepenseDetailPage from './modules/depenses/pages/DepenseDetailPage'
 import TresoreriePage from './modules/tresorerie/pages/TresoreriePage'
 import RapportFinancierAnneePage from './modules/tresorerie/pages/RapportFinancierAnneePage'
+import ComptabilitePage from './modules/tresorerie/pages/ComptabilitePage'
 import TransfertsPage from './modules/tresorerie/pages/TransfertsPage'
 import CreateTransfertPage from './modules/tresorerie/pages/CreateTransfertPage'
 import TransfertDetailPage from './modules/tresorerie/pages/TransfertDetailPage'
@@ -104,6 +105,7 @@ function AppLayout () {
               <Route element={<RoleProtectedRoute allowedRoles={TREASURY_ROLES} />}>
                 <Route path='/tresorerie' element={<TresoreriePage />} />
                 <Route path='/tresorerie/rapport-annee' element={<RapportFinancierAnneePage />} />
+                <Route path='/tresorerie/rapports-comptables' element={<ComptabilitePage />} />
                 <Route path='/tresorerie/transferts' element={<TransfertsPage />} />
                 <Route path='/tresorerie/transferts/create' element={<CreateTransfertPage />} />
                 <Route path='/tresorerie/transferts/:id' element={<TransfertDetailPage />} />

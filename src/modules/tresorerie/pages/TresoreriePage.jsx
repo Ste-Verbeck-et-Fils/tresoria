@@ -229,7 +229,7 @@ const TresoreriePage = () => {
           type: 'line',
           label: 'Sorties',
           data: sortiesData,
-          borderColor: '#173f5f', // Dark contrast color for line
+          borderColor: '#173f5f',
           backgroundColor: '#173f5f',
           borderWidth: 2,
           fill: false,
@@ -240,7 +240,7 @@ const TresoreriePage = () => {
           type: 'bar',
           label: 'Entrées',
           data: entreesData,
-          backgroundColor: '#26B6FF', // Primary color
+          backgroundColor: '#26B6FF',
         },
       ],
     }
