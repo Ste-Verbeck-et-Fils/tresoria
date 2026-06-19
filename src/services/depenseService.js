@@ -26,3 +26,6 @@ export const updateDepense = (id, payload) => getData(api.patch(`/api/depenses/$
 export const annulerDepense = (id) => getData(api.patch(`/api/depenses/${id}/annuler`))
 
 export const deleteDepense = (id) => getData(api.delete(`/api/depenses/${id}`))
+
+export const regulariserDepense = (id) => getData(api.post(`/api/depenses/${id}/regulariser`))
+export const validerDepense = (id) => getData(api.post(`/api/depenses/${id}/valider`))

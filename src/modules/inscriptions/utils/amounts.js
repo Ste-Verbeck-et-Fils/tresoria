@@ -42,6 +42,8 @@ const AMOUNT_KEYS = {
 export const unwrapInscriptionSolde = (payload) => (
   payload?.solde ??
   payload?.data?.solde ??
+  payload?.data?.inscription?.solde ??
+  payload?.inscription?.solde ??
   payload?.data ??
   payload ??
   null

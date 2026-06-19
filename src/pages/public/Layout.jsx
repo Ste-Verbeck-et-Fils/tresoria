@@ -16,7 +16,10 @@ import {
   UserRound,
   UsersRound,
   ArrowRightLeft,
-  MessageSquare
+  MessageSquare,
+  Wallet,
+  Settings,
+  NotebookPen
 } from 'lucide-react'
 import { logoutUser } from '../../services/authService'
 import { getUserProfile, normalizeProfile } from '../../services/profileService'
@@ -110,6 +113,7 @@ const Layout = () => {
       localStorage.removeItem('token')
       localStorage.removeItem('access_token')
       localStorage.removeItem('user')
+      sessionStorage.removeItem('ai_chat_history')
       navigate('/login', { replace: true })
     }
   }
@@ -120,60 +124,69 @@ const Layout = () => {
     links.push({ label: 'Tableau de bord', href: '/tresorerie', icon: <SwatchBook size={20} />, active: location.pathname === '/tresorerie' || location.pathname === '/dashboard' })
   }
 
+  const scolariteSubLinks = []
+
   if (canAccessInscriptions) {
-    links.push({ label: 'Inscriptions', href: '/inscriptions', icon: <BookOpenCheck size={20} />, active: isPathActive('/inscriptions') })
-  }
-
-  if (canAccessClasses) {
-    links.push({ label: 'Classes', href: '/classes', icon: <School size={20} />, active: isPathActive('/classes') })
-  }
-
-  if (canAccessAnneesScolaires) {
-    links.push({ label: 'Annees scolaires', href: '/annees-scolaires', icon: <CalendarDays size={20} />, active: isPathActive('/annees-scolaires') })
+    scolariteSubLinks.push({ label: 'Inscriptions', href: '/inscriptions', active: isPathActive('/inscriptions') })
   }
 
   if (isAdmin || isParent || isComptable) {
-    links.push({ label: 'Eleves', href: '/students', icon: <GraduationCap size={20} />, active: isPathActive('/students') })
+    scolariteSubLinks.push({ label: 'Elèves', href: '/students', active: isPathActive('/students') })
+  }
+
+  if (canAccessParents) {
+    scolariteSubLinks.push({ label: 'Parents', href: '/parents', active: isPathActive('/parents') })
+  }
+
+  if (isAdmin || isParent) {
+    scolariteSubLinks.push({ label: 'Adresses', href: '/adresses', active: isPathActive('/adresses') })
+  }
+
+  if (scolariteSubLinks.length > 0) {
+    links.push({
+      label: 'Scolarité',
+      icon: <NotebookPen size={20} />,
+      subLinks: scolariteSubLinks
+    })
   }
 
   if (isParent) {
     links.push({ label: 'Payer', href: '/parent/payer', icon: <CreditCard size={20} />, active: isPathActive('/parent/payer') })
   }
 
-  if (canAccessParents) {
-    links.push({ label: 'Parents', href: '/parents', icon: <UsersRound size={20} />, active: isPathActive('/parents') })
+  const comptabiliteSubLinks = []
+  if (canAccessPaiements) comptabiliteSubLinks.push({ label: 'Entrées', href: '/paiements', active: isPathActive('/paiements') })
+  if (canAccessDepenses) comptabiliteSubLinks.push({ label: 'Sorties', href: '/depenses', active: isPathActive('/depenses') })
+  if (canAccessTresorerie) comptabiliteSubLinks.push({ label: 'Rapport financier', href: '/tresorerie/rapport-annee', active: isPathActive('/tresorerie/rapport-annee') })
+  if (isAdmin || isComptable) comptabiliteSubLinks.push({ label: 'Rapport comptable', href: '/tresorerie/rapports-comptables', active: isPathActive('/tresorerie/rapports-comptables') })
+  if (canAccessTresorerie) comptabiliteSubLinks.push({ label: 'Transfert interne', href: '/tresorerie/transferts', active: isPathActive('/tresorerie/transferts') })
+
+  if (comptabiliteSubLinks.length > 0) {
+    links.push({
+      label: 'Comptabilité',
+      icon: <Wallet size={20} />,
+      subLinks: comptabiliteSubLinks
+    })
   }
 
-  if (isAdmin || isParent) {
-    links.push({ label: 'Adresses', href: '/adresses', icon: <MapPin size={20} />, active: isPathActive('/adresses') })
-  }
 
-  if (canAccessPaiements) {
-    links.push({ label: 'Entrées', href: '/paiements', icon: <CreditCard size={20} />, active: isPathActive('/paiements') })
-  }
 
-  if (canAccessDepenses) {
-    links.push({ label: 'Sorties', href: '/depenses', icon: <FileText size={20} />, active: isPathActive('/depenses') })
-  }
+  const configSubLinks = []
+  if (canAccessAnneesScolaires) configSubLinks.push({ label: 'Années scolaires', href: '/annees-scolaires', active: isPathActive('/annees-scolaires') })
+  if (canAccessClasses) configSubLinks.push({ label: 'Classes', href: '/classes', active: isPathActive('/classes') })
 
-  if (canAccessTresorerie) {
-    links.push({ label: 'Rapport financier', href: '/tresorerie/rapport-annee', icon: <FileText size={20} />, active: isPathActive('/tresorerie/rapport-annee') })
+  if (configSubLinks.length > 0) {
+    links.push({
+      label: 'Configuration',
+      icon: <Settings size={20} />,
+      subLinks: configSubLinks
+    })
   }
-
-  if (isAdmin || isComptable) {
-    links.push({ label: 'Rapport Comptable', href: '/tresorerie/rapports-comptables', icon: <FileText size={20} />, active: isPathActive('/tresorerie/rapports-comptables') })
-  }
-
-  if (canAccessTresorerie) {
-    links.push({ label: 'Transfert Interne', href: '/tresorerie/transferts', icon: <ArrowRightLeft size={20} />, active: isPathActive('/tresorerie/transferts') })
-  }
-
-  if (isAdmin) {
-    links.push({ label: 'Utilisateurs', href: '/users', icon: <UsersRound size={20} />, active: isPathActive('/users') })
-  }
-
   if (isAdmin || isComptable) {
     links.push({ label: 'Envoie SMS', href: '/sms', icon: <MessageSquare size={20} />, active: isPathActive('/sms') })
+  }
+  if (isAdmin) {
+    links.push({ label: 'Utilisateurs', href: '/users', icon: <UsersRound size={20} />, active: isPathActive('/users') })
   }
 
   links.push(

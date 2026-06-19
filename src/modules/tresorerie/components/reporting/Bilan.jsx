@@ -3,9 +3,11 @@ import { getBilan } from '../../../../services/comptabiliteService'
 import Loader from '../../../../components/ui/Loader'
 import Button from '../../../../components/ui/Button'
 import { formatAmount } from '../../../inscriptions/utils/amounts'
+import logoGsEmmanuel from '../../../../assets/images/logo_gsemmanuel.png'
+import SearchableSelectField from '../../../inscriptions/components/SearchableSelectField'
 import * as XLSX from 'xlsx'
 
-const Bilan = ({ filters }) => {
+const Bilan = ({ filters, compteOptions, onCompteChange }) => {
   const [bilan, setBilan] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -22,6 +24,7 @@ const Bilan = ({ filters }) => {
       if (filters?.start_date) params.dateDebut = filters.start_date
       if (filters?.end_date) params.dateFin = filters.end_date
       if (filters?.exercice_id) params.exerciceId = filters.exercice_id
+      if (filters?.compte_id) params.compteId = filters.compte_id
 
       const payload = await getBilan(params)
       if (payload.success) setBilan(payload.data)
@@ -89,24 +92,29 @@ const Bilan = ({ filters }) => {
       style={{
         flex: 1,
         minWidth: '300px',
-        border: '1px solid var(--color-border)',
-        borderRadius: '8px',
-        overflow: 'hidden'
+        marginBottom: '24px'
       }}
     >
       <div
         style={{
-          background: colorAccent,
-          color: '#fff',
-          padding: '12px 16px',
+          padding: '8px 12px',
+          background: 'var( #d4ddeaff)',
+          color: 'var(--color-secondary, #173f5f)',
           fontWeight: 700,
-          textAlign: 'center',
-          letterSpacing: '0.05em'
+          fontSize: '0.85rem',
+          borderRadius: '6px 6px 0 0',
+          borderBottom: '2px solid var(--color-secondary, #173f5f)'
         }}
       >
         {titre}
       </div>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+        <thead>
+          <tr style={{ background: '#f8fafc', borderBottom: '1px solid var(--color-border)' }}>
+            <th style={{ padding: '8px 12px', textAlign: 'left' }}>Compte</th>
+            <th style={{ padding: '8px 12px', textAlign: 'right' }}>Montant</th>
+          </tr>
+        </thead>
         <tbody>
           {Object.entries(entries).length === 0 ? (
             <tr>
@@ -125,12 +133,12 @@ const Bilan = ({ filters }) => {
           ) : (
             Object.entries(entries).map(([compte, details]) => (
               <tr key={compte} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   <span
                     style={{
                       fontFamily: 'monospace',
                       fontWeight: 700,
-                      color: colorAccent,
+                      color: 'var(--color-text-primary)',
                       marginRight: '8px'
                     }}
                   >
@@ -140,7 +148,7 @@ const Bilan = ({ filters }) => {
                 </td>
                 <td
                   style={{
-                    padding: '10px 12px',
+                    padding: '8px 12px',
                     textAlign: 'right',
                     fontWeight: 700,
                     whiteSpace: 'nowrap'
@@ -155,18 +163,17 @@ const Bilan = ({ filters }) => {
         <tfoot>
           <tr
             style={{
-              background: '#f8fafc',
+              background: '#f1f5f9',
               borderTop: '2px solid var(--color-border)',
               fontWeight: 700
             }}
           >
-            <td style={{ padding: '12px' }}>TOTAL</td>
+            <td style={{ padding: '8px 12px' }}>TOTAL</td>
             <td
               style={{
-                padding: '12px',
+                padding: '8px 12px',
                 textAlign: 'right',
-                color: colorAccent,
-                fontSize: '1rem'
+                color: colorAccent
               }}
             >
               {formatAmount(total)}
@@ -207,7 +214,16 @@ const Bilan = ({ filters }) => {
             {' '}(Produits {formatAmount(bilan.totalProduits)} – Charges {formatAmount(bilan.totalCharges)})
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ minWidth: '250px' }}>
+            <SearchableSelectField
+              id='compte_id'
+              placeholder='Rechercher un compte...'
+              options={compteOptions}
+              value={filters?.compte_id || ''}
+              onChange={(e) => onCompteChange(e.target.value)}
+            />
+          </div>
           <Button label='Exporter Excel' variant='secondary' className='inscription-action' onClick={exportToExcel} />
           <Button label='Imprimer (PDF)' variant='secondary' className='inscription-action' onClick={handlePrint} />
         </div>
@@ -220,6 +236,16 @@ const Bilan = ({ filters }) => {
         style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}
         className='bilan-print-area'
       >
+        {/* En-tête visible uniquement lors de l'impression */}
+        <div className="reporting-print-header" style={{ display: 'none', width: '100%' }}>
+          <img src={logoGsEmmanuel} alt="Logo GS Emmanuel" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+          <div>
+            <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
+            <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#475569' }}>
+              Rapport Comptable - Bilan (Généré le {new Date().toLocaleDateString('fr-FR')})
+            </p>
+          </div>
+        </div>
         <BilanTable
           titre='ACTIF (Emplois)'
           entries={bilan.actif}
@@ -239,6 +265,14 @@ const Bilan = ({ filters }) => {
           body * { visibility: hidden; }
           .bilan-print-area, .bilan-print-area * { visibility: visible; }
           .bilan-print-area { position: absolute; left: 0; top: 0; width: 100%; }
+          .reporting-print-header {
+            display: flex !important;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+          }
         }
       `}</style>
     </div>

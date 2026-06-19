@@ -1,0 +1,448 @@
+.rapport-financier-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Responsive filter panel */
+.rapport-financier-filter-fields {
+  display: grid;
+  grid-template-columns: minmax(250px, 1fr) auto;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.rapport-financier-filter-fields .tresorerie-filter-panel__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .rapport-financier-filter-fields {
+    grid-template-columns: 1fr;
+  }
+  
+  .rapport-financier-filter-fields .tresorerie-filter-panel__actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+  
+  .rapport-financier-filter-fields .tresorerie-filter-panel__actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.rapport-financier-hero-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.rapport-financier-hero-info h2 {
+  margin: 0 0 6px 0;
+  font-size: 1.4rem;
+  color: var(--color-text-primary, #12141D);
+}
+
+.rapport-financier-hero-subtitle {
+  margin: 0;
+  color: var(--color-text-muted, #6B7280);
+  font-size: 0.9rem;
+}
+
+.rapport-financier-solde-block {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.rapport-financier-solde-card {
+  padding: 16px 24px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.rapport-financier-solde-card .solde-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.rapport-financier-solde-card .solde-valeur {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.rapport-financier-solde-card .solde-valeur.text-success {
+  color: #334155;
+}
+
+.rapport-financier-solde-card .solde-valeur.text-danger {
+  color: var(--color-error, #EF4444);
+}
+
+.rapport-financier-solde-card .solde-explanation {
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+
+.excel-table-container {
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  border: 1px solid #000;
+
+
+}
+
+.excel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.excel-table th,
+.excel-table td {
+  border: 1px solid #000;
+  padding: 10px 14px;
+  vertical-align: middle;
+
+}
+
+.excel-table th {
+  font-weight: 700;
+  border-collapse: collapse;
+}
+
+.excel-main-header th {
+  font-size: 14px;
+  text-align: center;
+  padding: 12px;
+  letter-spacing: 0.05em;
+}
+
+.excel-header-entrees {
+  background-color: #ecfdf5;
+  color: #065f46;
+}
+
+.excel-header-sorties {
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+.excel-sub-header th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-size: 12px;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.excel-sub-header th.text-center {
+  text-align: center;
+}
+
+.excel-sub-header th.text-right {
+  text-align: right;
+}
+
+.excel-table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.excel-table tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+.excel-table td.text-left {
+  text-align: left;
+}
+
+.excel-table td.text-center {
+  text-align: center;
+  color: #64748b;
+}
+
+.excel-table td.text-right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* Border Left Separator for Excel Middle Line */
+.border-left-separator {
+  border-left: 3px #000 !important;
+}
+
+/* Subtotal Rows */
+.excel-row-subtotal td {
+  background-color: #f8fafc !important;
+  font-weight: 600;
+  color: #475569;
+  border-top: 1.5px solid #000;
+}
+
+.excel-row-subtotal td.text-muted {
+  color: #64748b;
+}
+
+/* Total Rows */
+.excel-row-total td {
+  background-color: #f1f5f9 !important;
+  font-weight: 700;
+  color: #0f172a;
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+}
+
+.excel-total-label {
+  font-size: 13px;
+}
+
+.excel-total-value {
+  font-size: 14px;
+}
+
+/* Net Balance Row */
+.excel-row-solde td {
+  background-color: #f8fafc !important;
+  padding: 16px 20px;
+  border-top: 2px solid #000;
+}
+
+.excel-solde-label {
+  font-size: 14px;
+  color: #334155;
+}
+
+.excel-double-underline {
+  font-size: 16px;
+  border-bottom: 4px #0f172a !important;
+  font-weight: 800;
+}
+
+.excel-double-underline.text-success {
+  color: #065f46;
+}
+
+.excel-double-underline.text-danger {
+  color: #dc2626;
+}
+
+/* Styles Détails des Opérations */
+.rapport-financier-details-section {
+  margin-top: 32px;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.details-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  padding-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.details-section-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--color-secondary, #173f5f);
+  font-weight: 700;
+}
+
+.details-tab-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.details-table-container.inactive-tab {
+  display: none;
+}
+
+.details-table-container.active-tab {
+  display: block;
+}
+
+.print-only-title {
+  display: none;
+}
+
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.status--confirme {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status--annule {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status--draft {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.status--en_attente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+@media print {
+  .tresoria-sidebar,
+  .app-header,
+  .no-print {
+    display: none !important;
+  }
+
+  .rapport-financier-print-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #ffffff !important;
+    padding: 0 !important;
+  }
+
+  .reporting-print-header {
+    display: flex !important;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+    width: 100%;
+  }
+
+  .rapport-financier-hero-card {
+    border: none !important;
+    padding: 0 0 16px 0 !important;
+    border-bottom: 1px dashed #ccc !important;
+    border-radius: 0 !important;
+    margin-bottom: 20px !important;
+    background: transparent !important;
+  }
+
+  .excel-table-container {
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .excel-table th,
+  .excel-table td {
+    border: 1px solid #000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .excel-header-entrees {
+    background-color: #ecfdf5 !important;
+    color: #065f46 !important;
+  }
+
+  .excel-header-sorties {
+    background-color: #fef2f2 !important;
+    color: #991b1b !important;
+  }
+
+  .excel-sub-header th {
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+  }
+
+  .excel-row-subtotal td {
+    background-color: #f8fafc !important;
+    border-top: 1.5px solid #000 !important;
+  }
+
+  .excel-row-total td {
+    background-color: #f1f5f9 !important;
+    border-top: 2px solid #000 !important;
+    border-bottom: 2px solid #000 !important;
+  }
+
+  .excel-row-solde td {
+    background-color: #f8fafc !important;
+    border-top: 2px solid #000 !important;
+  }
+
+  .border-left-separator {
+    border-left: 3px #000 !important;
+  }
+
+  .excel-double-underline {
+    border-bottom: 4px #000 !important;
+  }
+
+  /* Print Details of Transactions Stacked */
+  .rapport-financier-details-section {
+    border: none !important;
+    margin-top: 30px !important;
+    padding: 0 !important;
+    page-break-before: always;
+  }
+
+  .details-table-container.inactive-tab,
+  .details-table-container.active-tab {
+    display: block !important;
+    margin-bottom: 30px !important;
+    page-break-inside: avoid;
+  }
+
+  .print-only-title {
+    display: block !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    border-bottom: 1px solid #000 !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 12px !important;
+    color: #000 !important;
+  }
+
+  .status-tag {
+    border: 1px solid #ccc !important;
+    background: transparent !important;
+    color: #000 !important;
+  }
+}

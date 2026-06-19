@@ -9,8 +9,26 @@ const Feedback = ({
   onClose,
   theme = 'light',
   className = '',
+  autoHide = false,
+  autoHideDuration = 5000,
   ...props
 }) => {
+  const [isVisible, setIsVisible] = React.useState(true)
+
+  React.useEffect(() => {
+    const shouldAutoHide = autoHide || type === 'success'
+
+    if (shouldAutoHide && isVisible) {
+      const timer = setTimeout(() => {
+        setIsVisible(false)
+        if (onClose) onClose()
+      }, autoHideDuration)
+      return () => clearTimeout(timer)
+    }
+  }, [type, autoHide, autoHideDuration, isVisible, onClose])
+
+  if (!isVisible) return null
+
   const getIcon = () => {
     switch (type) {
       case 'success':
@@ -34,8 +52,12 @@ const Feedback = ({
         {title && <h4 className={`feedback-title text-${type}`}>{title}</h4>}
         {message && <p className='feedback-message'>{message}</p>}
       </div>
-      {onClose && (
+      {onClose ? (
         <button className='feedback-close-btn' onClick={onClose} aria-label='Close'>
+          <X size={16} />
+        </button>
+      ) : (
+        <button className='feedback-close-btn' onClick={() => setIsVisible(false)} aria-label='Close'>
           <X size={16} />
         </button>
       )}

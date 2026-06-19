@@ -14,6 +14,8 @@ import {
   deleteDepense,
   getDepense,
   updateDepense,
+  regulariserDepense,
+  validerDepense,
 } from '../../../services/depenseService'
 import PasswordConfirmModal from '../../../components/ui/PasswordConfirmModal'
 import DetailField from '../../inscriptions/components/DetailField'
@@ -43,7 +45,10 @@ import {
   normalizeDepenseForm,
   unwrapDepense,
   validateDepenseForm,
+  getTransactionDateConstraints,
 } from '../utils/depense'
+
+const { minDate: minDateTransaction, maxDate: maxDateTransaction } = getTransactionDateConstraints()
 
 const resolveDepenseBundle = async (id) => {
   const depensePayload = await getDepense(id)
@@ -76,8 +81,11 @@ const DepenseDetailPage = () => {
   const [isSaving, setIsSaving] = useState(false)
   const [isCancelling, setIsCancelling] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isRegularizing, setIsRegularizing] = useState(false)
+  const [isValidating, setIsValidating] = useState(false)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [pendingAction, setPendingAction] = useState(null)
+  const [showWarning, setShowWarning] = useState(true)
 
   const handlePasswordConfirm = () => {
     setShowPasswordModal(false)
@@ -87,6 +95,10 @@ const DepenseDetailPage = () => {
       executeDelete()
     } else if (pendingAction === 'edit') {
       executeEdit()
+    } else if (pendingAction === 'regulariser') {
+      executeRegulariser()
+    } else if (pendingAction === 'valider') {
+      executeValider()
     }
     setPendingAction(null)
   }
@@ -160,7 +172,30 @@ const DepenseDetailPage = () => {
   const isSelectedEditAnneeClosed = selectedEditAnnee ? isAnneeScolaireCloturee(selectedEditAnnee) : false
   const status = depense ? getDepenseStatus(depense) : ''
   const isDepenseCancelled = status.toUpperCase().startsWith('ANNU')
-  const isActionPending = isSaving || isCancelling || isDeleting
+  const isConfirmed = status === 'CONFIRME'
+  const isDraft = status === 'DRAFT'
+  const isActionPending = isSaving || isCancelling || isDeleting || isRegularizing || isValidating
+  const isAlreadyRegularized = depense?.reference?.includes('-REV')
+
+  useEffect(() => {
+    if (depense && isAlreadyRegularized) {
+      setShowWarning(true)
+      const timer = setTimeout(() => {
+        setShowWarning(false)
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [depense, isAlreadyRegularized])
+
+  useEffect(() => {
+    if (feedback.message) {
+      const dismissTime = (feedback.message.toLowerCase().includes('validé') || feedback.message.toLowerCase().includes('valide')) ? 10000 : 5000
+      const timer = setTimeout(() => {
+        setFeedback({ type: '', message: '' })
+      }, dismissTime)
+      return () => clearTimeout(timer)
+    }
+  }, [feedback.message])
 
   const anneeOptions = useMemo(
     () => anneesScolaires.map((annee) => {
@@ -206,6 +241,26 @@ const DepenseDetailPage = () => {
     }
   }
 
+  const hasChanges = () => {
+    if (!depense) return false
+    const originalForm = normalizeDepenseForm({
+      ...depense,
+      annee_scolaire_id: anneeScolaire?.id || depense?.annee_scolaire_id || '',
+    })
+    
+    return (
+      Number(editForm.annee_scolaire_id) !== Number(originalForm.annee_scolaire_id) ||
+      editForm.libelle.trim() !== originalForm.libelle.trim() ||
+      editForm.categorie !== originalForm.categorie ||
+      Number(editForm.montant) !== Number(originalForm.montant) ||
+      editForm.mode_paiement !== originalForm.mode_paiement ||
+      editForm.beneficiaire.trim() !== originalForm.beneficiaire.trim() ||
+      editForm.description.trim() !== originalForm.description.trim() ||
+      editForm.date_depense !== originalForm.date_depense ||
+      editForm.reference.trim() !== originalForm.reference.trim()
+    )
+  }
+
   const handleSaveEdit = async () => {
     setFeedback({ type: '', message: '' })
 
@@ -216,8 +271,20 @@ const DepenseDetailPage = () => {
       return
     }
 
-    setPendingAction('edit')
-    setShowPasswordModal(true)
+    const currentStatus = getDepenseStatus(depense)
+    if (currentStatus === 'CONFIRME') {
+      if (!hasChanges()) {
+        setFeedback({
+          type: 'warning',
+          message: 'Aucune information n\'a été modifiée. La régularisation n\'est pas nécessaire.'
+        })
+        return
+      }
+      setPendingAction('regulariser')
+      setShowPasswordModal(true)
+    } else {
+      executeEdit()
+    }
   }
 
   const executeEdit = async () => {
@@ -276,6 +343,55 @@ const DepenseDetailPage = () => {
     }
   }
 
+  const handleRegulariser = () => {
+    setPendingAction('regulariser')
+    setShowPasswordModal(true)
+  }
+
+  const executeRegulariser = async () => {
+    setFeedback({ type: '', message: '' })
+    setIsRegularizing(true)
+
+    try {
+      const response = await regulariserDepense(id)
+      const newDepenseId = response.data?.depense?.id || response.depense?.id
+      if (newDepenseId) {
+         // Apply modifications to the new draft expense
+         await updateDepense(newDepenseId, getDepensePayload(editForm))
+         setIsEditing(false)
+         navigate(`/depenses/${newDepenseId}`, {
+           replace: true,
+           state: { successMessage: 'Contre-passation effectuée et modifications enregistrées. Vous êtes maintenant sur la sortie brouillon.' },
+         })
+      } else {
+         await refreshAfterMutation('Sortie régularisée avec succès.')
+      }
+    } catch (error) {
+      setFeedback({ type: 'error', message: error.message || 'Impossible de régulariser cette sortie.' })
+    } finally {
+      setIsRegularizing(false)
+    }
+  }
+
+  const handleValider = () => {
+    setPendingAction('valider')
+    setShowPasswordModal(true)
+  }
+
+  const executeValider = async () => {
+    setFeedback({ type: '', message: '' })
+    setIsValidating(true)
+
+    try {
+      await validerDepense(id)
+      await refreshAfterMutation('Sortie validée avec succès.')
+    } catch (error) {
+      setFeedback({ type: 'error', message: error.message || 'Impossible de valider cette sortie.' })
+    } finally {
+      setIsValidating(false)
+    }
+  }
+
   return (
     <section className='inscription-page'>
       <header className='inscription-page-header'>
@@ -296,6 +412,13 @@ const DepenseDetailPage = () => {
           type={feedback.type}
           message={feedback.message}
           onClose={() => setFeedback({ type: '', message: '' })}
+        />
+      )}
+
+      {isConfirmed && isAlreadyRegularized && showWarning && (
+        <Feedback
+          type='warning'
+          message="Cette sortie est issue d'une régularisation (contre-passation) et ne peut plus être modifiée ni régularisée à nouveau."
         />
       )}
 
@@ -338,8 +461,8 @@ const DepenseDetailPage = () => {
                     <Button
                       type='button'
                       variant='super'
-                      label={isSaving ? 'Enregistrement...' : 'Enregistrer'}
-                      loading={isSaving}
+                      label={isConfirmed ? (isSaving || isRegularizing ? 'Régularisation...' : 'Régulariser') : (isSaving ? 'Enregistrement...' : 'Enregistrer')}
+                      loading={isSaving || isRegularizing}
                       disabled={isSelectedEditAnneeClosed}
                       onClick={handleSaveEdit}
                       className='inscription-action inscription-action--primary'
@@ -352,7 +475,7 @@ const DepenseDetailPage = () => {
                     variant='ghost'
                     label='Modifier'
                     icon={<PencilLine size={16} />}
-                    disabled={isActionPending}
+                    disabled={isActionPending || isDepenseCancelled || (isConfirmed && isAlreadyRegularized)}
                     onClick={handleStartEdit}
                     className='inscription-action inscription-action--secondary'
                   />
@@ -424,6 +547,8 @@ const DepenseDetailPage = () => {
                       <Input
                         id='date_depense'
                         type='date'
+                        min={minDateTransaction}
+                        max={maxDateTransaction}
                         value={editForm.date_depense}
                         error={editErrors.date_depense}
                         disabled={isSaving}
@@ -438,7 +563,7 @@ const DepenseDetailPage = () => {
                         id='reference'
                         type='text'
                         value={editForm.reference}
-                        disabled={isSaving}
+                        disabled={isSaving || depense?.statut === 'CONFIRME' || editForm.reference?.includes('-REV')}
                         onChange={handleEditChange}
                       />
                     </dd>
@@ -482,17 +607,29 @@ const DepenseDetailPage = () => {
                   label={isCancelling ? 'Annulation...' : 'Annuler la sortie'}
                   icon={<Ban size={16} />}
                   loading={isCancelling}
-                  disabled={isEditing || isDeleting || isDepenseCancelled}
+                  disabled={isEditing || isDeleting || isConfirmed || isDepenseCancelled}
                   onClick={handleAnnuler}
                   className='inscription-action inscription-action--secondary'
                 />
+                {isDraft && (
+                  <Button
+                    type='button'
+                    variant='super'
+                    label={isValidating ? 'Validation...' : 'Valider'}
+                    icon={<FileText size={16} />}
+                    loading={isValidating}
+                    disabled={isActionPending}
+                    onClick={handleValider}
+                    className='inscription-action inscription-action--primary'
+                  />
+                )}
                 <Button
                   type='button'
                   variant='ghost'
                   label={isDeleting ? 'Suppression...' : 'Supprimer'}
                   icon={<Trash2 size={16} />}
                   loading={isDeleting}
-                  disabled={isEditing || isCancelling}
+                  disabled={isActionPending || isConfirmed || isDepenseCancelled}
                   onClick={handleDelete}
                   className='inscription-action classe-delete-action'
                 />
@@ -510,8 +647,8 @@ const DepenseDetailPage = () => {
         onClose={() => { setShowPasswordModal(false); setPendingAction(null) }}
         onConfirm={handlePasswordConfirm}
         title='Confirmation requise'
-        message={pendingAction === 'annuler' ? 'Veuillez saisir votre mot de passe pour confirmer l annulation.' : pendingAction === 'edit' ? 'Veuillez saisir votre mot de passe pour confirmer la modification.' : 'Veuillez saisir votre mot de passe pour confirmer la suppression.'}
-        actionLabel={pendingAction === 'annuler' ? 'Annuler la sortie' : pendingAction === 'edit' ? 'Enregistrer' : 'Supprimer'}
+        message={pendingAction === 'annuler' ? 'Veuillez saisir votre mot de passe pour confirmer l annulation.' : pendingAction === 'edit' ? 'Veuillez saisir votre mot de passe pour confirmer la modification.' : pendingAction === 'regulariser' ? 'Veuillez saisir votre mot de passe pour confirmer la régularisation (contre-passation).' : pendingAction === 'valider' ? 'Veuillez saisir votre mot de passe pour valider la sortie.' : 'Veuillez saisir votre mot de passe pour confirmer la suppression.'}
+        actionLabel={pendingAction === 'annuler' ? 'Annuler la sortie' : pendingAction === 'edit' ? 'Enregistrer' : pendingAction === 'regulariser' ? 'Régulariser' : pendingAction === 'valider' ? 'Valider' : 'Supprimer'}
       />
     </section>
   )

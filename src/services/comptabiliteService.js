@@ -19,3 +19,8 @@ export const getGrandLivre = async (params = {}) => {
   const { data } = await api.get('/api/comptabilite/grand-livre', { params })
   return data
 }
+
+export const getPlanComptable = async (params = {}) => {
+  const { data } = await api.get('/api/comptabilite/plan-comptable', { params })
+  return data
+}

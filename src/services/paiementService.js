@@ -28,3 +28,6 @@ export const updatePaiement = (id, payload) => getData(api.patch(`/api/paiements
 export const annulerPaiement = (id) => getData(api.patch(`/api/paiements/${id}/annuler`))
 
 export const deletePaiement = (id) => getData(api.delete(`/api/paiements/${id}`))
+
+export const regulariserPaiement = (id) => getData(api.post(`/api/paiements/${id}/regulariser`))
+export const validerPaiement = (id) => getData(api.post(`/api/paiements/${id}/valider`))

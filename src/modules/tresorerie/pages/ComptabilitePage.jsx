@@ -5,11 +5,13 @@ import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
 import FilterPanel from '../../../components/ui/FilterPanel'
 import { getAnneesScolaires } from '../../../services/anneeScolaireService'
+import { getPlanComptable } from '../../../services/comptabiliteService'
 import SearchableSelectField from '../../inscriptions/components/SearchableSelectField'
 import Journal from '../components/reporting/Journal'
 import Bilan from '../components/reporting/Bilan'
 import Balance from '../components/reporting/Balance'
 import GrandLivre from '../components/reporting/GrandLivre'
+import RapportJournalier from '../components/reporting/RapportJournalier'
 import {
   getDesignation,
   normalizeCollection,
@@ -20,6 +22,7 @@ import {
 } from '../utils/tresorerie'
 
 const TABS = [
+  { id: 'RAPPORT_JOURNALIER', label: 'Rapport Journalier' },
   { id: 'JOURNAL', label: 'Journal' },
   { id: 'GRAND_LIVRE', label: 'Grand Livre' },
   { id: 'BALANCE', label: 'Balance Générale' },
@@ -28,12 +31,12 @@ const TABS = [
 
 const DEFAULT_FILTERS = {
   ...DEFAULT_TRESORERIE_FILTERS,
-  exercice_id: '',
-  journal_id: '',
+  compte_id: '',
 }
 
 const ComptabilitePage = () => {
   const [anneesScolaires, setAnneesScolaires] = useState([])
+  const [comptes, setComptes] = useState([])
   const [draftFilters, setDraftFilters] = useState(DEFAULT_FILTERS)
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS)
 
@@ -41,7 +44,7 @@ const ComptabilitePage = () => {
   const [optionsError, setOptionsError] = useState('')
   const [filterError, setFilterError] = useState('')
 
-  const [activeTab, setActiveTab] = useState('JOURNAL')
+  const [activeTab, setActiveTab] = useState('RAPPORT_JOURNALIER')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const loadAnnees = useCallback(async () => {
@@ -50,6 +53,8 @@ const ComptabilitePage = () => {
     try {
       const payload = await getAnneesScolaires()
       setAnneesScolaires(normalizeCollection(payload))
+      const comptesPayload = await getPlanComptable()
+      setComptes(normalizeCollection(comptesPayload))
     } catch (error) {
       setOptionsError(error.message || 'Impossible de charger les années scolaires.')
     } finally {
@@ -71,27 +76,27 @@ const ComptabilitePage = () => {
     [anneesScolaires]
   )
 
+  const compteOptions = useMemo(
+    () =>
+      comptes.map(compte => ({
+        value: compte.id,
+        label: `${compte.numero} - ${compte.intitule}`,
+        searchText: `${compte.numero} ${compte.intitule}`,
+      })),
+    [comptes]
+  )
+
   const hasActiveFilters = Boolean(
     appliedFilters.annee_scolaire_id ||
     appliedFilters.start_date ||
-    appliedFilters.end_date ||
-    appliedFilters.exercice_id ||
-    appliedFilters.journal_id
+    appliedFilters.end_date
   )
 
   const handleFilterChange = (id, value) => {
     setDraftFilters(current => {
       const next = { ...current, [id]: value }
 
-      // Annee scolaire et période sont mutuellement exclusifs
-      if (id === 'annee_scolaire_id' && value) {
-        next.start_date = ''
-        next.end_date = ''
-      }
-      if ((id === 'start_date' || id === 'end_date') && value) {
-        next.annee_scolaire_id = ''
-      }
-
+      // Plus de filtres mutuellement exclusifs comme demandé
       return next
     })
     if (filterError) setFilterError('')
@@ -109,9 +114,14 @@ const ComptabilitePage = () => {
   }
 
   const handleClearFilters = () => {
-    setDraftFilters(DEFAULT_FILTERS)
-    setAppliedFilters(DEFAULT_FILTERS)
+    setDraftFilters({ ...DEFAULT_FILTERS, compte_id: appliedFilters.compte_id })
+    setAppliedFilters({ ...DEFAULT_FILTERS, compte_id: appliedFilters.compte_id })
     setFilterError('')
+  }
+
+  const handleCompteChange = (value) => {
+    setAppliedFilters(current => ({ ...current, compte_id: value }))
+    setDraftFilters(current => ({ ...current, compte_id: value }))
   }
 
   return (
@@ -189,28 +199,21 @@ const ComptabilitePage = () => {
           </div>
         </div>
 
-        {/* Filtre exercice comptable (ID manuel — à remplacer par un select si on ajoute la route) */}
+        {/* Filtre Année Scolaire */}
         <div className='filter-field'>
-          <label>ID Exercice comptable</label>
-          <Input
-            type='number'
-            placeholder='Ex : 1'
-            value={draftFilters.exercice_id}
-            onChange={e => handleFilterChange('exercice_id', e.target.value)}
-            style={{ marginBottom: 0 }}
-          />
-        </div>
-
-        {/* Filtre journal (ID manuel) */}
-        <div className='filter-field'>
-          <label>ID Journal comptable</label>
-          <Input
-            type='number'
-            placeholder='Ex : 1 (CA=Caisse, BQ=Banque)'
-            value={draftFilters.journal_id}
-            onChange={e => handleFilterChange('journal_id', e.target.value)}
-            style={{ marginBottom: 0 }}
-          />
+          <label>Année Scolaire</label>
+          <select
+            value={draftFilters.annee_scolaire_id}
+            onChange={e => handleFilterChange('annee_scolaire_id', e.target.value)}
+            disabled={isLoadingOptions}
+            className='inscription-input'
+            style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--color-border)' }}
+          >
+            <option value=''>Toutes les années scolaires</option>
+            {anneeOptions.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
         </div>
 
         {filterError && <Feedback type='error' message={filterError} />}
@@ -223,10 +226,39 @@ const ComptabilitePage = () => {
 
       {/* Contenu du rapport actif */}
       <div style={{ marginTop: '16px' }}>
-        {activeTab === 'JOURNAL' && <Journal filters={appliedFilters} />}
-        {activeTab === 'GRAND_LIVRE' && <GrandLivre filters={appliedFilters} />}
-        {activeTab === 'BALANCE' && <Balance filters={appliedFilters} />}
-        {activeTab === 'BILAN' && <Bilan filters={appliedFilters} />}
+        {activeTab === 'RAPPORT_JOURNALIER' && (
+          <RapportJournalier
+            filters={appliedFilters}
+          />
+        )}
+        {activeTab === 'JOURNAL' && (
+          <Journal
+            filters={appliedFilters}
+            compteOptions={compteOptions}
+            onCompteChange={handleCompteChange}
+          />
+        )}
+        {activeTab === 'GRAND_LIVRE' && (
+          <GrandLivre
+            filters={appliedFilters}
+            compteOptions={compteOptions}
+            onCompteChange={handleCompteChange}
+          />
+        )}
+        {activeTab === 'BALANCE' && (
+          <Balance
+            filters={appliedFilters}
+            compteOptions={compteOptions}
+            onCompteChange={handleCompteChange}
+          />
+        )}
+        {activeTab === 'BILAN' && (
+          <Bilan
+            filters={appliedFilters}
+            compteOptions={compteOptions}
+            onCompteChange={handleCompteChange}
+          />
+        )}
       </div>
     </section>
   )

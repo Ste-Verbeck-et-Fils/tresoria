@@ -316,3 +316,42 @@
     min-height: 42px;
   }
 }
+
+.sidebar-dropdown-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-dropdown-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+}
+
+.sidebar-dropdown-icon {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+.sidebar-sublinks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 36px;
+  margin-top: 4px;
+}
+
+.sidebar-sublink {
+  min-height: 36px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+}
+
+.sidebar--collapsed .sidebar-sublinks {
+  display: none;
+}

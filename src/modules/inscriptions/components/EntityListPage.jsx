@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Plus, Search, MoreVertical, Eye, ChevronLeft, ChevronRight, Filter, X, Printer } from 'lucide-react'
 import Button from '../../../components/ui/Button'
+import logoGsEmmanuel from '../../../assets/images/logo_gsemmanuel.png'
 import Feedback from '../../../components/ui/Feedback'
 import Input from '../../../components/ui/Input'
 import { normalizeCollection } from '../utils/data'
@@ -419,9 +420,13 @@ const EntityListPage = ({
       })}
 
       <div className='print-only'>
-        <div className='print-header'>
-          <h1>{title}</h1>
-          <p>{description}</p>
+        <div className='print-header' style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingBottom: '15px', borderBottom: '2px solid #000', marginBottom: '20px' }}>
+          <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
+          <div style={{ textAlign: 'left' }}>
+            <h1 style={{ fontSize: '22px', margin: 0, fontWeight: 'bold' }}>GS EMMANUEL</h1>
+            <h2 style={{ fontSize: '15px', margin: '4px 0 0', fontWeight: '500', color: '#1e293b' }}>{title}</h2>
+            {description && <p style={{ fontSize: '12px', margin: '2px 0 0', color: '#475569' }}>{description}</p>}
+          </div>
         </div>
         <div className='print-meta'>
           Généré le : {new Date().toLocaleString('fr-FR')} <br/>

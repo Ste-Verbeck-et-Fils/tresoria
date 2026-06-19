@@ -3,13 +3,14 @@ import { getJournal } from '../../../../services/comptabiliteService'
 import Loader from '../../../../components/ui/Loader'
 import Button from '../../../../components/ui/Button'
 import { formatAmount } from '../../../inscriptions/utils/amounts'
+import logoGsEmmanuel from '../../../../assets/images/logo_gsemmanuel.png'
+import SearchableSelectField from '../../../inscriptions/components/SearchableSelectField'
 import * as XLSX from 'xlsx'
 
-const Journal = ({ filters }) => {
+const Journal = ({ filters, compteOptions, onCompteChange }) => {
   const [ecritures, setEcritures] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [expandedIds, setExpandedIds] = useState(new Set())
 
   useEffect(() => {
     loadJournal()
@@ -24,6 +25,7 @@ const Journal = ({ filters }) => {
       if (filters?.end_date) params.dateFin = filters.end_date
       if (filters?.journal_id) params.journalId = filters.journal_id
       if (filters?.exercice_id) params.exerciceId = filters.exercice_id
+      if (filters?.compte_id) params.compteId = filters.compte_id
 
       const payload = await getJournal(params)
       if (payload.success) setEcritures(payload.data)
@@ -33,25 +35,6 @@ const Journal = ({ filters }) => {
       setError('Erreur lors du chargement du journal.')
     } finally {
       setLoading(false)
-    }
-  }
-
-  const toggleExpand = (id) => {
-    setExpandedIds(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
-
-  const isAllExpanded = ecritures && ecritures.length > 0 && expandedIds.size === ecritures.length
-
-  const toggleAll = () => {
-    if (isAllExpanded) {
-      setExpandedIds(new Set())
-    } else {
-      if (ecritures) setExpandedIds(new Set(ecritures.map(e => e.id)))
     }
   }
 
@@ -123,28 +106,33 @@ const Journal = ({ filters }) => {
             {ecritures.length} écriture{ecritures.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <button
-            onClick={toggleAll}
-            style={{
-              padding: '6px 14px',
-              border: '1px solid var(--color-border)',
-              borderRadius: '6px',
-              background: 'transparent',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              color: 'var(--color-text-secondary)'
-            }}
-          >
-            {isAllExpanded ? 'Tout replier' : 'Tout déplier'}
-          </button>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ minWidth: '250px' }}>
+            <SearchableSelectField
+              id='compte_id'
+              placeholder='Rechercher un compte...'
+              options={compteOptions}
+              value={filters?.compte_id || ''}
+              onChange={(e) => onCompteChange(e.target.value)}
+            />
+          </div>
           <Button label='Exporter Excel' variant='secondary' className='inscription-action' onClick={exportToExcel} />
           <Button label='Imprimer (PDF)' variant='secondary' className='inscription-action' onClick={handlePrint} />
         </div>
       </div>
 
       {/* Écritures */}
-      <div className='journal-print-area'>
+      <div className='journal-print-area' style={{ overflowX: 'auto' }}>
+        {/* En-tête visible uniquement lors de l'impression */}
+        <div className="reporting-print-header" style={{ display: 'none' }}>
+          <img src={logoGsEmmanuel} alt="Logo GS Emmanuel" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+          <div>
+            <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
+            <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#475569' }}>
+              Rapport Comptable - Journal (Généré le {new Date().toLocaleDateString('fr-FR')})
+            </p>
+          </div>
+        </div>
         {ecritures.length === 0 ? (
           <div
             style={{
@@ -159,136 +147,87 @@ const Journal = ({ filters }) => {
           </div>
         ) : (
           ecritures.map(e => {
-            const isOpen = expandedIds.has(e.id)
-            const isEquilibre = Math.abs(e.totalDebit - e.totalCredit) < 0.01
-
             return (
-              <div
-                key={e.id}
-                style={{
-                  marginBottom: '24px',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '8px',
-                  overflow: 'hidden'
-                }}
-              >
-                {/* Ligne principale — cliquable */}
+              <div key={e.id} style={{ marginBottom: '24px' }}>
+                {/* En-tête de l'écriture */}
                 <div
-                  onClick={() => toggleExpand(e.id)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '12px',
+                    justifyContent: 'space-between',
                     padding: '8px 12px',
-                    background: 'var(--color-info-bg, #DBEAFE)',
+                    background: 'var( #d4ddeaff)',
                     color: 'var(--color-secondary, #173f5f)',
-                    borderRadius: isOpen ? '6px 6px 0 0' : '6px',
-                    borderBottom: isOpen ? '2px solid var(--color-secondary, #173f5f)' : 'none',
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                    transition: 'background 0.15s'
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    borderRadius: '6px 6px 0 0',
+                    borderBottom: '2px solid var(--color-secondary, #173f5f)'
                   }}
                 >
-                  <span
-                    style={{
-                      fontFamily: 'monospace',
-                      fontWeight: 700,
-                      fontSize: '1rem',
-                      color: 'var(--color-secondary, #173f5f)'
-                    }}
-                  >
-                    {new Date(e.date).toLocaleDateString('fr-FR')} - {e.journal.code}
-                  </span>
-                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)', flex: 1 }}>
-                    {e.libelle} {e.reference ? `(#${e.reference})` : ''}
-                  </span>
-                  <div style={{ display: 'flex', gap: '24px' }}>
-                    <span style={{ fontSize: '0.9rem', textAlign: 'right', color: 'var(--color-success, #16a34a)', fontWeight: 700 }}>
-                      {formatAmount(e.totalDebit)}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontFamily: 'monospace' }}>
+                      {new Date(e.date).toLocaleDateString('fr-FR')} - {e.journal.code}
                     </span>
-                    <span style={{ fontSize: '0.9rem', textAlign: 'right', color: 'var(--color-danger, #dc2626)', fontWeight: 700 }}>
-                      {formatAmount(e.totalCredit)}
+                    <span>
+                      {e.libelle} {e.reference ? `(#${e.reference})` : ''}
                     </span>
                   </div>
                 </div>
 
-                {/* Lignes de détail */}
-                {isOpen && (
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
-                      <thead>
-                        <tr style={{ background: '#f8fafc', borderBottom: '1px solid var(--color-border)' }}>
-                          <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 700 }}>
-                            Compte
-                          </th>
-                          <th style={{ padding: '8px', textAlign: 'left', fontWeight: 700 }}>
-                            Libellé ligne
-                          </th>
-                          <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 700 }}>
-                            Débit
-                          </th>
-                          <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 700 }}>
-                            Crédit
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {e.lignes.map(l => (
-                          <tr key={l.id} style={{ borderTop: '1px solid var(--color-border)' }}>
-                            <td style={{ padding: '8px 16px' }}>
-                              <span
-                                style={{
-                                  fontFamily: 'monospace',
-                                  fontWeight: 700,
-                                  color: 'var(--color-secondary, #173f5f)'
-                                }}
-                              >
-                                {l.compte.numero}
-                              </span>
-                              <span style={{ marginLeft: '8px', color: 'var(--color-text-secondary)' }}>
-                                {l.compte.intitule}
-                              </span>
-                            </td>
-                            <td style={{ padding: '8px', color: 'var(--color-text-secondary)' }}>
-                              {l.libelle}
-                            </td>
-                            <td
-                              style={{
-                                padding: '8px 16px',
-                                textAlign: 'right',
-                                color: l.sens === 'DEBIT' ? 'var(--color-success, #16a34a)' : 'transparent',
-                                fontWeight: l.sens === 'DEBIT' ? 600 : 400
-                              }}
-                            >
-                              {l.sens === 'DEBIT' ? formatAmount(l.montant) : '—'}
-                            </td>
-                            <td
-                              style={{
-                                padding: '8px 16px',
-                                textAlign: 'right',
-                                color: l.sens === 'CREDIT' ? 'var(--color-danger, #dc2626)' : 'transparent',
-                                fontWeight: l.sens === 'CREDIT' ? 600 : 400
-                              }}
-                            >
-                              {l.sens === 'CREDIT' ? formatAmount(l.montant) : '—'}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                      <tfoot>
-                        <tr style={{ background: '#f1f5f9', fontWeight: 700, borderTop: '2px solid var(--color-border)' }}>
-                          <td colSpan={2} style={{ padding: '8px 12px' }}>Total écriture</td>
-                          <td style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--color-success, #16a34a)' }}>
-                            {formatAmount(e.totalDebit)}
-                          </td>
-                          <td style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--color-danger, #dc2626)' }}>
-                            {formatAmount(e.totalCredit)}
-                          </td>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  </div>
-                )}
+                {/* Table */}
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+                  <thead>
+                    <tr style={{ background: '#f8fafc', borderBottom: '1px solid var(--color-border)' }}>
+                      <th style={{ padding: '8px 12px', textAlign: 'left' }}>Compte</th>
+                      <th style={{ padding: '8px', textAlign: 'left' }}>Libellé ligne</th>
+                      <th style={{ padding: '8px 12px', textAlign: 'right' }}>Débit</th>
+                      <th style={{ padding: '8px 12px', textAlign: 'right' }}>Crédit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {e.lignes.map(l => (
+                      <tr key={l.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                        <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontWeight: 700 }}>
+                          {l.compte.numero} <span style={{ fontFamily: 'inherit', fontWeight: 'normal', color: 'var(--color-text-secondary)' }}>{l.compte.intitule}</span>
+                        </td>
+                        <td style={{ padding: '8px' }}>
+                          {l.libelle}
+                        </td>
+                        <td
+                          style={{
+                            padding: '8px 12px',
+                            textAlign: 'right',
+                            color: l.sens === 'DEBIT' ? 'var(--color-success, #16a34a)' : 'transparent',
+                            fontWeight: l.sens === 'DEBIT' ? 600 : 400
+                          }}
+                        >
+                          {l.sens === 'DEBIT' ? formatAmount(l.montant) : '—'}
+                        </td>
+                        <td
+                          style={{
+                            padding: '8px 12px',
+                            textAlign: 'right',
+                            color: l.sens === 'CREDIT' ? 'var(--color-danger, #dc2626)' : 'transparent',
+                            fontWeight: l.sens === 'CREDIT' ? 600 : 400
+                          }}
+                        >
+                          {l.sens === 'CREDIT' ? formatAmount(l.montant) : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ background: '#f1f5f9', fontWeight: 700, borderTop: '2px solid var(--color-border)' }}>
+                      <td colSpan={2} style={{ padding: '8px 12px' }}>Total écriture</td>
+                      <td style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--color-success, #16a34a)' }}>
+                        {formatAmount(e.totalDebit)}
+                      </td>
+                      <td style={{ padding: '8px 12px', textAlign: 'right', color: 'var(--color-danger, #dc2626)' }}>
+                        {formatAmount(e.totalCredit)}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
               </div>
             )
           })
@@ -300,6 +239,14 @@ const Journal = ({ filters }) => {
           body * { visibility: hidden; }
           .journal-print-area, .journal-print-area * { visibility: visible; }
           .journal-print-area { position: absolute; left: 0; top: 0; width: 100%; }
+          .reporting-print-header {
+            display: flex !important;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+          }
         }
       `}</style>
     </div>

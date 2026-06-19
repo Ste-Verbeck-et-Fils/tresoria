@@ -3,9 +3,11 @@ import { getGrandLivre } from '../../../../services/comptabiliteService'
 import Loader from '../../../../components/ui/Loader'
 import Button from '../../../../components/ui/Button'
 import { formatAmount } from '../../../inscriptions/utils/amounts'
+import logoGsEmmanuel from '../../../../assets/images/logo_gsemmanuel.png'
+import SearchableSelectField from '../../../inscriptions/components/SearchableSelectField'
 import * as XLSX from 'xlsx'
 
-const GrandLivre = ({ filters }) => {
+const GrandLivre = ({ filters, compteOptions, onCompteChange }) => {
   const [grandLivre, setGrandLivre] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -23,9 +25,7 @@ const GrandLivre = ({ filters }) => {
       if (filters?.end_date) params.dateFin = filters.end_date
       if (filters?.exercice_id) params.exerciceId = filters.exercice_id
       if (filters?.journal_id) params.journalId = filters.journal_id
-
-
-
+      if (filters?.compte_id) params.compteId = filters.compte_id
       const payload = await getGrandLivre(params)
       if (payload.success) setGrandLivre(payload.data)
       else setError('Impossible de charger le grand livre.')
@@ -104,7 +104,16 @@ const GrandLivre = ({ filters }) => {
             </p>
           )}
         </div>
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ minWidth: '250px' }}>
+            <SearchableSelectField
+              id='compte_id'
+              placeholder='Rechercher un compte...'
+              options={compteOptions}
+              value={filters?.compte_id || ''}
+              onChange={(e) => onCompteChange(e.target.value)}
+            />
+          </div>
           <Button label='Exporter Excel' variant='secondary' className='inscription-action' onClick={exportToExcel} />
           <Button label='Imprimer (PDF)' variant='secondary' className='inscription-action' onClick={handlePrint} />
         </div>
@@ -119,6 +128,16 @@ const GrandLivre = ({ filters }) => {
         <div style={{ textAlign: 'center', color: 'var(--color-danger)', padding: '24px' }}>{error}</div>
       ) : (
         <div className='grand-livre-print-area'>
+          {/* En-tête visible uniquement lors de l'impression */}
+          <div className="reporting-print-header" style={{ display: 'none' }}>
+            <img src={logoGsEmmanuel} alt="Logo GS Emmanuel" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+            <div>
+              <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
+              <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#475569' }}>
+                Rapport Comptable - Grand Livre (Généré le {new Date().toLocaleDateString('fr-FR')})
+              </p>
+            </div>
+          </div>
           {comptesSections.length === 0 ? (
             <div
               style={{
@@ -138,37 +157,26 @@ const GrandLivre = ({ filters }) => {
               const soldeFinal = lignes[lignes.length - 1]?.solde ?? 0
 
               return (
-                <div
-                  key={compte.numero}
-                  style={{
-                    marginBottom: '24px',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: '8px',
-                    overflow: 'hidden'
-                  }}
-                >
+                <div key={compte.numero} style={{ marginBottom: '24px' }}>
                   {/* Titre du compte */}
                   <div
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '12px',
-                      padding: '10px 16px',
-                      background: 'var(--color-info-bg, #DBEAFE)',
-                      borderBottom: '1px solid var(--color-border)'
+                      padding: '8px 12px',
+                      background: 'var( #d4ddeaff)',
+                      color: 'var(--color-secondary, #173f5f)',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      borderRadius: '6px 6px 0 0',
+                      borderBottom: '2px solid var(--color-secondary, #173f5f)'
                     }}
                   >
-                    <span
-                      style={{
-                        fontFamily: 'monospace',
-                        fontWeight: 700,
-                        fontSize: '1rem',
-                        color: 'var(--color-secondary, #173f5f)'
-                      }}
-                    >
+                    <span style={{ fontFamily: 'monospace' }}>
                       {compte.numero}
                     </span>
-                    <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                    <span>
                       {compte.intitule}
                     </span>
                   </div>
@@ -177,7 +185,7 @@ const GrandLivre = ({ filters }) => {
                   <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
                       <thead>
-                        <tr style={{ background: '#f8fafc', borderBottom: '2px solid var(--color-border)' }}>
+                        <tr style={{ background: '#f8fafc', borderBottom: '1px solid var(--color-border)' }}>
                           <th style={{ padding: '8px 12px', textAlign: 'left' }}>Date</th>
                           <th style={{ padding: '8px', textAlign: 'left' }}>Jrn</th>
                           <th style={{ padding: '8px', textAlign: 'left' }}>Réf</th>
@@ -264,6 +272,14 @@ const GrandLivre = ({ filters }) => {
           body * { visibility: hidden; }
           .grand-livre-print-area, .grand-livre-print-area * { visibility: visible; }
           .grand-livre-print-area { position: absolute; left: 0; top: 0; width: 100%; }
+          .reporting-print-header {
+            display: flex !important;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+          }
         }
       `}</style>
     </div>

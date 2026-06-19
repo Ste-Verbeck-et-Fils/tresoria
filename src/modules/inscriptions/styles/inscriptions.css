@@ -325,6 +325,10 @@
   color: var(--color-success);
 }
 
+.inscription-status--draft {
+  color: #f97316; /* orange-500 pour indiquer le statut brouillon */
+}
+
 .inscription-status--en-attente,
 .inscription-status--suspendu {
   color: var(--color-warning);

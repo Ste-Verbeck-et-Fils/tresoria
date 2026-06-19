@@ -3,9 +3,11 @@ import { getBalance } from '../../../../services/comptabiliteService'
 import Loader from '../../../../components/ui/Loader'
 import Button from '../../../../components/ui/Button'
 import { formatAmount } from '../../../inscriptions/utils/amounts'
+import logoGsEmmanuel from '../../../../assets/images/logo_gsemmanuel.png'
+import SearchableSelectField from '../../../inscriptions/components/SearchableSelectField'
 import * as XLSX from 'xlsx'
 
-const Balance = ({ filters }) => {
+const Balance = ({ filters, compteOptions, onCompteChange }) => {
   const [balance, setBalance] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -22,6 +24,7 @@ const Balance = ({ filters }) => {
       if (filters?.start_date) params.dateDebut = filters.start_date
       if (filters?.end_date) params.dateFin = filters.end_date
       if (filters?.exercice_id) params.exerciceId = filters.exercice_id
+      if (filters?.compte_id) params.compteId = filters.compte_id
 
       const payload = await getBalance(params)
       if (payload.success) setBalance(payload.data)
@@ -115,7 +118,16 @@ const Balance = ({ filters }) => {
             </p>
           )}
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ minWidth: '250px' }}>
+            <SearchableSelectField
+              id='compte_id'
+              placeholder='Rechercher un compte...'
+              options={compteOptions}
+              value={filters?.compte_id || ''}
+              onChange={(e) => onCompteChange(e.target.value)}
+            />
+          </div>
           <Button label='Exporter Excel' variant='secondary' className='inscription-action' onClick={exportToExcel} />
           <Button label='Imprimer (PDF)' variant='secondary' className='inscription-action' onClick={handlePrint} />
         </div>
@@ -131,6 +143,16 @@ const Balance = ({ filters }) => {
 
           {/* Table par classe */}
           <div className='balance-print-area' style={{ overflowX: 'auto' }}>
+            {/* En-tête visible uniquement lors de l'impression */}
+            <div className="reporting-print-header" style={{ display: 'none' }}>
+              <img src={logoGsEmmanuel} alt="Logo GS Emmanuel" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+              <div>
+                <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
+                <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#475569' }}>
+                  Rapport Comptable - Balance Générale (Généré le {new Date().toLocaleDateString('fr-FR')})
+                </p>
+              </div>
+            </div>
             {Object.keys(groupedByClasse).sort().map(classe => {
               const lignes = groupedByClasse[classe]
               const classeDebit = lignes.reduce((s, l) => s + l.totalDebit, 0)
@@ -143,7 +165,7 @@ const Balance = ({ filters }) => {
                   <div
                     style={{
                       padding: '8px 12px',
-                      background: 'var(--color-info-bg, #DBEAFE)',
+                      background: 'var( #d4ddeaff)',
                       color: 'var(--color-secondary, #173f5f)',
                       fontWeight: 700,
                       fontSize: '0.85rem',
@@ -218,6 +240,14 @@ const Balance = ({ filters }) => {
               body * { visibility: hidden; }
               .balance-print-area, .balance-print-area * { visibility: visible; }
               .balance-print-area { position: absolute; left: 0; top: 0; width: 100%; }
+              .reporting-print-header {
+                display: flex !important;
+                align-items: center;
+                gap: 16px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 12px;
+                margin-bottom: 20px;
+              }
             }
           `}</style>
         </>

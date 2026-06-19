@@ -110,6 +110,7 @@ body {
     .module-filter-panel,
     .pagination-info,
     .pagination-btn,
+    .tresoria-feedback,
     .detail-page-stack > :not(.print-only) {
         display: none !important;
     }
@@ -177,78 +178,263 @@ body {
     display: none;
 }
 
-/* Receipt Print Styling */
-.receipt-container {
-    font-family: 'Courier New', Courier, monospace;
-    width: 300px;
-    margin: 0 auto;
-    padding: 20px;
-    background: #fff;
-    color: #000;
-    font-size: 14px;
+/* Modern Receipt Styling */
+.receipt-card {
+    font-family: var(--font-primary);
+    background: #ffffff;
+    color: #12141d;
+    max-width: 650px;
+    margin: 20px auto;
+    padding: 30px;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
 }
 
 .receipt-header {
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
 }
 
-.receipt-header h1 {
-    font-size: 24px;
-    margin: 0 0 5px 0;
-    font-weight: bold;
-    text-transform: uppercase;
+.receipt-header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.receipt-header p {
+.receipt-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.receipt-school-name {
+    font-family: var(--font-primary);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--color-secondary);
     margin: 0;
+    line-height: 1.2;
+}
+
+.receipt-school-sub {
     font-size: 12px;
-    color: #555;
+    color: var(--color-text-muted);
+    margin: 3px 0 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.receipt-header-right {
+    text-align: right;
+}
+
+.receipt-badge {
+    background-color: var(--color-secondary);
+    color: var(--color-text-inverse);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+    letter-spacing: 0.5px;
+}
+
+.receipt-number {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 6px 0 2px 0;
+    color: #12141d;
+}
+
+.receipt-date {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    margin: 0;
 }
 
 .receipt-divider {
-    border-top: 1px dashed #000;
+    border-top: 1px dashed #d1d5db;
+    margin: 20px 0;
+}
+
+.receipt-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin: 0 0 12px 0;
+    letter-spacing: 0.5px;
+}
+
+.receipt-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.receipt-meta-label {
+    display: block;
+    font-size: 11px;
+    color: var(--color-text-muted);
+    margin-bottom: 3px;
+}
+
+.receipt-meta-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #12141d;
+}
+
+.receipt-table {
+    width: 100%;
+    border-collapse: collapse;
     margin: 15px 0;
 }
 
-.receipt-row {
+.receipt-table th {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    border-bottom: 2px solid #e5e7eb;
+    padding: 10px 0;
+    text-align: left;
+}
+
+.receipt-table td {
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+    color: #12141d;
+}
+
+.receipt-amount {
+    font-weight: 700;
+}
+
+.receipt-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    margin-top: 20px;
+    background-color: var(--color-light);
+    padding: 15px;
+    border-radius: var(--radius-md);
+    width: 100%;
+}
+
+.receipt-summary-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
-    align-items: flex-start;
+    width: 100%;
+    max-width: 320px;
+    font-size: 14px;
 }
 
-.receipt-row.total-row {
+.receipt-summary-row strong {
     font-size: 18px;
-    font-weight: bold;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    color: var(--color-secondary);
 }
 
-.receipt-label {
-    flex: 1;
-    color: #333;
-}
-
-.receipt-value {
-    text-align: right;
-    max-width: 60%;
-    word-break: break-word;
-    font-weight: bold;
-}
-
-.receipt-footer {
-    text-align: center;
+.receipt-summary-row--small {
     font-size: 12px;
-    margin-top: 30px;
-    color: #555;
+    color: var(--color-text-muted);
+}
+
+.receipt-summary-row--highlight {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-error);
+    border-top: 1px solid #e5e7eb;
+    padding-top: 6px;
+    margin-top: 4px;
+}
+
+.receipt-signatures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 40px;
+}
+
+.receipt-signature-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.signature-line {
+    border-bottom: 1px dashed #d1d5db;
+    width: 80%;
+    height: 50px;
+    margin-top: 5px;
+}
+
+.receipt-footer-new {
+    text-align: center;
+    font-size: 11px;
+    color: var(--color-text-muted);
+    margin-top: 45px;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 15px;
+}
+
+.receipt-footer-new p {
+    margin: 3px 0;
 }
 
 @media print {
-    .receipt-container {
+    .receipt-card {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
         width: 100% !important;
-        max-width: 400px;
-        margin: 0;
-        padding: 0;
+        max-width: 100% !important;
+        margin: 0 !important;
     }
+    
+    .journal-print-area,
+    .balance-print-area,
+    .grand-livre-print-area,
+    .bilan-print-area,
+    .rapport-journalier-print-area {
+        --color-success: #000000 !important;
+        --color-danger: #000000 !important;
+    }
+
+    .reporting-signatures {
+        display: flex !important;
+    }
+}
+
+/* Reporting Signatures Styling */
+.reporting-signatures {
+    display: none;
+    justify-content: space-between;
+    gap: 40px;
+    margin-top: 40px;
+    width: 100%;
+}
+
+.signature-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.signature-line {
+    border-bottom: 1px dashed #94a3b8;
+    width: 60%;
+    height: 60px;
+    margin-top: 5px;
 }

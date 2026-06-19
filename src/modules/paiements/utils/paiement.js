@@ -157,6 +157,22 @@ export const getInscriptionOptionLabel = (inscription) => {
   ].join(' - ')
 }
 
+const getLocalYYYYMMDD = (date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+export const getTransactionDateConstraints = () => {
+  const today = new Date()
+  const maxDate = getLocalYYYYMMDD(today)
+  const pastDate = new Date()
+  pastDate.setDate(today.getDate() - 3)
+  const minDate = getLocalYYYYMMDD(pastDate)
+  return { minDate, maxDate }
+}
+
 export const validatePaiementForm = (form, selectedInscription) => {
   const errors = {}
   const montant = Number(form.montant)
@@ -181,8 +197,13 @@ export const validatePaiementForm = (form, selectedInscription) => {
     errors.mode_paiement = 'Selectionnez un mode de paiement.'
   }
 
+  const { minDate, maxDate } = getTransactionDateConstraints()
   if (!form.date_paiement) {
     errors.date_paiement = 'La date de l\'entrée est obligatoire.'
+  } else if (form.date_paiement < minDate) {
+    errors.date_paiement = 'La date ne peut pas remonter à plus de 3 jours dans le passé.'
+  } else if (form.date_paiement > maxDate) {
+    errors.date_paiement = 'La date ne peut pas être dans le futur.'
   }
 
   if (form.motif === 'FRAIS_TRANSPORT') {

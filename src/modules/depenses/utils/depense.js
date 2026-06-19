@@ -118,6 +118,22 @@ export const getDepenseModePaiement = (depense) => depense?.mode_paiement || dep
 
 export const getDepenseBeneficiaire = (depense) => depense?.beneficiaire || depense?.beneficiary || depense?.fournisseur
 
+const getLocalYYYYMMDD = (date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+export const getTransactionDateConstraints = () => {
+  const today = new Date()
+  const maxDate = getLocalYYYYMMDD(today)
+  const pastDate = new Date()
+  pastDate.setDate(today.getDate() - 3)
+  const minDate = getLocalYYYYMMDD(pastDate)
+  return { minDate, maxDate }
+}
+
 export const validateDepenseForm = (form, selectedAnneeScolaire) => {
   const errors = {}
   const montant = Number(form.montant)
@@ -146,8 +162,13 @@ export const validateDepenseForm = (form, selectedAnneeScolaire) => {
     errors.mode_paiement = 'Le mode de paiement est obligatoire.'
   }
 
+  const { minDate, maxDate } = getTransactionDateConstraints()
   if (!form.date_depense) {
     errors.date_depense = 'La date de sortie est obligatoire.'
+  } else if (form.date_depense < minDate) {
+    errors.date_depense = 'La date ne peut pas remonter à plus de 3 jours dans le passé.'
+  } else if (form.date_depense > maxDate) {
+    errors.date_depense = 'La date ne peut pas être dans le futur.'
   }
 
   return errors

@@ -27,16 +27,9 @@ import {
   isAnneeScolaireCloturee,
   unwrapDepense,
   validateDepenseForm,
+  getTransactionDateConstraints,
 } from '../utils/depense'
 
-const getTransactionDateConstraints = () => {
-  const today = new Date()
-  const maxDate = today.toISOString().split('T')[0]
-  const pastDate = new Date()
-  pastDate.setDate(today.getDate() - 3)
-  const minDate = pastDate.toISOString().split('T')[0]
-  return { minDate, maxDate }
-}
 const { minDate: minDateTransaction, maxDate: maxDateTransaction } = getTransactionDateConstraints()
 
 const CreateDepensePage = () => {
@@ -282,15 +275,6 @@ const CreateDepensePage = () => {
                 label='Bénéficiaire / Fournisseur (Optionnel)'
                 placeholder='Ex: Chauffeur Jean, Garage Kivu Auto'
                 value={form.beneficiaire}
-                disabled={isFormDisabled || isSelectedAnneeClosed}
-                onChange={handleChange}
-              />
-              <Input
-                id='reference'
-                type='text'
-                label='Référence (Optionnel)'
-                placeholder='Ex: SORTIE-2026-001'
-                value={form.reference}
                 disabled={isFormDisabled || isSelectedAnneeClosed}
                 onChange={handleChange}
               />

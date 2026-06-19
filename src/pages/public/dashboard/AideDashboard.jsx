@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Bot, User, Smile, Frown } from 'lucide-react'
+import { Bot, User, Smile, Frown, Mic, MicOff, SendHorizontal, Printer } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../../services/api'
 import '../../../styles/public/dashboard.css'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import logoGsEmmanuel from '../../../assets/images/logo_gsemmanuel.png'
 
 const getStoredUser = () => {
   const storedUser = localStorage.getItem('user')
@@ -17,12 +20,60 @@ const getStoredUser = () => {
 const AideDashboard = () => {
   const navigate = useNavigate()
   const [user, setUser] = useState(() => getStoredUser())
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Bonjour ! Je suis l'assistant IA de Gs Emmanuel. Comment puis-je vous aider aujourd'hui ?", sender: 'bot', time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }
-  ])
+  const [messages, setMessages] = useState(() => {
+    const saved = sessionStorage.getItem('ai_chat_history')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch (e) {}
+    }
+    return [
+      { id: 1, text: "Bonjour ! Je suis l'assistant IA de Gs Emmanuel. Comment puis-je vous aider aujourd'hui ?", sender: 'bot', time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }
+    ]
+  })
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isListening, setIsListening] = useState(false)
   const messagesEndRef = useRef(null)
+  
+  // Speech Recognition setup
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+  const recognition = SpeechRecognition ? new SpeechRecognition() : null
+
+  if (recognition) {
+    recognition.continuous = false
+    recognition.lang = 'fr-FR'
+    recognition.interimResults = false
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript
+      setInput((prev) => prev + (prev ? ' ' : '') + transcript)
+      setIsListening(false)
+    }
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error', event.error)
+      setIsListening(false)
+    }
+    
+    recognition.onend = () => {
+      setIsListening(false)
+    }
+  }
+
+  const toggleListening = () => {
+    if (!recognition) {
+      alert('La reconnaissance vocale n\'est pas supportée par votre navigateur.')
+      return
+    }
+    if (isListening) {
+      recognition.stop()
+      setIsListening(false)
+    } else {
+      recognition.start()
+      setIsListening(true)
+    }
+  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -31,6 +82,171 @@ const AideDashboard = () => {
   useEffect(() => {
     scrollToBottom()
   }, [messages, isLoading])
+
+  useEffect(() => {
+    sessionStorage.setItem('ai_chat_history', JSON.stringify(messages))
+  }, [messages])
+
+  const handlePrint = (msgId) => {
+    const bubbleEl = document.getElementById(`chat-bubble-${msgId}`)
+    if (!bubbleEl) return
+
+    const printWindow = window.open('', '_blank', 'width=800,height=600')
+    if (!printWindow) {
+      alert("Veuillez autoriser les fenêtres contextuelles pour imprimer cette réponse.")
+      return
+    }
+
+    let htmlContent = bubbleEl.innerHTML
+
+    // Supprimer la première phrase spécifique indésirable lors de l'impression
+    const literalText1 = "Si vous voulez, je peux aussi vous faire le même format pour la 4e, 5e et 6e primaire si elles existent."
+    htmlContent = htmlContent.replace(literalText1, "")
+
+    // Expression régulière pour couvrir les variations de la première phrase
+    const regex1 = /Si vous voulez,\s*je peux aussi vous faire le même format pour la\s*4[eè](?:me|ème)?,\s*5[eè](?:me|ème)?\s*et\s*6[eè](?:me|ème)?\s*primaire\s*si\s*elles\s*existent\.?/gi
+    htmlContent = htmlContent.replace(regex1, "")
+
+    // Supprimer la deuxième phrase spécifique indésirable lors de l'impression
+    const literalText2 = "Si vous voulez, je peux aussi vous faire un format imprimable propre avec seulement les noms et les dates."
+    htmlContent = htmlContent.replace(literalText2, "")
+
+    // Expression régulière pour la deuxième phrase
+    const regex2 = /Si vous voulez,\s*je peux aussi vous faire un format imprimable propre avec seulement les noms et les dates\.?/gi
+    htmlContent = htmlContent.replace(regex2, "")
+
+    // Supprimer les paragraphes devenus vides après la suppression
+    htmlContent = htmlContent.replace(/<p>\s*<\/p>/gi, "")
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Impression - Réponse Assistant</title>
+          <style>
+            body {
+              font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+              padding: 40px;
+              color: #1f2937;
+              line-height: 1.6;
+              background-color: #ffffff;
+            }
+            .print-header {
+              border-bottom: 1px solid #e5e7eb;
+              padding-bottom: 12px;
+              margin-bottom: 24px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              font-size: 0.875rem;
+              color: #4b5563;
+            }
+            .print-logo-container {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+            }
+            .print-logo-img {
+              width: 40px;
+              height: 40px;
+              object-fit: contain;
+            }
+            .print-logo {
+              font-weight: 700;
+              font-size: 1.1rem;
+              color: #0f172a;
+            }
+            .print-content {
+              font-size: 1rem;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 20px 0;
+              font-size: 0.875rem;
+            }
+            th, td {
+              border: 1px solid #e5e7eb;
+              padding: 10px 12px;
+              text-align: left;
+            }
+            th {
+              background-color: #f9fafb;
+              font-weight: 600;
+              color: #111827;
+            }
+            tr:nth-child(even) td {
+              background-color: #f9fafb;
+            }
+            ul, ol {
+              padding-left: 20px;
+              margin: 10px 0;
+            }
+            li {
+              margin-bottom: 4px;
+            }
+            p {
+              margin: 0 0 12px 0;
+            }
+            h1, h2, h3, h4, h5, h6 {
+              color: #111827;
+              margin-top: 24px;
+              margin-bottom: 12px;
+              font-weight: 600;
+            }
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.25rem; }
+            h3 { font-size: 1.125rem; }
+            strong {
+              color: #111827;
+            }
+            pre {
+              background: #f3f4f6;
+              padding: 12px;
+              border-radius: 6px;
+              overflow-x: auto;
+              border: 1px solid #e5e7eb;
+            }
+            code {
+              font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+              background: #f3f4f6;
+              padding: 2px 4px;
+              border-radius: 4px;
+              font-size: 0.875em;
+            }
+            @media print {
+              body {
+                padding: 0;
+              }
+              .no-print {
+                display: none;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="print-header">
+            <div class="print-logo-container">
+              <img class="print-logo-img" src="${logoGsEmmanuel}" alt="Logo GS Emmanuel" />
+              <span class="print-logo">Gs Emmanuel</span>
+            </div>
+            <span>Rapport d'assistance - ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+          </div>
+          <div class="print-content">
+            ${htmlContent}
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() {
+                window.close();
+              }, 250);
+            };
+          </script>
+        </body>
+      </html>
+    `)
+    printWindow.document.close()
+  }
 
   const handleSend = async (e) => {
     e.preventDefault()
@@ -47,7 +263,7 @@ const AideDashboard = () => {
     try {
       const history = messages
         .filter(msg => !msg.error)
-        .slice(-8)
+        .slice(-20)
         .map(msg => ({
           role: msg.sender === 'user' ? 'user' : 'assistant',
           content: msg.text
@@ -95,13 +311,25 @@ const AideDashboard = () => {
 
                     <span className='chat-app-name'>{isUser ? (user?.full_name || 'Vous') : 'Assistant'}</span>
                   </div>
-                  <div className={`chat-app-bubble ${isUser ? 'chat-app-bubble-user' : 'chat-app-bubble-bot'}`}>
-                    {msg.text}
+                  <div id={`chat-bubble-${msg.id}`} className={`chat-app-bubble ${isUser ? 'chat-app-bubble-user' : 'chat-app-bubble-bot'}`}>
+                    {isUser ? msg.text : <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>}
                   </div>
-                  {!isUser && !msg.error && index > 0 && (
+                  {!isUser && !msg.error && (
                     <div className='chat-app-reactions'>
-                      <Frown size={16} className='reaction-icon' />
-                      <Smile size={16} className='reaction-icon active' />
+                      {index > 0 && (
+                        <>
+                          <Frown size={16} className='reaction-icon' />
+                          <Smile size={16} className='reaction-icon active' />
+                        </>
+                      )}
+                      <button 
+                        type='button' 
+                        onClick={() => handlePrint(msg.id)} 
+                        className='chat-app-reaction-btn' 
+                        title='Imprimer cette réponse'
+                      >
+                        <Printer size={16} />
+                      </button>
                     </div>
                   )}
                 </div>
@@ -149,8 +377,28 @@ const AideDashboard = () => {
               className='chat-app-input'
               disabled={isLoading}
             />
+            <button 
+              type='button' 
+              onClick={toggleListening} 
+              className={`chat-app-mic-btn ${isListening ? 'listening' : ''}`}
+              title='Commande vocale'
+              style={{
+                background: isListening ? '#ef4444' : 'transparent',
+                color: isListening ? 'white' : 'var(--color-text-light)',
+                border: 'none',
+                padding: '8px',
+                cursor: 'pointer',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+            </button>
             <button type='submit' disabled={isLoading || !input.trim()} className='chat-app-send-btn'>
-              Envoyer
+              <SendHorizontal size={18} className='chat-app-send-icon' />
+              <span className='chat-app-send-label'>Envoyer</span>
             </button>
           </div>
         </form>

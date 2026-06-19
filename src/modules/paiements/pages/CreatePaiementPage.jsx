@@ -36,16 +36,9 @@ import {
   unwrapPaiement,
   validatePaiementForm,
   calculateDateFin,
+  getTransactionDateConstraints,
 } from '../utils/paiement'
 
-const getTransactionDateConstraints = () => {
-  const today = new Date()
-  const maxDate = today.toISOString().split('T')[0]
-  const pastDate = new Date()
-  pastDate.setDate(today.getDate() - 3)
-  const minDate = pastDate.toISOString().split('T')[0]
-  return { minDate, maxDate }
-}
 const { minDate: minDateTransaction, maxDate: maxDateTransaction } = getTransactionDateConstraints()
 
 const getInitialForm = (navigationState = {}) => normalizePaiementForm({
@@ -213,7 +206,7 @@ const CreatePaiementPage = () => {
 
       navigate(paiement?.id ? `/paiements/${paiement.id}` : '/paiements', {
         replace: true,
-        state: { successMessage: 'Entrée enregistrée avec succès.', autoPrint: true },
+        state: { successMessage: 'Entrée enregistrée avec succès.' },
       })
     } catch (error) {
       setFeedback(error.message || "Impossible d'enregistrer l'entrée.")
@@ -396,15 +389,7 @@ const CreatePaiementPage = () => {
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
-                <Input
-                  id='reference'
-                  type='text'
-                  label='Référence externe (optionnel)'
-                  placeholder={form.motif === 'FRAIS_TRANSPORT' ? 'Ex: ENTREE-TRANSPORT-2026-001' : 'Ex: ENTREE-2026-001'}
-                  value={form.reference}
-                  disabled={isFormDisabled || isSelectedInscriptionClosed}
-                  onChange={handleChange}
-                />
+
               </div>
               {/* Empty div to preserve 3-column alignment */}
               <div />

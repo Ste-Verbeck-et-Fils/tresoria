@@ -94,6 +94,7 @@ const GROUP_KEYS = {
     'depensesByCategory',
   ],
   paiementsParMode: [
+    'paiements_par_mode',
     'paiements_groupes_par_mode_paiement',
     'paiementsParModePaiement',
     'paiements_par_mode_paiement',
@@ -101,6 +102,7 @@ const GROUP_KEYS = {
     'paiementsByMode',
   ],
   depensesParMode: [
+    'depenses_par_mode',
     'depenses_groupes_par_mode_paiement',
     'depensesParModePaiement',
     'depenses_par_mode_paiement',
@@ -304,6 +306,7 @@ export const getRapportFinancierGroups = (payload) => {
   const rapport = unwrapRapportFinancier(payload)
   const sources = [
     rapport,
+    rapport?.groupements,
     rapport?.groupes,
     rapport?.groups,
     rapport?.details,

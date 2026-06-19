@@ -11,7 +11,7 @@ import {
   Legend,
   Filler
 } from 'chart.js';
-import { Chart } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
@@ -34,7 +34,6 @@ const CashFlowChart = ({ data }) => {
     labels: data.map(d => d.date),
     datasets: [
       {
-        type: 'line',
         label: 'Sorties',
         data: data.map(d => d.sorties),
         borderColor: '#173f5f',
@@ -45,7 +44,6 @@ const CashFlowChart = ({ data }) => {
         pointBackgroundColor: '#173f5f',
       },
       {
-        type: 'line',
         label: 'Entrées',
         data: data.map(d => d.entrees),
         borderColor: '#26B6FF',
@@ -78,7 +76,7 @@ const CashFlowChart = ({ data }) => {
     <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', width: '100%' }}>
       <h3 style={{ marginBottom: '16px', fontSize: '1.1rem', fontWeight: 600 }}>Flux de trésorerie</h3>
       <div style={{ position: 'relative', height: '320px', width: '100%' }}>
-        <Chart type='bar' options={options} data={chartData} />
+        <Line options={options} data={chartData} />
       </div>
     </div>
   );
