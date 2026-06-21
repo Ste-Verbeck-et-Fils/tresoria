@@ -76,7 +76,7 @@ const TresorerieAnalyticsDashboard = ({ filters }) => {
 
       {/* 2. Visualisation des Flux */}
       <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-        <div style={{ flex: '2 1 500px' }}>
+        <div style={{ flex: '1 1 100%', minWidth: 0 }}>
           <CashFlowChart data={data.cashFlow} />
         </div>
       </div>

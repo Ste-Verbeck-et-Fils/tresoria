@@ -269,7 +269,7 @@ const TresoreriePage = () => {
     }
 
     return (
-      <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', marginTop: '24px', width: '100%' }}>
+      <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', marginTop: '24px', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
         <div style={{ position: 'relative', height: '100%', width: '100%' }}>
           <Chart type='bar' options={options} data={data} />
         </div>
@@ -348,7 +348,7 @@ const TresoreriePage = () => {
             {renderCard('Mobile Money', dashboardData.soldesReels.mobileMoney)}
             {renderCard('Solde Total Disponible', dashboardData.soldesReels.soldeDisponible)}
           </div>
-          <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', marginTop: '24px', width: '100%' }}>
+          <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', marginTop: '24px', width: '100%', boxSizing: 'border-box' }}>
             <div style={{ position: 'relative', height: '100%', width: '100%' }}>
               <Chart type='bar' options={{ maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Répartition des soldes réels' } }, scales: { y: { beginAtZero: true } } }} data={data} />
             </div>

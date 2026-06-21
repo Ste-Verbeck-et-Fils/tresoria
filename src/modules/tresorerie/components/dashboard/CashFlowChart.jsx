@@ -77,7 +77,7 @@ const CashFlowChart = ({ data }) => {
   }
 
   return (
-    <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', width: '100%' }}>
+    <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
       <h3 style={{ marginBottom: '16px', fontSize: '1.1rem', fontWeight: 600 }}>Flux de trésorerie</h3>
       <div style={{ position: 'relative', height: '320px', width: '100%' }}>
         <Line options={options} data={chartData} />

@@ -42,9 +42,9 @@ const ExpenseCategoryChart = ({ data }) => {
   }
 
   return (
-    <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px' }}>
+    <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', boxSizing: 'border-box', width: '100%', overflow: 'hidden' }}>
       <h3 style={{ marginBottom: '16px', fontSize: '1.1rem', fontWeight: 600 }}>Répartition des Dépenses</h3>
-      <div style={{ height: '320px', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ height: '320px', display: 'flex', justifyContent: 'center', position: 'relative' }}>
         <Doughnut data={chartData} options={options} />
       </div>
     </div>
