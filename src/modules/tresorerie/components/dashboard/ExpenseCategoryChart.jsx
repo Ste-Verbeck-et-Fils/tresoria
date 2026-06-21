@@ -2,12 +2,13 @@ import React from 'react'
 import {
   Chart as ChartJS,
   ArcElement,
+  DoughnutController,
   Tooltip,
   Legend
 } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
 
-ChartJS.register(ArcElement, Tooltip, Legend)
+ChartJS.register(ArcElement, DoughnutController, Tooltip, Legend)
 
 const ExpenseCategoryChart = ({ data }) => {
   if (!data || data.length === 0) {
