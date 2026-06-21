@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { dashboardService } from '../../../../services/dashboardService';
-import KPICard from './KPICard';
-import CashFlowChart from './CashFlowChart';
-import Loader from '../../../../components/ui/Loader';
-import Feedback from '../../../../components/ui/Feedback';
+import React, { useEffect, useState } from 'react'
+import { dashboardService } from '../../../../services/dashboardService'
+import KPICard from './KPICard'
+import CashFlowChart from './CashFlowChart'
+import Loader from '../../../../components/ui/Loader'
+import Feedback from '../../../../components/ui/Feedback'
 
 const TresorerieAnalyticsDashboard = ({ filters }) => {
   const [data, setData] = useState({
@@ -12,40 +12,40 @@ const TresorerieAnalyticsDashboard = ({ filters }) => {
     expenses: [],
     recentOperations: [],
     anomalies: []
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  })
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
-      setError('');
+      setIsLoading(true)
+      setError('')
       try {
-        const params = {};
-        if (filters.annee_scolaire_id) params.annee_scolaire_id = filters.annee_scolaire_id;
-        if (filters.start_date) params.dateDebut = filters.start_date;
-        if (filters.end_date) params.dateFin = filters.end_date;
+        const params = {}
+        if (filters.annee_scolaire_id) params.annee_scolaire_id = filters.annee_scolaire_id
+        if (filters.start_date) params.dateDebut = filters.start_date
+        if (filters.end_date) params.dateFin = filters.end_date
 
         const [kpis, cashFlow, anomalies] = await Promise.all([
           dashboardService.getKpis(params),
           dashboardService.getCashFlow(params),
           dashboardService.getAnomalies(params)
-        ]);
+        ])
 
-        setData({ kpis, cashFlow, anomalies });
+        setData({ kpis, cashFlow, anomalies })
       } catch (err) {
-        console.error(err);
-        setError('Impossible de charger les données analytiques du dashboard.');
+        console.error(err)
+        setError('Impossible de charger les données analytiques du dashboard.')
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    fetchData();
-  }, [filters]);
+    fetchData()
+  }, [filters])
 
-  if (isLoading) return <Loader message="Chargement des analyses en cours..." />;
-  if (error) return <Feedback type="error" message={error} />;
+  if (isLoading) return <Loader message='Chargement des analyses en cours...' />
+  if (error) return <Feedback type='error' message={error} />
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '16px' }}>
@@ -53,22 +53,22 @@ const TresorerieAnalyticsDashboard = ({ filters }) => {
       {/* 1. Indicateurs de Performance (KPIs) */}
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
         <KPICard
-          title="Solde global actuel"
+          title='Solde global actuel'
           amount={data.kpis?.soldeGlobal}
 
         />
         <KPICard
-          title="Total Entrées"
+          title='Total Entrées'
           amount={data.kpis?.totalEntrees}
 
         />
         <KPICard
-          title="Total Sorties"
+          title='Total Sorties'
           amount={data.kpis?.totalSorties}
 
         />
         <KPICard
-          title="Reste à percevoir"
+          title='Reste à percevoir'
           amount={data.kpis?.resteAPercevoir}
 
         />
@@ -99,7 +99,7 @@ const TresorerieAnalyticsDashboard = ({ filters }) => {
       </div>
 
     </div>
-  );
-};
+  )
+}
 
-export default TresorerieAnalyticsDashboard;
+export default TresorerieAnalyticsDashboard

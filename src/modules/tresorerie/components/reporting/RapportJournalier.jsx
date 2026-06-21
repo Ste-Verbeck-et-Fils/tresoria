@@ -158,7 +158,7 @@ const RapportJournalier = ({ filters }) => {
           flexWrap: 'wrap',
           gap: '12px'
         }}
-        className="no-print"
+        className='no-print'
       >
         <div>
           <h2 style={{ margin: 0, color: 'var(--color-text-primary)' }}>Rapport Journalier de Caisse</h2>
@@ -172,10 +172,10 @@ const RapportJournalier = ({ filters }) => {
         </div>
       </div>
 
-      <div className="rapport-journalier-print-area">
+      <div className='rapport-journalier-print-area'>
         {/* En-tête d'impression */}
-        <div className="reporting-print-header" style={{ display: 'none' }}>
-          <img src={logoGsEmmanuel} alt="Logo GS Emmanuel" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+        <div className='reporting-print-header' style={{ display: 'none' }}>
+          <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
           <div>
             <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
             <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#475569' }}>
@@ -185,11 +185,11 @@ const RapportJournalier = ({ filters }) => {
         </div>
 
         {/* Tableau Unique Structuré */}
-        <table id="table-rapport-journalier" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+        <table id='table-rapport-journalier' style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
           <tbody>
-            
+
             {/* 1. FRAIS SCOLAIRE */}
-            <tr className="report-category-title-row">
+            <tr className='report-category-title-row'>
               <td colSpan={5} style={{ padding: '10px 8px', border: '1px solid var(--color-border)' }}>
                 I. FRAIS SCOLAIRE
               </td>
@@ -201,29 +201,31 @@ const RapportJournalier = ({ filters }) => {
               <td style={{ padding: '6px 8px', border: '1px solid var(--color-border)', width: '15%' }}>Classe</td>
               <td style={{ padding: '6px 8px', border: '1px solid var(--color-border)', width: '15%', textAlign: 'right' }}>Montant</td>
             </tr>
-            {groups.fraisScolaires.length === 0 ? (
-              <tr>
-                <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Aucune transaction</td>
-                <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right', fontWeight: '500' }}>0,00 $</td>
-              </tr>
-            ) : (
-              groups.fraisScolaires.map((p, idx) => (
-                <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{idx + 1}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getStudentName(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getReceiptLabel(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getClasseName(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(p.montant)}</td>
+            {groups.fraisScolaires.length === 0
+              ? (
+                <tr>
+                  <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Aucune transaction</td>
+                  <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right', fontWeight: '500' }}>0,00 $</td>
                 </tr>
-              ))
-            )}
+                )
+              : (
+                  groups.fraisScolaires.map((p, idx) => (
+                    <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{idx + 1}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getStudentName(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getReceiptLabel(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getClasseName(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(p.montant)}</td>
+                    </tr>
+                  ))
+                )}
             <tr style={{ background: '#f8fafc', fontWeight: 'bold' }}>
               <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>SOUS TOTAL FRAIS SCOLAIRE</td>
               <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(subtotals.fraisScolaires)}</td>
             </tr>
 
             {/* 2. FRAIS TRANSPORT */}
-            <tr className="report-category-title-row">
+            <tr className='report-category-title-row'>
               <td colSpan={5} style={{ padding: '10px 8px', border: '1px solid var(--color-border)', borderTop: '2px solid var(--color-border)' }}>
                 II. FRAIS TRANSPORT
               </td>
@@ -235,29 +237,31 @@ const RapportJournalier = ({ filters }) => {
               <td style={{ padding: '6px 8px', border: '1px solid var(--color-border)', width: '15%' }}>Classe</td>
               <td style={{ padding: '6px 8px', border: '1px solid var(--color-border)', width: '15%', textAlign: 'right' }}>Montant</td>
             </tr>
-            {groups.fraisTransport.length === 0 ? (
-              <tr>
-                <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Aucune transaction</td>
-                <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right', fontWeight: '500' }}>0,00 $</td>
-              </tr>
-            ) : (
-              groups.fraisTransport.map((p, idx) => (
-                <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{idx + 1}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getStudentName(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getReceiptLabel(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getClasseName(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(p.montant)}</td>
+            {groups.fraisTransport.length === 0
+              ? (
+                <tr>
+                  <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Aucune transaction</td>
+                  <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right', fontWeight: '500' }}>0,00 $</td>
                 </tr>
-              ))
-            )}
+                )
+              : (
+                  groups.fraisTransport.map((p, idx) => (
+                    <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{idx + 1}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getStudentName(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getReceiptLabel(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getClasseName(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(p.montant)}</td>
+                    </tr>
+                  ))
+                )}
             <tr style={{ background: '#f8fafc', fontWeight: 'bold' }}>
               <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>SOUS TOTAL FRAIS TRANSPORT</td>
               <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(subtotals.fraisTransport)}</td>
             </tr>
 
             {/* 3. FRAIS D'ETAT */}
-            <tr className="report-category-title-row">
+            <tr className='report-category-title-row'>
               <td colSpan={5} style={{ padding: '10px 8px', border: '1px solid var(--color-border)', borderTop: '2px solid var(--color-border)' }}>
                 III. FRAIS D'ETAT
               </td>
@@ -269,29 +273,31 @@ const RapportJournalier = ({ filters }) => {
               <td style={{ padding: '6px 8px', border: '1px solid var(--color-border)', width: '15%' }}>Classe</td>
               <td style={{ padding: '6px 8px', border: '1px solid var(--color-border)', width: '15%', textAlign: 'right' }}>Montant</td>
             </tr>
-            {groups.fraisEtat.length === 0 ? (
-              <tr>
-                <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Aucune transaction</td>
-                <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right', fontWeight: '500' }}>0,00 $</td>
-              </tr>
-            ) : (
-              groups.fraisEtat.map((p, idx) => (
-                <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{idx + 1}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getStudentName(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getReceiptLabel(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getClasseName(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(p.montant)}</td>
+            {groups.fraisEtat.length === 0
+              ? (
+                <tr>
+                  <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Aucune transaction</td>
+                  <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right', fontWeight: '500' }}>0,00 $</td>
                 </tr>
-              ))
-            )}
+                )
+              : (
+                  groups.fraisEtat.map((p, idx) => (
+                    <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{idx + 1}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getStudentName(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getReceiptLabel(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getClasseName(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(p.montant)}</td>
+                    </tr>
+                  ))
+                )}
             <tr style={{ background: '#f8fafc', fontWeight: 'bold' }}>
               <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>SOUS TOTAL FRAIS D'ETAT</td>
               <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(subtotals.fraisEtat)}</td>
             </tr>
 
             {/* 4. PAIEMENT DES LITIGES */}
-            <tr className="report-category-title-row">
+            <tr className='report-category-title-row'>
               <td colSpan={5} style={{ padding: '10px 8px', border: '1px solid var(--color-border)', borderTop: '2px solid var(--color-border)' }}>
                 IV. PAIEMENT DES LITIGES / AUTRES
               </td>
@@ -303,29 +309,31 @@ const RapportJournalier = ({ filters }) => {
               <td style={{ padding: '6px 8px', border: '1px solid var(--color-border)', width: '15%' }}>Classe</td>
               <td style={{ padding: '6px 8px', border: '1px solid var(--color-border)', width: '15%', textAlign: 'right' }}>Montant</td>
             </tr>
-            {groups.litiges.length === 0 ? (
-              <tr>
-                <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Aucune transaction</td>
-                <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right', fontWeight: '500' }}>0,00 $</td>
-              </tr>
-            ) : (
-              groups.litiges.map((p, idx) => (
-                <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{idx + 1}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getStudentName(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getReceiptLabel(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getClasseName(p)}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(p.montant)}</td>
+            {groups.litiges.length === 0
+              ? (
+                <tr>
+                  <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Aucune transaction</td>
+                  <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right', fontWeight: '500' }}>0,00 $</td>
                 </tr>
-              ))
-            )}
+                )
+              : (
+                  groups.litiges.map((p, idx) => (
+                    <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{idx + 1}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getStudentName(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getReceiptLabel(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{getClasseName(p)}</td>
+                      <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(p.montant)}</td>
+                    </tr>
+                  ))
+                )}
             <tr style={{ background: '#f8fafc', fontWeight: 'bold' }}>
               <td colSpan={4} style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>SOUS TOTAL PAIEMENT DES LITIGES</td>
               <td style={{ padding: '8px', border: '1px solid var(--color-border)', textAlign: 'right' }}>{formatAmount(subtotals.litiges)}</td>
             </tr>
 
             {/* 5. DEPENSES JOURNALIERES */}
-            <tr className="report-category-title-row">
+            <tr className='report-category-title-row'>
               <td colSpan={5} style={{ padding: '10px 8px', border: '1px solid var(--color-border)', borderTop: '2px solid var(--color-border)' }}>
                 V. DEPENSES JOURNALIERES
               </td>
@@ -346,7 +354,7 @@ const RapportJournalier = ({ filters }) => {
               groups.depenses.map((e, idx) => (
                 <tr key={e.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
                   <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{idx + 1}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}></td> {/* Leave space for name empty */}
+                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }} /> {/* Leave space for name empty */}
                   <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>
                     {e.reference ? `${e.reference} - ` : ''}{e.libelle || e.description}
                   </td>
@@ -374,14 +382,14 @@ const RapportJournalier = ({ filters }) => {
         </table>
 
         {/* Zones de Signatures */}
-        <div className="reporting-signatures">
-          <div className="signature-box">
+        <div className='reporting-signatures'>
+          <div className='signature-box'>
             <span>Le Service Comptable</span>
-            <div className="signature-line" />
+            <div className='signature-line' />
           </div>
-          <div className="signature-box">
+          <div className='signature-box'>
             <span>Le Visa Gestionnaire</span>
-            <div className="signature-line" />
+            <div className='signature-line' />
           </div>
         </div>
       </div>
@@ -409,7 +417,8 @@ const RapportJournalier = ({ filters }) => {
             print-color-adjust: exact !important;
           }
         }
-      `}</style>
+      `}
+      </style>
     </div>
   )
 }

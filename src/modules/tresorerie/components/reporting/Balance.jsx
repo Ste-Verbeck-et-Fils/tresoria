@@ -80,13 +80,13 @@ const Balance = ({ filters, compteOptions, onCompteChange }) => {
   }, [balance])
 
   const classeLabels = {
-    '1': 'Classe 1 Capitaux propres et ressources assimilées',
-    '2': 'Classe 2 Immobilisations',
-    '3': 'Classe 3 Stocks',
-    '4': 'Classe 4 Tiers',
-    '5': 'Classe 5 Trésorerie',
-    '6': 'Classe 6 Charges',
-    '7': 'Classe 7 Produits'
+    1: 'Classe 1 Capitaux propres et ressources assimilées',
+    2: 'Classe 2 Immobilisations',
+    3: 'Classe 3 Stocks',
+    4: 'Classe 4 Tiers',
+    5: 'Classe 5 Trésorerie',
+    6: 'Classe 6 Charges',
+    7: 'Classe 7 Produits'
   }
 
   return (
@@ -140,12 +140,11 @@ const Balance = ({ filters, compteOptions, onCompteChange }) => {
       ) : !balance ? null : (
         <>
 
-
           {/* Table par classe */}
           <div className='balance-print-area' style={{ overflowX: 'auto' }}>
             {/* En-tête visible uniquement lors de l'impression */}
-            <div className="reporting-print-header" style={{ display: 'none' }}>
-              <img src={logoGsEmmanuel} alt="Logo GS Emmanuel" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+            <div className='reporting-print-header' style={{ display: 'none' }}>
+              <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
               <div>
                 <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
                 <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#475569' }}>
@@ -249,7 +248,8 @@ const Balance = ({ filters, compteOptions, onCompteChange }) => {
                 margin-bottom: 20px;
               }
             }
-          `}</style>
+          `}
+          </style>
         </>
       )}
     </div>

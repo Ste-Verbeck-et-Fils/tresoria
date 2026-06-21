@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,8 +10,8 @@ import {
   Tooltip,
   Legend,
   Filler
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
 
 ChartJS.register(
   CategoryScale,
@@ -23,11 +23,11 @@ ChartJS.register(
   Tooltip,
   Legend,
   Filler
-);
+)
 
 const CashFlowChart = ({ data }) => {
   if (!data || data.length === 0) {
-    return <div style={{ padding: '24px', textAlign: 'center', color: 'var(--color-text-muted)' }}>Aucune donnée de flux disponible.</div>;
+    return <div style={{ padding: '24px', textAlign: 'center', color: 'var(--color-text-muted)' }}>Aucune donnée de flux disponible.</div>
   }
 
   const chartData = {
@@ -54,7 +54,7 @@ const CashFlowChart = ({ data }) => {
         pointBackgroundColor: '#26B6FF',
       }
     ]
-  };
+  }
 
   const options = {
     responsive: true,
@@ -70,7 +70,7 @@ const CashFlowChart = ({ data }) => {
     scales: {
       y: { beginAtZero: true }
     }
-  };
+  }
 
   return (
     <div style={{ background: 'var(--color-surface)', padding: '24px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border)', height: '400px', width: '100%' }}>
@@ -79,7 +79,7 @@ const CashFlowChart = ({ data }) => {
         <Line options={options} data={chartData} />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CashFlowChart;
+export default CashFlowChart

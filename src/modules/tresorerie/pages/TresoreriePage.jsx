@@ -392,25 +392,25 @@ const TresoreriePage = () => {
             className={`inscription-action ${activeTab !== 'VUE_ENSEMBLE' ? 'inscription-action--secondary' : ''}`}
           />
           <Button
-            label="Vue courante"
+            label='Vue courante'
             variant={activeTab === 'COURANTE' ? 'secondary' : 'outline'}
             onClick={() => setActiveTab('COURANTE')}
             className={`inscription-action ${activeTab !== 'COURANTE' ? 'inscription-action--secondary' : ''}`}
           />
           <Button
-            label="Résumé global"
+            label='Résumé global'
             variant={activeTab === 'GLOBAL' ? 'secondary' : 'outline'}
             onClick={() => setActiveTab('GLOBAL')}
             className={`inscription-action ${activeTab !== 'GLOBAL' ? 'inscription-action--secondary' : ''}`}
           />
           <Button
-            label="Solde disponible"
+            label='Solde disponible'
             variant={activeTab === 'SOLDE' ? 'secondary' : 'outline'}
             onClick={() => setActiveTab('SOLDE')}
             className={`inscription-action ${activeTab !== 'SOLDE' ? 'inscription-action--secondary' : ''}`}
           />
           <Button
-            label="Résumé transport"
+            label='Résumé transport'
             variant={activeTab === 'TRANSPORT' ? 'secondary' : 'outline'}
             onClick={() => setActiveTab('TRANSPORT')}
             className={`inscription-action ${activeTab !== 'TRANSPORT' ? 'inscription-action--secondary' : ''}`}

@@ -62,7 +62,7 @@ const TransfertDetailPage = () => {
 
   const compteOptions = useMemo(() => {
     const options = []
-    
+
     const banque = comptes.find(c => c.type === 'BANQUE' || c.nom === 'Banque' || c.nom === 'Banque Principale')
     if (banque) options.push({ value: banque.id, label: 'Banque' })
 
@@ -286,23 +286,23 @@ const TransfertDetailPage = () => {
       const response = await regulariserTransfert(id)
       const newTransfertId = response.data?.transfert?.id || response.transfert?.id || response.data?.id
       if (newTransfertId) {
-         // Apply modifications to the new draft transfert
-         await updateTransfert(newTransfertId, {
-           compte_source_id: parseInt(editForm.compte_source_id),
-           compte_destination_id: parseInt(editForm.compte_destination_id),
-           montant: Number(editForm.montant),
-           description: editForm.description,
-           reference: editForm.reference,
-           date_mouvement: editForm.date_mouvement
-         })
-         setIsEditing(false)
-         navigate(`/tresorerie/transferts/${newTransfertId}`, {
-           replace: true,
-           state: { successMessage: 'Contre-passation effectuée et modifications enregistrées. Vous êtes maintenant sur le transfert brouillon.' },
-         })
+        // Apply modifications to the new draft transfert
+        await updateTransfert(newTransfertId, {
+          compte_source_id: parseInt(editForm.compte_source_id),
+          compte_destination_id: parseInt(editForm.compte_destination_id),
+          montant: Number(editForm.montant),
+          description: editForm.description,
+          reference: editForm.reference,
+          date_mouvement: editForm.date_mouvement
+        })
+        setIsEditing(false)
+        navigate(`/tresorerie/transferts/${newTransfertId}`, {
+          replace: true,
+          state: { successMessage: 'Contre-passation effectuée et modifications enregistrées. Vous êtes maintenant sur le transfert brouillon.' },
+        })
       } else {
-         await loadTransfertData()
-         setFeedback({ type: 'success', message: 'Transfert régularisé avec succès.' })
+        await loadTransfertData()
+        setFeedback({ type: 'success', message: 'Transfert régularisé avec succès.' })
       }
     } catch (error) {
       setFeedback({ type: 'error', message: error.message || 'Impossible de régulariser ce transfert.' })
@@ -437,7 +437,7 @@ const TransfertDetailPage = () => {
                       className='inscription-action inscription-action--primary'
                     />
                   </>
-                )
+                  )
                 : (
                   <Button
                     type='button'
@@ -448,7 +448,7 @@ const TransfertDetailPage = () => {
                     onClick={handleStartEdit}
                     className='inscription-action inscription-action--secondary'
                   />
-                )
+                  )
             )}
           >
             {isEditing
@@ -539,7 +539,7 @@ const TransfertDetailPage = () => {
                     </dd>
                   </div>
                 </>
-              )
+                )
               : (
                 <>
                   <DetailField label='Reference' value={transfert.reference || '#' + transfert.id} />
@@ -551,7 +551,7 @@ const TransfertDetailPage = () => {
                   <DetailField label='Description' value={transfert.description || '-'} />
                   <DetailField label='Crée par' value={transfert.creator?.full_name || transfert.creator?.phone || '-'} />
                 </>
-              )}
+                )}
           </DetailSection>
 
           <DetailSection
@@ -568,7 +568,7 @@ const TransfertDetailPage = () => {
                   onClick={handleAnnuler}
                   className='inscription-action inscription-action--secondary'
                 />
-                 {isConfirmed && (
+                {isConfirmed && (
                   <Button
                     type='button'
                     variant='ghost'

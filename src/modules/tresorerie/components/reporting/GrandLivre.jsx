@@ -37,8 +37,6 @@ const GrandLivre = ({ filters, compteOptions, onCompteChange }) => {
     }
   }
 
-
-
   const exportToExcel = () => {
     if (!grandLivre) return
     const rows = grandLivre.map(l => ({
@@ -119,8 +117,6 @@ const GrandLivre = ({ filters, compteOptions, onCompteChange }) => {
         </div>
       </div>
 
-
-
       {/* Contenu */}
       {loading ? (
         <Loader message='Chargement du grand livre...' />
@@ -129,8 +125,8 @@ const GrandLivre = ({ filters, compteOptions, onCompteChange }) => {
       ) : (
         <div className='grand-livre-print-area'>
           {/* En-tête visible uniquement lors de l'impression */}
-          <div className="reporting-print-header" style={{ display: 'none' }}>
-            <img src={logoGsEmmanuel} alt="Logo GS Emmanuel" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+          <div className='reporting-print-header' style={{ display: 'none' }}>
+            <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
             <div>
               <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
               <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#475569' }}>
@@ -281,7 +277,8 @@ const GrandLivre = ({ filters, compteOptions, onCompteChange }) => {
             margin-bottom: 20px;
           }
         }
-      `}</style>
+      `}
+      </style>
     </div>
   )
 }

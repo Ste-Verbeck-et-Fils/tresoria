@@ -296,7 +296,7 @@ const CreateStudentPage = () => {
               <Input id='nom' type='text' label='Nom' placeholder='Nom' value={form.nom} error={errors.nom} disabled={isSubmitting} onChange={handleChange} />
               <Input id='postnom' type='text' label='Postnom' placeholder='Postnom' value={form.postnom} error={errors.postnom} disabled={isSubmitting} onChange={handleChange} />
               <Input id='prenom' type='text' label='Prenom' placeholder='Prenom' value={form.prenom} error={errors.prenom} disabled={isSubmitting} onChange={handleChange} />
-              
+
               <div className={`inscription-radio-group ${errors.sexe ? 'has-error' : ''}`}>
                 <label className='inscription-field-label' style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>Sexe</label>
                 <div className='inscription-radio-options' style={{ display: 'flex', gap: '15px' }}>

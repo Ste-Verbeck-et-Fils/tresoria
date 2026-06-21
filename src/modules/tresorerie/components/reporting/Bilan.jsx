@@ -116,49 +116,51 @@ const Bilan = ({ filters, compteOptions, onCompteChange }) => {
           </tr>
         </thead>
         <tbody>
-          {Object.entries(entries).length === 0 ? (
-            <tr>
-              <td
-                colSpan={2}
-                style={{
-                  padding: '20px',
-                  textAlign: 'center',
-                  color: 'var(--color-text-muted)',
-                  fontStyle: 'italic'
-                }}
-              >
-                Aucun mouvement
-              </td>
-            </tr>
-          ) : (
-            Object.entries(entries).map(([compte, details]) => (
-              <tr key={compte} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                <td style={{ padding: '8px 12px' }}>
-                  <span
-                    style={{
-                      fontFamily: 'monospace',
-                      fontWeight: 700,
-                      color: 'var(--color-text-primary)',
-                      marginRight: '8px'
-                    }}
-                  >
-                    {compte}
-                  </span>
-                  {details.intitule}
-                </td>
+          {Object.entries(entries).length === 0
+            ? (
+              <tr>
                 <td
+                  colSpan={2}
                   style={{
-                    padding: '8px 12px',
-                    textAlign: 'right',
-                    fontWeight: 700,
-                    whiteSpace: 'nowrap'
+                    padding: '20px',
+                    textAlign: 'center',
+                    color: 'var(--color-text-muted)',
+                    fontStyle: 'italic'
                   }}
                 >
-                  {formatAmount(details.montant)}
+                  Aucun mouvement
                 </td>
               </tr>
-            ))
-          )}
+              )
+            : (
+                Object.entries(entries).map(([compte, details]) => (
+                  <tr key={compte} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                    <td style={{ padding: '8px 12px' }}>
+                      <span
+                        style={{
+                          fontFamily: 'monospace',
+                          fontWeight: 700,
+                          color: 'var(--color-text-primary)',
+                          marginRight: '8px'
+                        }}
+                      >
+                        {compte}
+                      </span>
+                      {details.intitule}
+                    </td>
+                    <td
+                      style={{
+                        padding: '8px 12px',
+                        textAlign: 'right',
+                        fontWeight: 700,
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      {formatAmount(details.montant)}
+                    </td>
+                  </tr>
+                ))
+              )}
         </tbody>
         <tfoot>
           <tr
@@ -229,16 +231,14 @@ const Bilan = ({ filters, compteOptions, onCompteChange }) => {
         </div>
       </div>
 
-
-
       {/* Tableaux Actif / Passif */}
       <div
         style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}
         className='bilan-print-area'
       >
         {/* En-tête visible uniquement lors de l'impression */}
-        <div className="reporting-print-header" style={{ display: 'none', width: '100%' }}>
-          <img src={logoGsEmmanuel} alt="Logo GS Emmanuel" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+        <div className='reporting-print-header' style={{ display: 'none', width: '100%' }}>
+          <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
           <div>
             <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
             <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#475569' }}>
@@ -274,7 +274,8 @@ const Bilan = ({ filters, compteOptions, onCompteChange }) => {
             margin-bottom: 20px;
           }
         }
-      `}</style>
+      `}
+      </style>
     </div>
   )
 }

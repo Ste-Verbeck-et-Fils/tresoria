@@ -54,7 +54,7 @@ const PasswordConfirmModal = ({ isOpen, onClose, onConfirm, title, message, acti
       <div className='modal-content' style={{ backgroundColor: 'white', padding: '24px', borderRadius: '8px', maxWidth: '400px', width: '100%', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
         <h2 style={{ marginTop: 0, marginBottom: '16px', fontSize: '1.25rem', fontWeight: 600 }}>{title || 'Confirmation requise'}</h2>
         <p style={{ marginBottom: '24px', color: '#4b5563', fontSize: '0.875rem' }}>{message || 'Veuillez saisir votre mot de passe pour confirmer cette action.'}</p>
-        
+
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '24px' }}>
             <Input

@@ -140,7 +140,6 @@ const AnneeScolaireDetailPage = () => {
   }
 
   const executeDelete = async () => {
-
     setFeedback({ type: '', message: '' })
     setIsDeleting(true)
 

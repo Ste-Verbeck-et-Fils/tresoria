@@ -86,7 +86,7 @@ const RapportFinancierAnneePage = () => {
           setAnneesScolaires(normalized)
 
           if (!anneeScolaireId) {
-            const anneeActive = normalized.find(a => a.statut === "ACTIF" || a.status === "ACTIVE" || a.is_active || a.active)
+            const anneeActive = normalized.find(a => a.statut === 'ACTIF' || a.status === 'ACTIVE' || a.is_active || a.active)
             if (anneeActive) {
               setAnneeScolaireId(anneeActive.id)
               loadRapport(anneeActive.id)
@@ -212,12 +212,12 @@ const RapportFinancierAnneePage = () => {
 
     // Convert first table (Main table)
     const ws1 = XLSX.utils.table_to_sheet(tableEls[0])
-    XLSX.utils.book_append_sheet(wb, ws1, "Flux Financiers")
+    XLSX.utils.book_append_sheet(wb, ws1, 'Flux Financiers')
 
     // Convert second table (Payment modes)
     if (tableEls.length > 1) {
       const ws2 = XLSX.utils.table_to_sheet(tableEls[1])
-      XLSX.utils.book_append_sheet(wb, ws2, "Modes de Paiement")
+      XLSX.utils.book_append_sheet(wb, ws2, 'Modes de Paiement')
     }
 
     const anneeName = selectedAnnee ? getDesignation(selectedAnnee) : 'Annee'
@@ -287,7 +287,6 @@ const RapportFinancierAnneePage = () => {
               className='inscription-action'
             />
 
-
           </div>
         </div>
 
@@ -335,8 +334,8 @@ const RapportFinancierAnneePage = () => {
       {!isLoadingRapport && !isForbidden && !rapportError && unwrappedRapport && (
         <div className='rapport-financier-stack rapport-financier-print-container'>
           {/* En-tête visible uniquement lors de l'impression */}
-          <div className="reporting-print-header" style={{ display: 'none' }}>
-            <img src={logoGsEmmanuel} alt="Logo GS Emmanuel" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
+          <div className='reporting-print-header' style={{ display: 'none' }}>
+            <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
             <div>
               <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
               <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#475569' }}>
@@ -370,7 +369,6 @@ const RapportFinancierAnneePage = () => {
             </div>
           </section>
 
-
           {/* Tableau Excel Principal (Recettes vs Dépenses) */}
           <div className='excel-table-container'>
             <table className='excel-table'>
@@ -400,34 +398,38 @@ const RapportFinancierAnneePage = () => {
                   return (
                     <tr key={index}>
                       {/* Recettes (Entrées) */}
-                      {paiement ? (
-                        <>
-                          <td className='text-left'>{paiement.label}</td>
-                          <td className='text-center'>{paiement.count ?? '-'}</td>
-                          <td className='text-right'>{formatAmount(paiement.montant)}</td>
-                        </>
-                      ) : (
-                        <>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </>
-                      )}
+                      {paiement
+                        ? (
+                          <>
+                            <td className='text-left'>{paiement.label}</td>
+                            <td className='text-center'>{paiement.count ?? '-'}</td>
+                            <td className='text-right'>{formatAmount(paiement.montant)}</td>
+                          </>
+                          )
+                        : (
+                          <>
+                            <td />
+                            <td />
+                            <td />
+                          </>
+                          )}
 
                       {/* Dépenses (Sorties) */}
-                      {depense ? (
-                        <>
-                          <td className='text-left border-left-separator'>{depense.label}</td>
-                          <td className='text-center'>{depense.count ?? '-'}</td>
-                          <td className='text-right'>{formatAmount(depense.montant)}</td>
-                        </>
-                      ) : (
-                        <>
-                          <td className='border-left-separator'></td>
-                          <td></td>
-                          <td></td>
-                        </>
-                      )}
+                      {depense
+                        ? (
+                          <>
+                            <td className='text-left border-left-separator'>{depense.label}</td>
+                            <td className='text-center'>{depense.count ?? '-'}</td>
+                            <td className='text-right'>{formatAmount(depense.montant)}</td>
+                          </>
+                          )
+                        : (
+                          <>
+                            <td className='border-left-separator' />
+                            <td />
+                            <td />
+                          </>
+                          )}
                     </tr>
                   )
                 })}
@@ -506,34 +508,38 @@ const RapportFinancierAnneePage = () => {
                   return (
                     <tr key={index}>
                       {/* Entrées */}
-                      {paiementMode ? (
-                        <>
-                          <td className='text-left'>{paiementMode.label}</td>
-                          <td className='text-center'>{paiementMode.count ?? '-'}</td>
-                          <td className='text-right'>{formatAmount(paiementMode.montant)}</td>
-                        </>
-                      ) : (
-                        <>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </>
-                      )}
+                      {paiementMode
+                        ? (
+                          <>
+                            <td className='text-left'>{paiementMode.label}</td>
+                            <td className='text-center'>{paiementMode.count ?? '-'}</td>
+                            <td className='text-right'>{formatAmount(paiementMode.montant)}</td>
+                          </>
+                          )
+                        : (
+                          <>
+                            <td />
+                            <td />
+                            <td />
+                          </>
+                          )}
 
                       {/* Sorties */}
-                      {depenseMode ? (
-                        <>
-                          <td className='text-left border-left-separator'>{depenseMode.label}</td>
-                          <td className='text-center'>{depenseMode.count ?? '-'}</td>
-                          <td className='text-right'>{formatAmount(depenseMode.montant)}</td>
-                        </>
-                      ) : (
-                        <>
-                          <td className='border-left-separator'></td>
-                          <td></td>
-                          <td></td>
-                        </>
-                      )}
+                      {depenseMode
+                        ? (
+                          <>
+                            <td className='text-left border-left-separator'>{depenseMode.label}</td>
+                            <td className='text-center'>{depenseMode.count ?? '-'}</td>
+                            <td className='text-right'>{formatAmount(depenseMode.montant)}</td>
+                          </>
+                          )
+                        : (
+                          <>
+                            <td className='border-left-separator' />
+                            <td />
+                            <td />
+                          </>
+                          )}
                     </tr>
                   )
                 })}
@@ -551,7 +557,6 @@ const RapportFinancierAnneePage = () => {
               </tbody>
             </table>
           </div>
-
 
         </div>
       )}

@@ -247,7 +247,7 @@ const DepenseDetailPage = () => {
       ...depense,
       annee_scolaire_id: anneeScolaire?.id || depense?.annee_scolaire_id || '',
     })
-    
+
     return (
       Number(editForm.annee_scolaire_id) !== Number(originalForm.annee_scolaire_id) ||
       editForm.libelle.trim() !== originalForm.libelle.trim() ||
@@ -326,7 +326,6 @@ const DepenseDetailPage = () => {
   }
 
   const executeDelete = async () => {
-
     setFeedback({ type: '', message: '' })
     setIsDeleting(true)
 
@@ -356,15 +355,15 @@ const DepenseDetailPage = () => {
       const response = await regulariserDepense(id)
       const newDepenseId = response.data?.depense?.id || response.depense?.id
       if (newDepenseId) {
-         // Apply modifications to the new draft expense
-         await updateDepense(newDepenseId, getDepensePayload(editForm))
-         setIsEditing(false)
-         navigate(`/depenses/${newDepenseId}`, {
-           replace: true,
-           state: { successMessage: 'Contre-passation effectuée et modifications enregistrées. Vous êtes maintenant sur la sortie brouillon.' },
-         })
+        // Apply modifications to the new draft expense
+        await updateDepense(newDepenseId, getDepensePayload(editForm))
+        setIsEditing(false)
+        navigate(`/depenses/${newDepenseId}`, {
+          replace: true,
+          state: { successMessage: 'Contre-passation effectuée et modifications enregistrées. Vous êtes maintenant sur la sortie brouillon.' },
+        })
       } else {
-         await refreshAfterMutation('Sortie régularisée avec succès.')
+        await refreshAfterMutation('Sortie régularisée avec succès.')
       }
     } catch (error) {
       setFeedback({ type: 'error', message: error.message || 'Impossible de régulariser cette sortie.' })
@@ -538,7 +537,7 @@ const DepenseDetailPage = () => {
                           <option key={opt.value} value={opt.value}>{opt.label}</option>
                         ))}
                       </select>
-                      {editErrors.categorie && <span className="inscription-error-text">{editErrors.categorie}</span>}
+                      {editErrors.categorie && <span className='inscription-error-text'>{editErrors.categorie}</span>}
                     </dd>
                   </div>
                   <div className='inscription-detail-field inscription-detail-field--editing'>

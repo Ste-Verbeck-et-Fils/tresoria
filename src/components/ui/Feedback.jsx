@@ -52,15 +52,17 @@ const Feedback = ({
         {title && <h4 className={`feedback-title text-${type}`}>{title}</h4>}
         {message && <p className='feedback-message'>{message}</p>}
       </div>
-      {onClose ? (
-        <button className='feedback-close-btn' onClick={onClose} aria-label='Close'>
-          <X size={16} />
-        </button>
-      ) : (
-        <button className='feedback-close-btn' onClick={() => setIsVisible(false)} aria-label='Close'>
-          <X size={16} />
-        </button>
-      )}
+      {onClose
+        ? (
+          <button className='feedback-close-btn' onClick={onClose} aria-label='Close'>
+            <X size={16} />
+          </button>
+          )
+        : (
+          <button className='feedback-close-btn' onClick={() => setIsVisible(false)} aria-label='Close'>
+            <X size={16} />
+          </button>
+          )}
     </div>
   )
 }

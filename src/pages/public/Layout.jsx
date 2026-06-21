@@ -169,8 +169,6 @@ const Layout = () => {
     })
   }
 
-
-
   const configSubLinks = []
   if (canAccessAnneesScolaires) configSubLinks.push({ label: 'Années scolaires', href: '/annees-scolaires', active: isPathActive('/annees-scolaires') })
   if (canAccessClasses) configSubLinks.push({ label: 'Classes', href: '/classes', active: isPathActive('/classes') })

@@ -388,9 +388,7 @@ const CreatePaiementPage = () => {
                   onChange={handleChange}
                 />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
-
-              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }} />
               {/* Empty div to preserve 3-column alignment */}
               <div />
 

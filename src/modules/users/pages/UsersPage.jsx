@@ -46,14 +46,14 @@ const UserRowActions = ({ item, user, onDelete }) => {
           overflow: 'hidden'
         }}
         >
-          <button 
-            onClick={() => { setIsOpen(false); navigate(`/users/${item.id}`) }} 
+          <button
+            onClick={() => { setIsOpen(false); navigate(`/users/${item.id}`) }}
             style={{ padding: '10px 16px', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', color: '#173f5f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
             <PencilLine size={16} /> Modifier
           </button>
-          <button 
-            onClick={() => { setIsOpen(false); onDelete(item.id) }} 
+          <button
+            onClick={() => { setIsOpen(false); onDelete(item.id) }}
             style={{ padding: '10px 16px', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', color: '#ef4444', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
             <Trash2 size={16} /> Supprimer
@@ -70,7 +70,7 @@ const UsersPage = () => {
   const user = userStr ? JSON.parse(userStr) : {}
 
   const [isDeleting, setIsDeleting] = useState(false)
-  
+
   const [targetUserId, setTargetUserId] = useState(null)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
 
@@ -104,9 +104,9 @@ const UsersPage = () => {
   }
 
   const columns = [
-    { 
-      label: 'Photo', 
-      render: (item) => <img src={item.photo_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(item.full_name)} alt="Photo" style={{width: 32, height: 32, borderRadius: '50%', objectFit: 'cover'}} /> 
+    {
+      label: 'Photo',
+      render: (item) => <img src={item.photo_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(item.full_name)} alt='Photo' style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
     },
     { label: 'Nom complet', render: (item) => item.full_name },
     { label: 'Téléphone', render: (item) => item.phone },

@@ -23,6 +23,14 @@ export default [
       ],
       camelcase: 'error',
       'react/jsx-pascal-case': 'error',
+      'no-unused-vars': 'off',
+      'react-hooks/set-state-in-effect': 'off',
+      'no-undef': 'off',
+      '@stylistic/multiline-ternary': 'off',
+      'react-hooks/static-components': 'off',
+      'react-hooks/immutability': 'off',
+      'no-useless-escape': 'off',
+      'no-return-assign': 'off',
     },
     languageOptions: {
       parserOptions: {

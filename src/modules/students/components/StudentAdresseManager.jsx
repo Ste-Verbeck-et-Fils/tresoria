@@ -129,149 +129,149 @@ const StudentAdresseManager = ({
 
   return (
     <>
-    <article className='detail-section-card parent-address-section'>
-      <header className='detail-section-card__header'>
-        <h2>Adresses de l eleve</h2>
-        {!mode && !readOnly && adresses.length < 3 && (
-          <Button
-            type='button'
-            variant='ghost'
-            label='Ajouter une adresse'
-            icon={<Plus size={16} />}
-            disabled={disabled || isPending}
-            onClick={handleStartCreate}
-            className='inscription-action inscription-action--secondary'
-          />
-        )}
-      </header>
-
-      {feedback.message && (
-        <Feedback
-          type={feedback.type}
-          message={feedback.message}
-          onClose={() => setFeedback({ type: '', message: '' })}
-          className='student-address-feedback'
-        />
-      )}
-
-      {mode && (
-        <form className='parent-address-inline-form' onSubmit={handleSave}>
-          <h3>{mode === 'edit' ? 'Modifier l adresse' : 'Nouvelle adresse'}</h3>
-          <div className='parent-address-form-grid'>
-            <label className='parent-address-form-field'>
-              <span>Commune</span>
-              <Input
-                id='commune'
-                type='text'
-                value={form.commune}
-                disabled={isSaving}
-                onChange={handleChange}
-              />
-            </label>
-            <label className='parent-address-form-field'>
-              <span>Quartier</span>
-              <Input
-                id='quartier'
-                type='text'
-                value={form.quartier}
-                error={errors.quartier}
-                disabled={isSaving}
-                onChange={handleChange}
-              />
-            </label>
-            <label className='parent-address-form-field'>
-              <span>Avenue</span>
-              <Input
-                id='avenue'
-                type='text'
-                value={form.avenue}
-                disabled={isSaving}
-                onChange={handleChange}
-              />
-            </label>
-            <label className='parent-address-form-field'>
-              <span>Numero</span>
-              <Input
-                id='numero'
-                type='text'
-                value={form.numero}
-                disabled={isSaving}
-                onChange={handleChange}
-              />
-            </label>
-          </div>
-          <div className='parent-address-form-actions'>
+      <article className='detail-section-card parent-address-section'>
+        <header className='detail-section-card__header'>
+          <h2>Adresses de l eleve</h2>
+          {!mode && !readOnly && adresses.length < 3 && (
             <Button
               type='button'
               variant='ghost'
-              label='Annuler'
-              disabled={isSaving}
-              onClick={handleCancel}
+              label='Ajouter une adresse'
+              icon={<Plus size={16} />}
+              disabled={disabled || isPending}
+              onClick={handleStartCreate}
               className='inscription-action inscription-action--secondary'
             />
-            <Button
-              type='submit'
-              variant='super'
-              label={isSaving ? 'Enregistrement...' : 'Enregistrer'}
-              loading={isSaving}
-              className='inscription-action inscription-action--primary'
-            />
-          </div>
-        </form>
-      )}
+          )}
+        </header>
 
-      {!mode && adresses.length === 0 && (
-        <p className='parent-address-empty'>Aucune adresse enregistree pour cet eleve.</p>
-      )}
+        {feedback.message && (
+          <Feedback
+            type={feedback.type}
+            message={feedback.message}
+            onClose={() => setFeedback({ type: '', message: '' })}
+            className='student-address-feedback'
+          />
+        )}
 
-      {!mode && adresses.length > 0 && (
-        <div className='parent-address-list'>
-          {adresses.map((adresse) => (
-            <article key={adresse.id} className='parent-address-card'>
-              <div className='parent-address-card__icon'>
-                <MapPin size={19} aria-hidden='true' />
-              </div>
-              <div className='parent-address-card__content'>
-                <h3>Adresse #{adresse.id}</h3>
-                <p>{[adresse.numero, adresse.avenue, adresse.quartier, adresse.commune].filter(Boolean).join(', ')}</p>
-              </div>
-              {!readOnly && (
-                <div className='parent-address-card__actions'>
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    label='Modifier'
-                    icon={<PencilLine size={15} />}
-                    disabled={disabled || isPending}
-                    onClick={() => handleStartEdit(adresse)}
-                    className='inscription-action inscription-action--secondary'
-                  />
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    label={deletingAdresseId === adresse.id ? 'Suppression...' : 'Supprimer'}
-                    icon={<Trash2 size={15} />}
-                    loading={deletingAdresseId === adresse.id}
-                    disabled={disabled}
-                    onClick={() => handleDelete(adresse)}
-                    className='inscription-action classe-delete-action'
-                  />
+        {mode && (
+          <form className='parent-address-inline-form' onSubmit={handleSave}>
+            <h3>{mode === 'edit' ? 'Modifier l adresse' : 'Nouvelle adresse'}</h3>
+            <div className='parent-address-form-grid'>
+              <label className='parent-address-form-field'>
+                <span>Commune</span>
+                <Input
+                  id='commune'
+                  type='text'
+                  value={form.commune}
+                  disabled={isSaving}
+                  onChange={handleChange}
+                />
+              </label>
+              <label className='parent-address-form-field'>
+                <span>Quartier</span>
+                <Input
+                  id='quartier'
+                  type='text'
+                  value={form.quartier}
+                  error={errors.quartier}
+                  disabled={isSaving}
+                  onChange={handleChange}
+                />
+              </label>
+              <label className='parent-address-form-field'>
+                <span>Avenue</span>
+                <Input
+                  id='avenue'
+                  type='text'
+                  value={form.avenue}
+                  disabled={isSaving}
+                  onChange={handleChange}
+                />
+              </label>
+              <label className='parent-address-form-field'>
+                <span>Numero</span>
+                <Input
+                  id='numero'
+                  type='text'
+                  value={form.numero}
+                  disabled={isSaving}
+                  onChange={handleChange}
+                />
+              </label>
+            </div>
+            <div className='parent-address-form-actions'>
+              <Button
+                type='button'
+                variant='ghost'
+                label='Annuler'
+                disabled={isSaving}
+                onClick={handleCancel}
+                className='inscription-action inscription-action--secondary'
+              />
+              <Button
+                type='submit'
+                variant='super'
+                label={isSaving ? 'Enregistrement...' : 'Enregistrer'}
+                loading={isSaving}
+                className='inscription-action inscription-action--primary'
+              />
+            </div>
+          </form>
+        )}
+
+        {!mode && adresses.length === 0 && (
+          <p className='parent-address-empty'>Aucune adresse enregistree pour cet eleve.</p>
+        )}
+
+        {!mode && adresses.length > 0 && (
+          <div className='parent-address-list'>
+            {adresses.map((adresse) => (
+              <article key={adresse.id} className='parent-address-card'>
+                <div className='parent-address-card__icon'>
+                  <MapPin size={19} aria-hidden='true' />
                 </div>
-              )}
-            </article>
-          ))}
-        </div>
-      )}
-    </article>
+                <div className='parent-address-card__content'>
+                  <h3>Adresse #{adresse.id}</h3>
+                  <p>{[adresse.numero, adresse.avenue, adresse.quartier, adresse.commune].filter(Boolean).join(', ')}</p>
+                </div>
+                {!readOnly && (
+                  <div className='parent-address-card__actions'>
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      label='Modifier'
+                      icon={<PencilLine size={15} />}
+                      disabled={disabled || isPending}
+                      onClick={() => handleStartEdit(adresse)}
+                      className='inscription-action inscription-action--secondary'
+                    />
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      label={deletingAdresseId === adresse.id ? 'Suppression...' : 'Supprimer'}
+                      icon={<Trash2 size={15} />}
+                      loading={deletingAdresseId === adresse.id}
+                      disabled={disabled}
+                      onClick={() => handleDelete(adresse)}
+                      className='inscription-action classe-delete-action'
+                    />
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        )}
+      </article>
 
-    <PasswordConfirmModal
-      isOpen={showPasswordModal}
-      onClose={() => { setShowPasswordModal(false); setPendingDeleteAdresse(null) }}
-      onConfirm={executeDelete}
-      title='Confirmation requise'
-      message='Veuillez saisir votre mot de passe pour confirmer la suppression de cette adresse.'
-      actionLabel='Supprimer'
-    />
+      <PasswordConfirmModal
+        isOpen={showPasswordModal}
+        onClose={() => { setShowPasswordModal(false); setPendingDeleteAdresse(null) }}
+        onConfirm={executeDelete}
+        title='Confirmation requise'
+        message='Veuillez saisir votre mot de passe pour confirmer la suppression de cette adresse.'
+        actionLabel='Supprimer'
+      />
     </>
   )
 }

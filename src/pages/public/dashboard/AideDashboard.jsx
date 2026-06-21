@@ -35,7 +35,7 @@ const AideDashboard = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isListening, setIsListening] = useState(false)
   const messagesEndRef = useRef(null)
-  
+
   // Speech Recognition setup
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
   const recognition = SpeechRecognition ? new SpeechRecognition() : null
@@ -55,7 +55,7 @@ const AideDashboard = () => {
       console.error('Speech recognition error', event.error)
       setIsListening(false)
     }
-    
+
     recognition.onend = () => {
       setIsListening(false)
     }
@@ -93,30 +93,30 @@ const AideDashboard = () => {
 
     const printWindow = window.open('', '_blank', 'width=800,height=600')
     if (!printWindow) {
-      alert("Veuillez autoriser les fenêtres contextuelles pour imprimer cette réponse.")
+      alert('Veuillez autoriser les fenêtres contextuelles pour imprimer cette réponse.')
       return
     }
 
     let htmlContent = bubbleEl.innerHTML
 
     // Supprimer la première phrase spécifique indésirable lors de l'impression
-    const literalText1 = "Si vous voulez, je peux aussi vous faire le même format pour la 4e, 5e et 6e primaire si elles existent."
-    htmlContent = htmlContent.replace(literalText1, "")
+    const literalText1 = 'Si vous voulez, je peux aussi vous faire le même format pour la 4e, 5e et 6e primaire si elles existent.'
+    htmlContent = htmlContent.replace(literalText1, '')
 
     // Expression régulière pour couvrir les variations de la première phrase
     const regex1 = /Si vous voulez,\s*je peux aussi vous faire le même format pour la\s*4[eè](?:me|ème)?,\s*5[eè](?:me|ème)?\s*et\s*6[eè](?:me|ème)?\s*primaire\s*si\s*elles\s*existent\.?/gi
-    htmlContent = htmlContent.replace(regex1, "")
+    htmlContent = htmlContent.replace(regex1, '')
 
     // Supprimer la deuxième phrase spécifique indésirable lors de l'impression
-    const literalText2 = "Si vous voulez, je peux aussi vous faire un format imprimable propre avec seulement les noms et les dates."
-    htmlContent = htmlContent.replace(literalText2, "")
+    const literalText2 = 'Si vous voulez, je peux aussi vous faire un format imprimable propre avec seulement les noms et les dates.'
+    htmlContent = htmlContent.replace(literalText2, '')
 
     // Expression régulière pour la deuxième phrase
     const regex2 = /Si vous voulez,\s*je peux aussi vous faire un format imprimable propre avec seulement les noms et les dates\.?/gi
-    htmlContent = htmlContent.replace(regex2, "")
+    htmlContent = htmlContent.replace(regex2, '')
 
     // Supprimer les paragraphes devenus vides après la suppression
-    htmlContent = htmlContent.replace(/<p>\s*<\/p>/gi, "")
+    htmlContent = htmlContent.replace(/<p>\s*<\/p>/gi, '')
 
     printWindow.document.write(`
       <html>
@@ -322,10 +322,10 @@ const AideDashboard = () => {
                           <Smile size={16} className='reaction-icon active' />
                         </>
                       )}
-                      <button 
-                        type='button' 
-                        onClick={() => handlePrint(msg.id)} 
-                        className='chat-app-reaction-btn' 
+                      <button
+                        type='button'
+                        onClick={() => handlePrint(msg.id)}
+                        className='chat-app-reaction-btn'
                         title='Imprimer cette réponse'
                       >
                         <Printer size={16} />
@@ -377,9 +377,9 @@ const AideDashboard = () => {
               className='chat-app-input'
               disabled={isLoading}
             />
-            <button 
-              type='button' 
-              onClick={toggleListening} 
+            <button
+              type='button'
+              onClick={toggleListening}
               className={`chat-app-mic-btn ${isListening ? 'listening' : ''}`}
               title='Commande vocale'
               style={{

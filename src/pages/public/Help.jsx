@@ -31,8 +31,8 @@ const Help = () => {
   return (
     <main className='public-site-theme'>
       <Header />
-      <div className="hero-banner">
-        <img src={HeroBanner} alt="hero banner" className='hero-banner-img' />
+      <div className='hero-banner'>
+        <img src={HeroBanner} alt='hero banner' className='hero-banner-img' />
       </div>
       <div className='help-page'>
 

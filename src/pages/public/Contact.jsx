@@ -40,8 +40,8 @@ const Contact = () => {
   return (
     <div className='public-site-theme'>
       <Header onActionClick={() => navigate('/login')} />
-      <div className="hero-banner">
-        <img src={HeroBanner} alt="hero banner" className='hero-banner-img' />
+      <div className='hero-banner'>
+        <img src={HeroBanner} alt='hero banner' className='hero-banner-img' />
       </div>
       <div className='contact-page'>
         <div className='contact-header'>

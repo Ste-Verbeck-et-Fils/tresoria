@@ -124,8 +124,8 @@ const Journal = ({ filters, compteOptions, onCompteChange }) => {
       {/* Écritures */}
       <div className='journal-print-area' style={{ overflowX: 'auto' }}>
         {/* En-tête visible uniquement lors de l'impression */}
-        <div className="reporting-print-header" style={{ display: 'none' }}>
-          <img src={logoGsEmmanuel} alt="Logo GS Emmanuel" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+        <div className='reporting-print-header' style={{ display: 'none' }}>
+          <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
           <div>
             <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
             <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#475569' }}>
@@ -248,7 +248,8 @@ const Journal = ({ filters, compteOptions, onCompteChange }) => {
             margin-bottom: 20px;
           }
         }
-      `}</style>
+      `}
+      </style>
     </div>
   )
 }

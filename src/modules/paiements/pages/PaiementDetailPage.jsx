@@ -227,7 +227,7 @@ const PaiementDetailPage = () => {
       ...paiement,
       inscription_id: inscription?.id || paiement?.inscription_id || '',
     })
-    
+
     return (
       Number(editForm.montant) !== Number(originalForm.montant) ||
       editForm.motif !== originalForm.motif ||
@@ -306,7 +306,6 @@ const PaiementDetailPage = () => {
   }
 
   const executeDelete = async () => {
-
     setFeedback({ type: '', message: '' })
     setIsDeleting(true)
 
@@ -336,15 +335,15 @@ const PaiementDetailPage = () => {
       const response = await regulariserPaiement(id)
       const newPaiementId = response.data?.paiement?.id || response.paiement?.id
       if (newPaiementId) {
-         // Apply modifications to the new draft payment
-         await updatePaiement(newPaiementId, getPaiementPayload(editForm))
-         setIsEditing(false)
-         navigate(`/paiements/${newPaiementId}`, {
-           replace: true,
-           state: { successMessage: 'Contre-passation effectuée et modifications enregistrées. Vous êtes maintenant sur le paiement brouillon.' },
-         })
+        // Apply modifications to the new draft payment
+        await updatePaiement(newPaiementId, getPaiementPayload(editForm))
+        setIsEditing(false)
+        navigate(`/paiements/${newPaiementId}`, {
+          replace: true,
+          state: { successMessage: 'Contre-passation effectuée et modifications enregistrées. Vous êtes maintenant sur le paiement brouillon.' },
+        })
       } else {
-         await refreshAfterMutation('Entrée régularisée avec succès.')
+        await refreshAfterMutation('Entrée régularisée avec succès.')
       }
     } catch (error) {
       setFeedback({ type: 'error', message: error.message || 'Impossible de régulariser cette entrée.' })
@@ -490,7 +489,7 @@ const PaiementDetailPage = () => {
                   </>
                   )
                 : (
-                   <Button
+                  <Button
                     type='button'
                     variant='ghost'
                     label='Modifier'

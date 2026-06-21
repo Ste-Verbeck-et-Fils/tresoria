@@ -15,8 +15,8 @@ const Home = () => {
     <div className='public-site-theme'>
       <Header />
       <div className='home-page'>
-        <div className="hero-banner">
-          <img src={HeroBanner} alt="hero banner" className='hero-banner-img' />
+        <div className='hero-banner'>
+          <img src={HeroBanner} alt='hero banner' className='hero-banner-img' />
         </div>
         <section className='hero-section'>
           <h1 className='hero-title'>

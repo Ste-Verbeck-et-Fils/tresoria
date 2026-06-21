@@ -178,7 +178,7 @@ const UserDetailPage = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
             <img
               src={user?.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(form.full_name || 'U')}`}
-              alt="Photo de profil"
+              alt='Photo de profil'
               style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover' }}
             />
             <h2 className='inscription-form-section-title' style={{ marginBottom: 0, borderBottom: 'none', paddingBottom: 0 }}>
@@ -224,14 +224,14 @@ const UserDetailPage = () => {
           <div style={{ marginTop: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <label style={{ fontSize: '0.875rem', fontWeight: 500, color: '#334155' }}>Statut du compte</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <label className="user-status-switch">
+              <label className='user-status-switch'>
                 <input
-                  type="checkbox"
+                  type='checkbox'
                   checked={form.statut === 'ACTIF'}
                   onChange={handleToggleStatus}
                   disabled={!isEditing || isSubmitting}
                 />
-                <span className="user-status-slider"></span>
+                <span className='user-status-slider' />
               </label>
               <span style={{ fontSize: '0.875rem', color: form.statut === 'ACTIF' ? '#10b981' : '#64748b', fontWeight: 600 }}>
                 {form.statut === 'ACTIF' ? 'ACTIF' : 'INACTIF'}
@@ -240,42 +240,44 @@ const UserDetailPage = () => {
           </div>
 
           <div className='inscription-form-actions'>
-            {!isEditing ? (
-              <Button
-                type='button'
-                variant='super'
-                label='Modifier les informations'
-                onClick={() => setIsEditing(true)}
-                className='inscription-action inscription-action--primary'
-              />
-            ) : (
-              <>
+            {!isEditing
+              ? (
                 <Button
                   type='button'
-                  variant='ghost'
-                  label='Annuler'
-                  onClick={() => {
-                    setIsEditing(false)
-                    setForm({
-                      full_name: user.full_name || '',
-                      phone: user.phone || '',
-                      role: user.role || '',
-                      statut: user.statut || 'ACTIF'
-                    })
-                    setErrors({})
-                  }}
-                  disabled={isSubmitting}
-                />
-                <Button
-                  type='submit'
                   variant='super'
-                  label={isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
+                  label='Modifier les informations'
+                  onClick={() => setIsEditing(true)}
                   className='inscription-action inscription-action--primary'
                 />
-              </>
-            )}
+                )
+              : (
+                <>
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    label='Annuler'
+                    onClick={() => {
+                      setIsEditing(false)
+                      setForm({
+                        full_name: user.full_name || '',
+                        phone: user.phone || '',
+                        role: user.role || '',
+                        statut: user.statut || 'ACTIF'
+                      })
+                      setErrors({})
+                    }}
+                    disabled={isSubmitting}
+                  />
+                  <Button
+                    type='submit'
+                    variant='super'
+                    label={isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    className='inscription-action inscription-action--primary'
+                  />
+                </>
+                )}
           </div>
         </form>
       </div>

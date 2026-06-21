@@ -41,7 +41,7 @@ const Sidebar = ({
             const isActive = link.subLinks.some(sub => sub.active) || link.active
 
             return (
-              <div key={idx} className="sidebar-dropdown-group">
+              <div key={idx} className='sidebar-dropdown-group'>
                 <button
                   className={`sidebar-link sidebar-dropdown-btn ${isActive ? 'sidebar-link--active' : ''}`}
                   title={!isExpanded ? link.label : ''}
@@ -65,7 +65,7 @@ const Sidebar = ({
                   )}
                 </button>
                 {isExpanded && isOpen && (
-                  <div className="sidebar-sublinks">
+                  <div className='sidebar-sublinks'>
                     {link.subLinks.map((sub, subIdx) => (
                       <Link
                         key={subIdx}

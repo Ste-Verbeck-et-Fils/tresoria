@@ -429,7 +429,7 @@ const EntityListPage = ({
           </div>
         </div>
         <div className='print-meta'>
-          Généré le : {new Date().toLocaleString('fr-FR')} <br/>
+          Généré le : {new Date().toLocaleString('fr-FR')} <br />
           Total éléments : {filteredItems.length}
         </div>
         <table className='print-table'>
