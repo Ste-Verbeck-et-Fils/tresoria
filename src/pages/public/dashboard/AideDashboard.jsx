@@ -25,7 +25,7 @@ const AideDashboard = () => {
     if (saved) {
       try {
         return JSON.parse(saved)
-      } catch (e) {}
+      } catch (e) { }
     }
     return [
       { id: 1, text: "Bonjour ! Je suis l'assistant IA de Gs Emmanuel. Comment puis-je vous aider aujourd'hui ?", sender: 'bot', time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }
@@ -99,23 +99,19 @@ const AideDashboard = () => {
 
     let htmlContent = bubbleEl.innerHTML
 
-    // Supprimer la première phrase spécifique indésirable lors de l'impression
+
     const literalText1 = 'Si vous voulez, je peux aussi vous faire le même format pour la 4e, 5e et 6e primaire si elles existent.'
     htmlContent = htmlContent.replace(literalText1, '')
 
-    // Expression régulière pour couvrir les variations de la première phrase
     const regex1 = /Si vous voulez,\s*je peux aussi vous faire le même format pour la\s*4[eè](?:me|ème)?,\s*5[eè](?:me|ème)?\s*et\s*6[eè](?:me|ème)?\s*primaire\s*si\s*elles\s*existent\.?/gi
     htmlContent = htmlContent.replace(regex1, '')
 
-    // Supprimer la deuxième phrase spécifique indésirable lors de l'impression
     const literalText2 = 'Si vous voulez, je peux aussi vous faire un format imprimable propre avec seulement les noms et les dates.'
     htmlContent = htmlContent.replace(literalText2, '')
 
-    // Expression régulière pour la deuxième phrase
     const regex2 = /Si vous voulez,\s*je peux aussi vous faire un format imprimable propre avec seulement les noms et les dates\.?/gi
     htmlContent = htmlContent.replace(regex2, '')
 
-    // Supprimer les paragraphes devenus vides après la suppression
     htmlContent = htmlContent.replace(/<p>\s*<\/p>/gi, '')
 
     printWindow.document.write(`
@@ -339,10 +335,10 @@ const AideDashboard = () => {
                     {user?.photo_url
                       ? (
                         <img src={user.photo_url} alt={user.full_name || 'Utilisateur'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        )
+                      )
                       : (
                         <User size={20} />
-                        )}
+                      )}
                   </div>
                 )}
               </div>

@@ -162,18 +162,6 @@ const UserDetailPage = () => {
 
       <div className='inscription-form-container'>
 
-        <div className='inscription-form-section' style={{ marginBottom: '24px', padding: '16px', backgroundColor: '#f8fafc', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-
-          <Button
-            type='button'
-            variant='secondary'
-            label={isResetting ? 'Réinitialisation...' : 'Réinitialiser le mot de passe'}
-            icon={<RefreshCw size={14} />}
-            onClick={handleResetPassword}
-            disabled={isResetting || isSubmitting}
-          />
-        </div>
-
         <form onSubmit={handleSubmit} className='inscription-form-section'>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
             <img
@@ -240,6 +228,15 @@ const UserDetailPage = () => {
           </div>
 
           <div className='inscription-form-actions'>
+            <Button
+              id='btn-reset-password'
+              type='button'
+              variant='secondary'
+              label={isResetting ? 'Réinitialisation...' : 'Réinitialiser le mot de passe'}
+              icon={<RefreshCw size={14} />}
+              onClick={handleResetPassword}
+              disabled={isResetting || isSubmitting}
+            />
             {!isEditing
               ? (
                 <Button
@@ -249,7 +246,7 @@ const UserDetailPage = () => {
                   onClick={() => setIsEditing(true)}
                   className='inscription-action inscription-action--primary'
                 />
-                )
+              )
               : (
                 <>
                   <Button
@@ -277,7 +274,8 @@ const UserDetailPage = () => {
                     className='inscription-action inscription-action--primary'
                   />
                 </>
-                )}
+              )}
+
           </div>
         </form>
       </div>

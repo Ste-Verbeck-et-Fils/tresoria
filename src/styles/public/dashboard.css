@@ -21,13 +21,11 @@
   font-size: 0.95rem;
 }
 
-/* Nouveau design Chat IA - Ergonomie Image */
 .chat-app-container {
   background: var(--color-light-darker);
-  /* Blanc */
   width: 100%;
   max-width: none;
-  height: calc(100vh - 120px);
+  height: calc(95vh - 120px);
   border-radius: var(--radius-container);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.05);
   display: flex;
@@ -42,7 +40,6 @@
   align-items: center;
   padding: 24px 32px;
   background: var(--color-light);
-  /* Tres leger gris/beige */
   border-bottom: 1px solid rgba(0, 0, 0, 0.03);
 }
 
@@ -337,14 +334,14 @@
   cursor: not-allowed;
 }
 
-/* Responsive Chat UI */
+
 @media (max-width: 600px) {
   .dashboard-page {
     padding: 12px;
   }
 
   .chat-app-container {
-    height: calc(100vh - 80px);
+    height: calc(95vh - 80px);
   }
 
   .chat-app-header {

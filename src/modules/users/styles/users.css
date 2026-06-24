@@ -12,6 +12,10 @@
   height: 0;
 }
 
+#btn-reset-password {
+  border-radius: 8px !important;
+}
+
 .user-status-slider {
   position: absolute;
   cursor: pointer;
@@ -36,15 +40,15 @@
   border-radius: 50%;
 }
 
-.user-status-switch input:checked + .user-status-slider {
+.user-status-switch input:checked+.user-status-slider {
   background-color: #173f5f;
 }
 
-.user-status-switch input:checked + .user-status-slider:before {
+.user-status-switch input:checked+.user-status-slider:before {
   transform: translateX(20px);
 }
 
-.user-status-switch input:disabled + .user-status-slider {
+.user-status-switch input:disabled+.user-status-slider {
   opacity: 0.6;
   cursor: not-allowed;
 }

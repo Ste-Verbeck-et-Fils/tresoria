@@ -177,9 +177,9 @@
   align-items: center;
   gap: 16px;
   padding: 18px 20px;
-  border: 1px solid var(--inscription-accent-border);
   border-radius: 9px;
   background: var(--inscription-accent-soft);
+  box-shadow: 0 5px 16px rgba(23, 63, 95, 0.08);
 }
 
 .active-annee-card__icon {
@@ -326,7 +326,8 @@
 }
 
 .inscription-status--draft {
-  color: #f97316; /* orange-500 pour indiquer le statut brouillon */
+  color: #f97316;
+  /* orange-500 pour indiquer le statut brouillon */
 }
 
 .inscription-status--en-attente,
