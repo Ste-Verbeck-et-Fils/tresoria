@@ -50,7 +50,6 @@ const ParentPaymentPage = () => {
   const [pageError, setPageError] = useState('')
   const [formError, setFormError] = useState('')
   const [montant, setMontant] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const loadStudents = useCallback(async () => {
@@ -231,28 +230,53 @@ const ParentPaymentPage = () => {
       return
     }
 
-    if (phoneNumber.trim().length < 8) {
-      setFormError('Renseignez le numero Airtel Money.')
-      return
-    }
+
 
     setIsSubmitting(true)
 
+    // Open window synchronously before await to avoid popup blocker
+    const paymentWindow = window.open('about:blank', '_blank')
+
     try {
-      await createParentPaiement({
+      const response = await createParentPaiement({
         inscription_id: Number(selectedInscriptionId),
         montant: amount,
         motif: 'FRAIS_SCOLAIRE',
         mode_paiement: 'MOBILE_MONEY',
-        description: `Entrée parent - ${selectedModeLabel}`,
-        reference: `AM-${Date.now()}`
+        description: `Entrée parent - Mobile Money`,
+        reference: `MM-${Date.now()}`
       })
+
+      if (response?.data?.checkoutParams) {
+        const params = response.data.checkoutParams;
+        if (paymentWindow) {
+          const checkoutForm = paymentWindow.document.createElement('form');
+          checkoutForm.method = 'POST';
+          checkoutForm.action = params.actionUrl;
+          
+          Object.keys(params).forEach(key => {
+            if (key !== 'actionUrl') {
+              const input = paymentWindow.document.createElement('input');
+              input.type = 'hidden';
+              input.name = key;
+              input.value = params[key];
+              checkoutForm.appendChild(input);
+            }
+          });
+          
+          paymentWindow.document.body.appendChild(checkoutForm);
+          checkoutForm.submit();
+        }
+      } else if (paymentWindow) {
+        paymentWindow.close();
+      }
 
       navigate(`/students/${selectedStudentId}/paiements`, {
         replace: true,
         state: { successMessage: 'Entrée effectuée avec succes.' },
       })
     } catch (error) {
+      if (paymentWindow) paymentWindow.close();
       setFormError(error.message || 'Erreur lors du traitement de l\'entrée.')
     } finally {
       setIsSubmitting(false)
@@ -387,15 +411,7 @@ const ParentPaymentPage = () => {
                     disabled={isSubmitting}
                     onChange={(event) => setMontant(event.target.value)}
                   />
-                  <Input
-                    id='airtel_phone'
-                    type='tel'
-                    label='Numero Airtel Money'
-                    placeholder='Ex: 099...'
-                    value={phoneNumber}
-                    disabled={isSubmitting}
-                    onChange={(event) => setPhoneNumber(event.target.value)}
-                  />
+
                   <div />
                 </div>
 

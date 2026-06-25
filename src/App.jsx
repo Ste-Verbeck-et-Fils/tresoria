@@ -39,6 +39,7 @@ import AdresseDetailPage from './modules/adresses/pages/AdresseDetailPage'
 import PaiementsPage from './modules/paiements/pages/PaiementsPage'
 import CreatePaiementPage from './modules/paiements/pages/CreatePaiementPage'
 import PaiementDetailPage from './modules/paiements/pages/PaiementDetailPage'
+import PaiementStatusPage from './modules/paiements/pages/PaiementStatusPage'
 import DepensesPage from './modules/depenses/pages/DepensesPage'
 import CreateDepensePage from './modules/depenses/pages/CreateDepensePage'
 import DepenseDetailPage from './modules/depenses/pages/DepenseDetailPage'
@@ -131,6 +132,9 @@ function AppLayout () {
               </Route>
               <Route element={<RoleProtectedRoute allowedRoles={['PARENT']} />}>
                 <Route path='/parent/payer' element={<ParentPaymentPage />} />
+              </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={[...ADMIN_ROLES, 'PARENT', 'COMPTABLE']} />}>
+                <Route path='/paiements/status' element={<PaiementStatusPage />} />
               </Route>
               <Route element={<RoleProtectedRoute allowedRoles={[...ADMIN_ROLES, 'PARENT', 'COMPTABLE']} />}>
                 <Route path='/adresses' element={<AdressesPage />} />

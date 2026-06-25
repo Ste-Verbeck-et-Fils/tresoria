@@ -88,7 +88,8 @@ export const normalizePaiementForm = (paiement = {}) => ({
   inscription_id: paiement.inscription_id ?? paiement.inscription?.id ?? '',
   montant: paiement.montant ?? paiement.amount ?? '',
   motif: paiement.motif || paiement.type || 'FRAIS_SCOLAIRE',
-  mode_paiement: paiement.mode_paiement || paiement.modePaiement || paiement.mode || 'CASH',
+  mode_paiement: paiement.mode_paiement || paiement.modePaiement || paiement.mode || 'MOBILE_MONEY',
+  phone: paiement.phone || paiement.airtel_phone || '',
   reference: paiement.reference || paiement.transaction_reference || '',
   compte_destination_id: paiement.compte_destination_id ?? 'CAISSE_PRINCIPALE',
   date_paiement: paiement.date_paiement ?? new Date().toISOString().split('T')[0],
@@ -206,6 +207,9 @@ export const validatePaiementForm = (form, selectedInscription) => {
     errors.date_paiement = 'La date ne peut pas être dans le futur.'
   }
 
+  // L'utilisateur entre son numéro directement sur l'interface sécurisée MaishaPay
+  // La validation du téléphone a été retirée pour simplifier le formulaire
+
   if (form.motif === 'FRAIS_TRANSPORT') {
     if (!form.transport_date_debut) {
       errors.transport_date_debut = 'La date de début est obligatoire.'
@@ -239,6 +243,7 @@ export const getPaiementPayload = (form) => {
           montant_attendu: Number(form.transport_nombre_mois) * Number(form.tarif_mensuel_transport)
         }
       : {}),
+    source: window.location.pathname + window.location.search
     // compte_destination_id: form.compte_destination_id, // To be enabled when backend supports it
   }
 
