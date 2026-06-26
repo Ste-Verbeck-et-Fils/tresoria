@@ -380,6 +380,7 @@ const PaiementDetailPage = () => {
   const status = paiement ? getPaiementStatus(paiement) : ''
   const isConfirmed = status === 'CONFIRME'
   const isCancelled = status === 'ANNULE'
+  const isPending = status === 'EN_ATTENTE'
   const isDraft = status === 'DRAFT'
   const isActionPending = isSaving || isCancelling || isDeleting || isRegularizing || isValidating
   const isAlreadyRegularized = paiement?.reference?.includes('-REV')
@@ -494,7 +495,7 @@ const PaiementDetailPage = () => {
                     variant='ghost'
                     label='Modifier'
                     icon={<PencilLine size={16} />}
-                    disabled={isActionPending || isInscriptionClosed || isCancelled || (isConfirmed && isAlreadyRegularized)}
+                    disabled={isActionPending || isInscriptionClosed || isCancelled || isPending || (isConfirmed && isAlreadyRegularized)}
                     onClick={handleStartEdit}
                     className='inscription-action inscription-action--secondary'
                   />
@@ -641,7 +642,7 @@ const PaiementDetailPage = () => {
                   label={isCancelling ? 'Annulation...' : 'Annuler l\'entrée'}
                   icon={<Ban size={16} />}
                   loading={isCancelling}
-                  disabled={isEditing || isDeleting || isConfirmed || isCancelled}
+                  disabled={isEditing || isDeleting || isConfirmed || isCancelled || isPending}
                   onClick={handleAnnuler}
                   className='inscription-action inscription-action--secondary'
                 />
@@ -663,7 +664,7 @@ const PaiementDetailPage = () => {
                   label={isDeleting ? 'Suppression...' : 'Supprimer'}
                   icon={<Trash2 size={16} />}
                   loading={isDeleting}
-                  disabled={isActionPending || isConfirmed || isCancelled}
+                  disabled={isActionPending || isConfirmed || isCancelled || isPending}
                   onClick={handleDelete}
                   className='inscription-action classe-delete-action'
                 />
