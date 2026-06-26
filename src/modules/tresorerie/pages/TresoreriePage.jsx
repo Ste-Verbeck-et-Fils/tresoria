@@ -109,12 +109,10 @@ const TresoreriePage = () => {
   }, [])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadDashboard()
   }, [loadDashboard])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadAnnees()
   }, [loadAnnees])
 

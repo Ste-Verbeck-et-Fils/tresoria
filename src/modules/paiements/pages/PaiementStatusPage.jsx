@@ -66,24 +66,26 @@ const referenceBoxStyle = {
 
 const PaiementStatusPage = () => {
   const [searchParams] = useSearchParams()
-  let reference = searchParams.get('ref')
+  const rawReference = searchParams.get('ref')
   const urlStatus = searchParams.get('status')
   const source = searchParams.get('source') || '/dashboard'
-  
+
   // Nettoyage de la référence au cas où MaishaPay rajoute /?status=400 ou ?status=... à la fin de notre URL
-  if (reference) {
-    if (reference.includes('/?')) {
-      reference = reference.split('/?')[0]
-    } else if (reference.includes('?')) {
-      reference = reference.split('?')[0]
+  let cleanRef = rawReference
+  if (cleanRef) {
+    if (cleanRef.includes('/?')) {
+      cleanRef = cleanRef.split('/?')[0]
+    } else if (cleanRef.includes('?')) {
+      cleanRef = cleanRef.split('?')[0]
     }
   }
-  
+  const reference = cleanRef
+
   const navigate = useNavigate()
-  
+
   const [status, setStatus] = useState('loading') // 'loading', 'success', 'pending', 'error', 'cancelled'
   const [paiement, setPaiement] = useState(null)
-  
+
   const checkStatus = useCallback(async () => {
     if (!reference) {
       setStatus('error')
@@ -122,14 +124,14 @@ const PaiementStatusPage = () => {
 
   useEffect(() => {
     checkStatus()
-    
+
     let interval = null
     if (status === 'pending') {
       interval = setInterval(() => {
         checkStatus()
       }, 10000)
     }
-    
+
     return () => {
       if (interval) clearInterval(interval)
     }
@@ -141,7 +143,7 @@ const PaiementStatusPage = () => {
         return (
           <>
             <div style={iconContainerStyle('#F3F4F6')}>
-              <Search size={48} color="#6B7280" className="animate-pulse" />
+              <Search size={48} color='#6B7280' className='animate-pulse' />
             </div>
             <h1 style={titleStyle}>Recherche de votre paiement...</h1>
             <p style={textStyle}>
@@ -153,7 +155,7 @@ const PaiementStatusPage = () => {
         return (
           <>
             <div style={iconContainerStyle('#D1FAE5')}>
-              <CheckCircle size={52} color="#059669" />
+              <CheckCircle size={52} color='#059669' />
             </div>
             <h1 style={titleStyle}>Paiement Confirmé !</h1>
             <p style={textStyle}>
@@ -169,7 +171,7 @@ const PaiementStatusPage = () => {
         return (
           <>
             <div style={iconContainerStyle('#FEE2E2')}>
-              <XCircle size={52} color="#DC2626" />
+              <XCircle size={52} color='#DC2626' />
             </div>
             <h1 style={titleStyle}>Paiement Annulé</h1>
             <p style={textStyle}>
@@ -186,11 +188,11 @@ const PaiementStatusPage = () => {
         return (
           <>
             <div style={iconContainerStyle('#FEF3C7')}>
-              <Clock size={52} color="#D97706" />
+              <Clock size={52} color='#D97706' />
             </div>
             <h1 style={titleStyle}>En attente de confirmation</h1>
             <p style={textStyle}>
-              Votre demande a bien été envoyée à MaishaPay.<br/>
+              Votre demande a bien été envoyée à MaishaPay.<br />
               Nous attendons leur signal pour finaliser l'opération (jusqu'à 90 secondes).
             </p>
             <div style={referenceBoxStyle}>Réf : {reference}</div>
@@ -205,7 +207,7 @@ const PaiementStatusPage = () => {
         return (
           <>
             <div style={iconContainerStyle('#F3F4F6')}>
-              <AlertTriangle size={52} color="#4B5563" />
+              <AlertTriangle size={52} color='#4B5563' />
             </div>
             <h1 style={titleStyle}>Paiement Introuvable</h1>
             <p style={textStyle}>
@@ -230,4 +232,3 @@ const PaiementStatusPage = () => {
 }
 
 export default PaiementStatusPage
-

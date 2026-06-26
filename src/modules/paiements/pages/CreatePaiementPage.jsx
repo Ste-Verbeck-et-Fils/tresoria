@@ -208,27 +208,27 @@ const CreatePaiementPage = () => {
       const response = await createPaiement(payload)
 
       if (response?.data?.checkoutParams) {
-        const params = response.data.checkoutParams;
+        const params = response.data.checkoutParams
         if (paymentWindow) {
-          const checkoutForm = paymentWindow.document.createElement('form');
-          checkoutForm.method = 'POST';
-          checkoutForm.action = params.actionUrl;
-          
+          const checkoutForm = paymentWindow.document.createElement('form')
+          checkoutForm.method = 'POST'
+          checkoutForm.action = params.actionUrl
+
           Object.keys(params).forEach(key => {
             if (key !== 'actionUrl') {
-              const input = paymentWindow.document.createElement('input');
-              input.type = 'hidden';
-              input.name = key;
-              input.value = params[key];
-              checkoutForm.appendChild(input);
+              const input = paymentWindow.document.createElement('input')
+              input.type = 'hidden'
+              input.name = key
+              input.value = params[key]
+              checkoutForm.appendChild(input)
             }
-          });
-          
-          paymentWindow.document.body.appendChild(checkoutForm);
-          checkoutForm.submit();
+          })
+
+          paymentWindow.document.body.appendChild(checkoutForm)
+          checkoutForm.submit()
         }
       } else if (paymentWindow) {
-        paymentWindow.close();
+        paymentWindow.close()
       }
 
       const paiement = unwrapPaiement(response)
@@ -237,7 +237,7 @@ const CreatePaiementPage = () => {
         state: { successMessage: 'Entrée enregistrée avec succès.' },
       })
     } catch (error) {
-      if (paymentWindow) paymentWindow.close();
+      if (paymentWindow) paymentWindow.close()
       setFeedback(error.message || "Impossible d'enregistrer l'entrée.")
     } finally {
       setIsSubmitting(false)

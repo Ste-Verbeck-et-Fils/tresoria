@@ -246,7 +246,7 @@ const UserDetailPage = () => {
                   onClick={() => setIsEditing(true)}
                   className='inscription-action inscription-action--primary'
                 />
-              )
+                )
               : (
                 <>
                   <Button
@@ -274,7 +274,7 @@ const UserDetailPage = () => {
                     className='inscription-action inscription-action--primary'
                   />
                 </>
-              )}
+                )}
 
           </div>
         </form>

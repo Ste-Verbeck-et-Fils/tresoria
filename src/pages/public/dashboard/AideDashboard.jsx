@@ -99,7 +99,6 @@ const AideDashboard = () => {
 
     let htmlContent = bubbleEl.innerHTML
 
-
     const literalText1 = 'Si vous voulez, je peux aussi vous faire le même format pour la 4e, 5e et 6e primaire si elles existent.'
     htmlContent = htmlContent.replace(literalText1, '')
 
@@ -335,10 +334,10 @@ const AideDashboard = () => {
                     {user?.photo_url
                       ? (
                         <img src={user.photo_url} alt={user.full_name || 'Utilisateur'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      )
+                        )
                       : (
                         <User size={20} />
-                      )}
+                        )}
                   </div>
                 )}
               </div>

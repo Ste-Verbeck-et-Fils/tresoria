@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://gsemmanuel-api.kozow.com'
 
 // Création de l'instance Axios avec withCredentials activé par défaut
 // Cela permet au navigateur d'envoyer et de recevoir le cookie HttpOnly (refresh_token)

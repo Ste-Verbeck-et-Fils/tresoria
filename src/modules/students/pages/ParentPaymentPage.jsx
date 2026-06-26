@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Smartphone } from 'lucide-react'
@@ -230,8 +229,6 @@ const ParentPaymentPage = () => {
       return
     }
 
-
-
     setIsSubmitting(true)
 
     // Open window synchronously before await to avoid popup blocker
@@ -243,32 +240,32 @@ const ParentPaymentPage = () => {
         montant: amount,
         motif: 'FRAIS_SCOLAIRE',
         mode_paiement: 'MOBILE_MONEY',
-        description: `Entrée parent - Mobile Money`,
+        description: 'Entrée parent - Mobile Money',
         reference: `MM-${Date.now()}`
       })
 
       if (response?.data?.checkoutParams) {
-        const params = response.data.checkoutParams;
+        const params = response.data.checkoutParams
         if (paymentWindow) {
-          const checkoutForm = paymentWindow.document.createElement('form');
-          checkoutForm.method = 'POST';
-          checkoutForm.action = params.actionUrl;
-          
+          const checkoutForm = paymentWindow.document.createElement('form')
+          checkoutForm.method = 'POST'
+          checkoutForm.action = params.actionUrl
+
           Object.keys(params).forEach(key => {
             if (key !== 'actionUrl') {
-              const input = paymentWindow.document.createElement('input');
-              input.type = 'hidden';
-              input.name = key;
-              input.value = params[key];
-              checkoutForm.appendChild(input);
+              const input = paymentWindow.document.createElement('input')
+              input.type = 'hidden'
+              input.name = key
+              input.value = params[key]
+              checkoutForm.appendChild(input)
             }
-          });
-          
-          paymentWindow.document.body.appendChild(checkoutForm);
-          checkoutForm.submit();
+          })
+
+          paymentWindow.document.body.appendChild(checkoutForm)
+          checkoutForm.submit()
         }
       } else if (paymentWindow) {
-        paymentWindow.close();
+        paymentWindow.close()
       }
 
       navigate(`/students/${selectedStudentId}/paiements`, {
@@ -276,7 +273,7 @@ const ParentPaymentPage = () => {
         state: { successMessage: 'Entrée effectuée avec succes.' },
       })
     } catch (error) {
-      if (paymentWindow) paymentWindow.close();
+      if (paymentWindow) paymentWindow.close()
       setFormError(error.message || 'Erreur lors du traitement de l\'entrée.')
     } finally {
       setIsSubmitting(false)
