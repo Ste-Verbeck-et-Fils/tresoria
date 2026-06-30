@@ -37,41 +37,58 @@ const AideDashboard = () => {
   const messagesEndRef = useRef(null)
 
   // Speech Recognition setup
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-  const recognition = SpeechRecognition ? new SpeechRecognition() : null
+  const recognitionRef = useRef(null)
 
-  if (recognition) {
+  const toggleListening = () => {
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop()
+      setIsListening(false)
+      return
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      alert('La reconnaissance vocale n\'est pas supportée par votre navigateur.')
+      return
+    }
+
+    const recognition = new SpeechRecognition()
     recognition.continuous = false
     recognition.lang = 'fr-FR'
     recognition.interimResults = false
 
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript
-      setInput((prev) => prev + (prev ? ' ' : '') + transcript)
+      if (event.results && event.results[0] && event.results[0][0]) {
+        const transcript = event.results[0][0].transcript
+        setInput((prev) => prev + (prev ? ' ' : '') + transcript)
+      }
       setIsListening(false)
     }
 
     recognition.onerror = (event) => {
-      console.error('Speech recognition error', event.error)
+      console.error('Speech recognition error:', event.error)
+      let errorMsg = 'Erreur vocale: ' + event.error
+      if (event.error === 'not-allowed') {
+        errorMsg = "L'accès au microphone a été refusé. Veuillez l'autoriser dans votre navigateur."
+      } else if (event.error === 'no-speech') {
+        errorMsg = "Aucune voix détectée. Veuillez réessayer."
+      }
+      alert(errorMsg)
       setIsListening(false)
     }
 
     recognition.onend = () => {
       setIsListening(false)
     }
-  }
 
-  const toggleListening = () => {
-    if (!recognition) {
-      alert('La reconnaissance vocale n\'est pas supportée par votre navigateur.')
-      return
-    }
-    if (isListening) {
-      recognition.stop()
-      setIsListening(false)
-    } else {
+    recognitionRef.current = recognition
+
+    try {
       recognition.start()
       setIsListening(true)
+    } catch (e) {
+      console.error('Speech recognition start error', e)
+      setIsListening(false)
     }
   }
 
