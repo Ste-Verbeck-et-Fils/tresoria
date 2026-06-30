@@ -212,6 +212,19 @@ const PaiementDetailPage = () => {
     setIsEditing(false)
   }
 
+  const handlePrintReceipt = () => {
+    if (!isConfirmed) return
+    document.body.classList.add('print-receipt-only')
+    window.print()
+    document.body.classList.remove('print-receipt-only')
+  }
+
+  const handlePrintDetails = () => {
+    document.body.classList.add('print-details-only')
+    window.print()
+    document.body.classList.remove('print-details-only')
+  }
+
   const handleEditChange = (event) => {
     const { id: fieldId, value } = event.target
     setEditForm((currentForm) => ({ ...currentForm, [fieldId]: value }))
@@ -632,9 +645,17 @@ const PaiementDetailPage = () => {
                   variant='super'
                   label='Imprimer le reçu'
                   icon={<Printer size={16} />}
-                  onClick={() => isConfirmed && window.print()}
+                  onClick={handlePrintReceipt}
                   disabled={!isConfirmed}
                   className='inscription-action inscription-action--primary'
+                />
+                <Button
+                  type='button'
+                  variant='outline'
+                  label='Imprimer le détail'
+                  icon={<Printer size={16} />}
+                  onClick={handlePrintDetails}
+                  className='inscription-action inscription-action--secondary'
                 />
                 <Button
                   type='button'
@@ -693,8 +714,7 @@ const PaiementDetailPage = () => {
             <div className='receipt-header-left'>
               <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' className='receipt-logo' />
               <div>
-                <h1 className='receipt-school-name'>GS EMMANUEL</h1>
-                <p className='receipt-school-sub'>Complexe Scolaire Bilingue</p>
+                <h1 className='receipt-school-name'>GS EMMANUEL SAUVE</h1>
               </div>
             </div>
             <div className='receipt-header-right'>
@@ -790,10 +810,6 @@ const PaiementDetailPage = () => {
             </div>
           </div>
 
-          <div className='receipt-footer-new'>
-            <p>Merci pour votre confiance. L'éducation est notre priorité.</p>
-            <p>Imprimé le {new Date().toLocaleString('fr-FR')} | Tresoria App</p>
-          </div>
         </div>
       )}
     </section>

@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
+import { AsYouType } from 'libphonenumber-js'
 import './Input.css'
 
 const Input = ({
@@ -17,10 +19,20 @@ const Input = ({
   className = '',
   ...props
 }) => {
+  const [showPassword, setShowPassword] = useState(false)
   const baseClass = 'tresoria-input'
 
   // Use placeholder or label as the floating text
   const floatingText = placeholder || label
+  const inputType = type === 'password' ? (showPassword ? 'text' : 'password') : type
+
+  const handleChange = (e) => {
+    if (type === 'tel') {
+      const formatter = new AsYouType('CD')
+      e.target.value = formatter.input(e.target.value)
+    }
+    if (onChange) onChange(e)
+  }
 
   if (variant === 'textarea') {
     return (
@@ -55,12 +67,12 @@ const Input = ({
 
         <input
           id={id}
-          type={type}
-          className={`${baseClass} ${variant === 'searchbox' ? 'input--searchbox' : ''}`}
+          type={inputType}
+          className={`${baseClass} ${variant === 'searchbox' ? 'input--searchbox' : ''} ${type === 'password' ? 'input--password' : ''}`}
           placeholder={variant === 'searchbox' ? placeholder : ' '}
           value={value}
           disabled={disabled}
-          onChange={onChange}
+          onChange={handleChange}
           {...props}
         />
 
@@ -80,6 +92,19 @@ const Input = ({
             onClick={() => onSearch?.(value)}
           >
             {icon}
+          </button>
+        )}
+
+        {/* Password toggle icon */}
+        {type === 'password' && (
+          <button
+            type='button'
+            className='input-password-toggle'
+            onClick={() => setShowPassword(!showPassword)}
+            tabIndex={-1}
+            aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         )}
       </div>

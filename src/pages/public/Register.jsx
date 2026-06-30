@@ -76,7 +76,7 @@ const Register = () => {
       try {
         await registerUser({
           full_name: formData.full_name,
-          phone: formData.phone,
+          phone: formData.phone.replace(/\s+/g, ''),
           password: formData.password,
         })
 

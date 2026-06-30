@@ -1,6 +1,6 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
-import { Archive, ArrowLeft, CalendarRange, PencilLine, Trash2 } from 'lucide-react'
+import { Archive, ArrowLeft, CalendarRange, PencilLine, Trash2, Printer } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
@@ -304,6 +304,14 @@ const AnneeScolaireDetailPage = () => {
             title='Suivi de l annee scolaire'
             actions={(
               <>
+                <Button
+                  type='button'
+                  variant='outline'
+                  label='Imprimer'
+                  icon={<Printer size={16} />}
+                  onClick={() => window.print()}
+                  className='inscription-action inscription-action--secondary no-print'
+                />
                 {isActive && (
                   <Button
                     type='button'

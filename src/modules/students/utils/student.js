@@ -67,6 +67,13 @@ export const validateStudentForm = (form) => {
 
     if (!isValidDate) {
       errors.date_naissance = 'La date de naissance est invalide.'
+    } else {
+      const diffMs = Date.now() - date.getTime()
+      const ageDate = new Date(diffMs)
+      const age = Math.abs(ageDate.getUTCFullYear() - 1970)
+      if (age < 2) {
+        errors.date_naissance = 'L\'enfant doit avoir au moins 2 ans pour être enregistré.'
+      }
     }
   }
 

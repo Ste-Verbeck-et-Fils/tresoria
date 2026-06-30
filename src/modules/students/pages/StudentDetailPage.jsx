@@ -1,6 +1,6 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
-import { ArrowLeft, GraduationCap, PencilLine, Trash2 } from 'lucide-react'
+import { ArrowLeft, GraduationCap, PencilLine, Trash2, Printer } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
@@ -366,16 +366,21 @@ const StudentDetailPage = () => {
             />
           )}
 
-          {canDelete && (
+          <div className='no-print'>
             <DetailSection
-              title='Actions sensibles'
+              title='Autres actions'
               actions={(
-                <Button type='button' variant='ghost' label={isDeleting ? 'Suppression...' : 'Supprimer'} icon={<Trash2 size={16} />} loading={isDeleting} disabled={isEditing} onClick={handleDelete} className='inscription-action classe-delete-action' />
-              )}
-            >
-              <DetailField label='Regle de suppression' value='La suppression peut etre refusee si l eleve possede une inscription.' />
+                <>
+                  <Button type='button' variant='outline' label='Imprimer' icon={<Printer size={16} />} onClick={() => window.print()} className='inscription-action inscription-action--secondary no-print' />
+                {canDelete && (
+                  <Button type='button' variant='ghost' label={isDeleting ? 'Suppression...' : 'Supprimer'} icon={<Trash2 size={16} />} loading={isDeleting} disabled={isEditing} onClick={handleDelete} className='inscription-action classe-delete-action' />
+                )}
+              </>
+            )}
+          >
+            <DetailField label='Regle de suppression' value='La suppression peut etre refusee si l eleve possede une inscription.' />
             </DetailSection>
-          )}
+          </div>
         </div>
       )}
 

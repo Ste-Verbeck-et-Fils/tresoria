@@ -190,6 +190,10 @@ const CreateStudentPage = () => {
     setErrors(nextErrors)
     setAdresseErrors(nextAdresseErrors)
 
+    if (nextErrors.date_naissance && nextErrors.date_naissance.includes('2 ans')) {
+      setFeedback(nextErrors.date_naissance)
+    }
+
     if (Object.keys(nextErrors).length > 0 || Object.keys(nextAdresseErrors).length > 0) {
       return
     }

@@ -177,7 +177,7 @@ const RapportJournalier = ({ filters }) => {
         <div className='reporting-print-header' style={{ display: 'none' }}>
           <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
           <div>
-            <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
+            <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL SAUVE</h1>
             <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#475569' }}>
               Rapport Comptable - Rapport Journalier de Caisse ({formattedDateRange()})
             </p>
@@ -354,7 +354,8 @@ const RapportJournalier = ({ filters }) => {
               groups.depenses.map((e, idx) => (
                 <tr key={e.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
                   <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>{idx + 1}</td>
-                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }} /> {/* Leave space for name empty */}
+                  {/* Leave space for name empty */}
+                  <td style={{ padding: '8px', border: '1px solid var(--color-border)' }} />
                   <td style={{ padding: '8px', border: '1px solid var(--color-border)' }}>
                     {e.reference ? `${e.reference} - ` : ''}{e.libelle || e.description}
                   </td>

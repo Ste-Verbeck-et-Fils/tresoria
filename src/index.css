@@ -111,8 +111,38 @@ body {
     .pagination-info,
     .pagination-btn,
     .tresoria-feedback,
-    .detail-page-stack > :not(.print-only) {
+    .active-annee-card,
+    .detail-summary-card,
+    .inscription-action,
+    .no-print {
         display: none !important;
+    }
+
+    /* Format Detail cards professionally for print */
+    .detail-section-card,
+    .parent-address-card {
+        box-shadow: none !important;
+        border: none !important;
+        background: transparent !important;
+        page-break-inside: avoid;
+        margin-bottom: 20px !important;
+        padding: 0 !important;
+    }
+
+    .parent-address-card {
+        margin-bottom: 10px !important;
+        padding-bottom: 10px !important;
+        border-bottom: 1px dashed #ccc !important;
+    }
+
+    .parent-address-card:last-child {
+        border-bottom: none !important;
+    }
+
+    .detail-section-card__header {
+        border-bottom: 1px solid #000 !important;
+        padding-bottom: 5px !important;
+        margin-bottom: 10px !important;
     }
 
     .print-only {
@@ -120,6 +150,16 @@ body {
         width: 100%;
         margin: 0;
         padding: 0;
+    }
+
+    body.print-receipt-only .detail-section-card,
+    body.print-receipt-only .detail-summary-card,
+    body.print-receipt-only .print-header {
+        display: none !important;
+    }
+    
+    body.print-details-only .receipt-card {
+        display: none !important;
     }
 
     .print-table {

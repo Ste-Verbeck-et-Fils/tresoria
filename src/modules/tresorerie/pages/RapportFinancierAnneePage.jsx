@@ -337,7 +337,7 @@ const RapportFinancierAnneePage = () => {
           <div className='reporting-print-header' style={{ display: 'none' }}>
             <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
             <div>
-              <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
+              <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL SAUVE</h1>
               <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#475569' }}>
                 Rapport Financier Annuel — {getDesignation(selectedAnnee, `Année scolaire #${anneeScolaireId}`)}
               </p>

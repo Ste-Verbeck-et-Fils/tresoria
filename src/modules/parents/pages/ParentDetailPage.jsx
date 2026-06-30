@@ -1,6 +1,6 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
-import { ArrowLeft, MapPin, PencilLine, Plus, Trash2, UserRound } from 'lucide-react'
+import { ArrowLeft, MapPin, PencilLine, Plus, Trash2, UserRound, Printer } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
@@ -590,16 +590,26 @@ const ParentDetailPage = () => {
           <DetailSection
             title='Suivi du parent'
             actions={(
-              <Button
-                type='button'
-                variant='ghost'
-                label={isDeleting ? 'Suppression...' : 'Supprimer'}
-                icon={<Trash2 size={16} />}
-                loading={isDeleting}
-                disabled={isEditing || Boolean(adresseMode)}
-                onClick={handleDeleteParent}
-                className='inscription-action classe-delete-action'
-              />
+              <>
+                <Button
+                  type='button'
+                  variant='outline'
+                  label='Imprimer'
+                  icon={<Printer size={16} />}
+                  onClick={() => window.print()}
+                  className='inscription-action inscription-action--secondary no-print'
+                />
+                <Button
+                  type='button'
+                  variant='ghost'
+                  label={isDeleting ? 'Suppression...' : 'Supprimer'}
+                  icon={<Trash2 size={16} />}
+                  loading={isDeleting}
+                  disabled={isEditing || Boolean(adresseMode)}
+                  onClick={handleDeleteParent}
+                  className='inscription-action classe-delete-action'
+                />
+              </>
             )}
           >
             <DetailField label='Date de creation' value={formatDate(parent.created_at)} />

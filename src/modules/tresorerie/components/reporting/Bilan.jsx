@@ -240,7 +240,7 @@ const Bilan = ({ filters, compteOptions, onCompteChange }) => {
         <div className='reporting-print-header' style={{ display: 'none', width: '100%' }}>
           <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
           <div>
-            <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL</h1>
+            <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>GS EMMANUEL SAUVE</h1>
             <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#475569' }}>
               Rapport Comptable - Bilan (Généré le {new Date().toLocaleDateString('fr-FR')})
             </p>

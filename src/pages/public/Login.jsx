@@ -69,7 +69,7 @@ const Login = () => {
 
     try {
       const data = await loginWithWebAuthn({
-        phone: formData.phone.trim() || undefined,
+        phone: formData.phone.replace(/\s+/g, '') || undefined,
       })
 
       const token = data.access_token
@@ -92,7 +92,7 @@ const Login = () => {
 
       try {
         const data = await loginUser({
-          phone: formData.phone,
+          phone: formData.phone.replace(/\s+/g, ''),
           password: formData.password,
         })
 

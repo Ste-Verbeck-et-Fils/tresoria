@@ -1,6 +1,6 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState, useCallback, useMemo } from 'react'
-import { ArrowLeft, Ban, FileText, PencilLine } from 'lucide-react'
+import { ArrowLeft, Ban, FileText, PencilLine, Printer } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
@@ -558,6 +558,14 @@ const TransfertDetailPage = () => {
             title='Actions'
             actions={(
               <>
+                <Button
+                  type='button'
+                  variant='outline'
+                  label='Imprimer'
+                  icon={<Printer size={16} />}
+                  onClick={() => window.print()}
+                  className='inscription-action inscription-action--secondary no-print'
+                />
                 <Button
                   type='button'
                   variant='ghost'

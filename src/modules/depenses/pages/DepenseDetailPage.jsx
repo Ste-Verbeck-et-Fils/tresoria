@@ -1,6 +1,6 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, Ban, FileText, PencilLine, Trash2 } from 'lucide-react'
+import { ArrowLeft, Ban, FileText, PencilLine, Trash2, Printer } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
@@ -600,6 +600,14 @@ const DepenseDetailPage = () => {
             title='Actions'
             actions={(
               <>
+                <Button
+                  type='button'
+                  variant='outline'
+                  label='Imprimer'
+                  icon={<Printer size={16} />}
+                  onClick={() => window.print()}
+                  className='inscription-action inscription-action--secondary no-print'
+                />
                 <Button
                   type='button'
                   variant='ghost'

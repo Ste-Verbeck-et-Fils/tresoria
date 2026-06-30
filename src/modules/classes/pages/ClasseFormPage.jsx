@@ -47,7 +47,8 @@ const ClasseFormPage = ({ mode }) => {
     getClasse(id)
       .then((payload) => {
         if (!isCancelled) {
-          setForm(normalizeForm(payload.classe || payload.data || payload))
+          const dataObj = payload.data || payload
+          setForm(normalizeForm(dataObj.classe || dataObj))
         }
       })
       .catch((error) => {
@@ -111,7 +112,8 @@ const ClasseFormPage = ({ mode }) => {
       const response = isEditing
         ? await updateClasse(id, payload)
         : await createClasse(payload)
-      const classe = response.classe || response.data || response
+      const dataObj = response.data || response
+      const classe = dataObj.classe || dataObj
       const classeId = classe.id || id
 
       navigate(`/classes/${classeId}`, {

@@ -1,6 +1,6 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
-import { ArrowLeft, PencilLine, School, Trash2 } from 'lucide-react'
+import { ArrowLeft, PencilLine, School, Trash2, Printer } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
@@ -41,7 +41,8 @@ const ClasseDetailPage = () => {
 
     try {
       const payload = await getClasse(id)
-      setClasse(payload.classe || payload.data || payload)
+      const dataObj = payload.data || payload
+      setClasse(dataObj.classe || dataObj)
     } catch (loadError) {
       setError(loadError.message || 'Impossible de charger cette classe.')
     } finally {
@@ -55,7 +56,8 @@ const ClasseDetailPage = () => {
     getClasse(id)
       .then((payload) => {
         if (!isCancelled) {
-          setClasse(payload.classe || payload.data || payload)
+          const dataObj = payload.data || payload
+          setClasse(dataObj.classe || dataObj)
         }
       })
       .catch((loadError) => {
@@ -152,7 +154,8 @@ const ClasseDetailPage = () => {
         responsable: editForm.responsable.trim() || null,
       }
       const response = await updateClasse(id, payload)
-      const updatedClasse = response.classe || response.data || response
+      const dataObj = response.data || response
+      const updatedClasse = dataObj.classe || dataObj
 
       setClasse(updatedClasse)
       setEditForm(normalizeForm(updatedClasse))
@@ -315,15 +318,25 @@ const ClasseDetailPage = () => {
           <DetailSection
             title='Suivi de la classe'
             actions={(
-              <Button
-                type='button'
-                variant='ghost'
-                label={isDeleting ? 'Suppression...' : 'Supprimer'}
-                icon={<Trash2 size={16} />}
-                loading={isDeleting}
-                onClick={handleDelete}
-                className='inscription-action classe-delete-action'
-              />
+              <>
+                <Button
+                  type='button'
+                  variant='outline'
+                  label='Imprimer'
+                  icon={<Printer size={16} />}
+                  onClick={() => window.print()}
+                  className='inscription-action inscription-action--secondary no-print'
+                />
+                <Button
+                  type='button'
+                  variant='ghost'
+                  label={isDeleting ? 'Suppression...' : 'Supprimer'}
+                  icon={<Trash2 size={16} />}
+                  loading={isDeleting}
+                  onClick={handleDelete}
+                  className='inscription-action classe-delete-action'
+                />
+              </>
             )}
           >
             <DetailField label='Date de creation' value={formatDate(classe.created_at)} />

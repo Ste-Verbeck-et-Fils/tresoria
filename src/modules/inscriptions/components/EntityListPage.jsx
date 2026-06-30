@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, Search, MoreVertical, Eye, ChevronLeft, ChevronRight, Filter, X, Printer } from 'lucide-react'
+import { Plus, Search, MoreVertical, Eye, ChevronLeft, ChevronRight, Filter, X, Printer, Download } from 'lucide-react'
 import Button from '../../../components/ui/Button'
 import logoGsEmmanuel from '../../../assets/images/logo_gsemmanuel.png'
 import Feedback from '../../../components/ui/Feedback'
@@ -255,6 +255,35 @@ const EntityListPage = ({
     }
   }, [totalPages, currentPage])
 
+  const handleExportExcel = async () => {
+    try {
+      const XLSX = await import('xlsx')
+      const exportColumns = columns.filter(c => c.label !== 'Statut' && !c.hideOnExport && !c.hideOnPrint)
+
+      const dataToExport = filteredItems.map(item => {
+        const row = {}
+        exportColumns.forEach(col => {
+          let val = col.render(item)
+          // Si c'est du JSX (React element), on essaie de recuperer une string basique
+          // ou on laisse vide, mais dans notre cas exportColumns ne contient plus le Statut ni les Actions.
+          if (typeof val === 'object' && val !== null) {
+            val = val.props?.children || val.props?.value || ''
+            if (Array.isArray(val)) val = val.join('')
+          }
+          row[col.label] = val
+        })
+        return row
+      })
+
+      const ws = XLSX.utils.json_to_sheet(dataToExport)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, title.substring(0, 31))
+      XLSX.writeFile(wb, `${title.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.xlsx`)
+    } catch (e) {
+      console.error('Erreur lors de l\'export Excel', e)
+    }
+  }
+
   return (
     <section className='inscription-page' style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
       <header className='inscription-page-header'>
@@ -321,6 +350,15 @@ const EntityListPage = ({
                 )}
               </div>
             )}
+            <Button
+              variant='outline'
+              label='Exporter Excel'
+              icon={<Download size={17} />}
+              onClick={handleExportExcel}
+              title='Exporter en Excel'
+              className='inscription-action inscription-action--secondary'
+              style={{ flexShrink: 0 }}
+            />
             <Button
               variant='outline'
               label='Imprimer'
@@ -423,7 +461,7 @@ const EntityListPage = ({
         <div className='print-header' style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingBottom: '15px', borderBottom: '2px solid #000', marginBottom: '20px' }}>
           <img src={logoGsEmmanuel} alt='Logo GS Emmanuel' style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
           <div style={{ textAlign: 'left' }}>
-            <h1 style={{ fontSize: '22px', margin: 0, fontWeight: 'bold' }}>GS EMMANUEL</h1>
+            <h1 style={{ fontSize: '22px', margin: 0, fontWeight: 'bold' }}>GS EMMANUEL SAUVE</h1>
             <h2 style={{ fontSize: '15px', margin: '4px 0 0', fontWeight: '500', color: '#1e293b' }}>{title}</h2>
             {description && <p style={{ fontSize: '12px', margin: '2px 0 0', color: '#475569' }}>{description}</p>}
           </div>
@@ -435,13 +473,13 @@ const EntityListPage = ({
         <table className='print-table'>
           <thead>
             <tr>
-              {columns.map((column) => <th key={column.label}>{column.label}</th>)}
+              {columns.filter(c => c.label !== 'Statut' && !c.hideOnPrint).map((column) => <th key={column.label}>{column.label}</th>)}
             </tr>
           </thead>
           <tbody>
             {filteredItems.map((item) => (
               <tr key={item.id}>
-                {columns.map((column) => <td key={column.label}>{column.render(item)}</td>)}
+                {columns.filter(c => c.label !== 'Statut' && !c.hideOnPrint).map((column) => <td key={column.label}>{column.render(item)}</td>)}
               </tr>
             ))}
           </tbody>

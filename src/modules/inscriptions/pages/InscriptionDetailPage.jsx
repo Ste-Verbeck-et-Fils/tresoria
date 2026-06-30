@@ -1,6 +1,6 @@
 import Loader from '../../../components/ui/Loader'
 import React, { useEffect, useState } from 'react'
-import { ArrowLeft, GraduationCap, PencilLine, Trash2 } from 'lucide-react'
+import { ArrowLeft, GraduationCap, PencilLine, Trash2, Printer } from 'lucide-react'
 import { Link, useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Feedback from '../../../components/ui/Feedback'
@@ -320,9 +320,12 @@ const InscriptionDetailPage = () => {
             actions={(
               canManageInscription
                 ? (
-                  <Button type='button' variant='ghost' label={isDeleting ? 'Suppression...' : 'Supprimer'} icon={<Trash2 size={16} />} loading={isDeleting} disabled={isEditing} onClick={handleDelete} className='inscription-action classe-delete-action' />
+                  <>
+                    <Button type='button' variant='outline' label='Imprimer' icon={<Printer size={16} />} onClick={() => window.print()} className='inscription-action inscription-action--secondary no-print' />
+                    <Button type='button' variant='ghost' label={isDeleting ? 'Suppression...' : 'Supprimer'} icon={<Trash2 size={16} />} loading={isDeleting} disabled={isEditing} onClick={handleDelete} className='inscription-action classe-delete-action' />
+                  </>
                   )
-                : null
+                : <Button type='button' variant='outline' label='Imprimer' icon={<Printer size={16} />} onClick={() => window.print()} className='inscription-action inscription-action--secondary no-print' />
             )}
           >
             <DetailField label='Date de creation' value={formatDate(inscription.created_at)} />
