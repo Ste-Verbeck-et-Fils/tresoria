@@ -52,6 +52,7 @@ import {
   isAnneeScolaireCloturee,
   MODE_PAIEMENT_OPTIONS,
   MOTIF_PAIEMENT_OPTIONS,
+  MOIS_TRANSPORT_OPTIONS,
   normalizePaiementForm,
   unwrapPaiement,
   validatePaiementForm,
@@ -88,6 +89,11 @@ const resolvePaiementBundle = async (id) => {
   return { paiement, inscription, solde, soldeError }
 }
 
+const getMoisLabel = (moisVal) => {
+  if (!moisVal) return '-'
+  return MOIS_TRANSPORT_OPTIONS.find(opt => opt.value === moisVal)?.label || moisVal
+}
+
 const PaiementDetailPage = () => {
   const { id } = useParams()
   const location = useLocation()
@@ -115,7 +121,11 @@ const PaiementDetailPage = () => {
   useEffect(() => {
     if (paiement && inscription && location.state?.autoPrint && !hasPrinted) {
       setHasPrinted(true)
-      setTimeout(() => window.print(), 500)
+      setTimeout(() => {
+        document.body.classList.add('print-receipt-only')
+        window.print()
+        document.body.classList.remove('print-receipt-only')
+      }, 500)
     }
   }, [paiement, inscription, location.state, hasPrinted])
 
@@ -227,7 +237,13 @@ const PaiementDetailPage = () => {
 
   const handleEditChange = (event) => {
     const { id: fieldId, value } = event.target
-    setEditForm((currentForm) => ({ ...currentForm, [fieldId]: value }))
+    setEditForm((currentForm) => {
+      const nextForm = { ...currentForm, [fieldId]: value }
+      if (fieldId === 'motif' && value === 'FRAIS_TRANSPORT') {
+        nextForm.montant = '25'
+      }
+      return nextForm
+    })
 
     if (editErrors[fieldId]) {
       setEditErrors((currentErrors) => ({ ...currentErrors, [fieldId]: '' }))
@@ -248,9 +264,7 @@ const PaiementDetailPage = () => {
       editForm.date_paiement !== originalForm.date_paiement ||
       editForm.reference.trim() !== originalForm.reference.trim() ||
       (editForm.description || '').trim() !== (originalForm.description || '').trim() ||
-      editForm.transport_date_debut !== originalForm.transport_date_debut ||
-      Number(editForm.transport_nombre_mois) !== Number(originalForm.transport_nombre_mois) ||
-      Number(editForm.tarif_mensuel_transport) !== Number(originalForm.tarif_mensuel_transport)
+      editForm.transport_mois !== originalForm.transport_mois
     )
   }
 
@@ -377,7 +391,11 @@ const PaiementDetailPage = () => {
     try {
       await validerPaiement(id)
       await refreshAfterMutation('Entrée validée avec succès.')
-      setTimeout(() => window.print(), 500)
+      setTimeout(() => {
+        document.body.classList.add('print-receipt-only')
+        window.print()
+        document.body.classList.remove('print-receipt-only')
+      }, 500)
     } catch (error) {
       setFeedback({ type: 'error', message: error.message || 'Impossible de valider cette entrée.' })
     } finally {
@@ -529,7 +547,7 @@ const PaiementDetailPage = () => {
                         min='1'
                         value={editForm.montant}
                         error={editErrors.montant}
-                        disabled={isSaving}
+                        disabled={isSaving || editForm.motif === 'FRAIS_TRANSPORT'}
                         onChange={handleEditChange}
                       />
                     </dd>
@@ -591,12 +609,32 @@ const PaiementDetailPage = () => {
                       />
                     </dd>
                   </div>
+                  {editForm.motif === 'FRAIS_TRANSPORT' && (
+                    <div className='inscription-detail-field inscription-detail-field--editing'>
+                      <dt>Mois de transport</dt>
+                      <dd>
+                        <SelectField
+                          id='transport_mois'
+                          label=''
+                          value={editForm.transport_mois}
+                          options={MOIS_TRANSPORT_OPTIONS}
+                          placeholder='Selectionner le mois'
+                          error={editErrors.transport_mois}
+                          disabled={isSaving}
+                          onChange={handleEditChange}
+                        />
+                      </dd>
+                    </div>
+                  )}
                 </>
                 )
               : (
                 <>
                   <DetailField label='Montant' value={formatAmount(getPaiementMontant(paiement))} />
                   <DetailField label='Motif' value={getPaiementMotifLabel(paiement.motif || paiement.type)} />
+                  {(paiement.motif === 'FRAIS_TRANSPORT' || paiement.type === 'FRAIS_TRANSPORT') && (
+                    <DetailField label='Mois de transport' value={getMoisLabel(paiement.transport?.mois)} />
+                  )}
                   <DetailField label='Mode' value={getPaiementModeLabel(paiement.mode_paiement || paiement.modePaiement || paiement.mode)} />
                   <DetailField label='Reference externe' value={paiement.reference || paiement.transaction_reference} />
                 </>
@@ -759,9 +797,9 @@ const PaiementDetailPage = () => {
               <tr>
                 <td>
                   <strong>{getPaiementMotifLabel(paiement.motif || paiement.type)}</strong>
-                  {(paiement.motif === 'FRAIS_TRANSPORT' || paiement.type === 'FRAIS_TRANSPORT') && paiement.transport_date_debut && (
+                  {(paiement.motif === 'FRAIS_TRANSPORT' || paiement.type === 'FRAIS_TRANSPORT') && paiement.transport?.mois && (
                     <div style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>
-                      Période: {formatDate(paiement.transport_date_debut)} au {formatDate(paiement.transport_date_fin)} ({paiement.transport_nombre_mois} mois)
+                      Mois payé : {getMoisLabel(paiement.transport.mois)}
                     </div>
                   )}
                 </td>

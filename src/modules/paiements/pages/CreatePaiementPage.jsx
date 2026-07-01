@@ -30,7 +30,7 @@ import {
   isAnneeScolaireCloturee,
   MODE_PAIEMENT_OPTIONS,
   MOTIF_PAIEMENT_OPTIONS,
-  MOIS_OPTIONS,
+  MOIS_TRANSPORT_OPTIONS,
   ANNEE_OPTIONS,
   normalizePaiementForm,
   unwrapPaiement,
@@ -165,7 +165,13 @@ const CreatePaiementPage = () => {
 
   const handleChange = (event) => {
     const { id, value } = event.target
-    setForm((currentForm) => ({ ...currentForm, [id]: value }))
+    setForm((currentForm) => {
+      const nextForm = { ...currentForm, [id]: value }
+      if (id === 'motif' && value === 'FRAIS_TRANSPORT') {
+        nextForm.montant = '25'
+      }
+      return nextForm
+    })
 
     if (errors[id] || id === 'mode_paiement') {
       setErrors((currentErrors) => ({ ...currentErrors, [id]: '' }))
@@ -200,8 +206,8 @@ const CreatePaiementPage = () => {
 
     setIsSubmitting(true)
 
-    // Open window synchronously before await to avoid popup blocker
-    const paymentWindow = window.open('about:blank', '_blank')
+    // Open window synchronously before await to avoid popup blocker (only for Mobile Money)
+    const paymentWindow = form.mode_paiement === 'MOBILE_MONEY' ? window.open('about:blank', '_blank') : null
 
     try {
       const payload = getPaiementPayload(form)
@@ -246,9 +252,6 @@ const CreatePaiementPage = () => {
 
   const isFormUnavailable = isLoadingOptions || Boolean(optionsError)
   const isFormDisabled = isFormUnavailable || isSubmitting
-
-  const computedTransportDateFin = form.motif === 'FRAIS_TRANSPORT' ? calculateDateFin(form.transport_date_debut, form.transport_nombre_mois) : ''
-  const computedMontantAttendu = form.motif === 'FRAIS_TRANSPORT' ? ((Number(form.transport_nombre_mois) || 0) * (Number(form.tarif_mensuel_transport) || 0)) : ''
 
   return (
     <section className='inscription-page'>
@@ -378,7 +381,7 @@ const CreatePaiementPage = () => {
                   placeholder='Montant payé'
                   value={form.montant}
                   error={errors.montant}
-                  disabled={isFormDisabled || isSelectedInscriptionClosed}
+                  disabled={isFormDisabled || isSelectedInscriptionClosed || form.motif === 'FRAIS_TRANSPORT'}
                   onChange={handleChange}
                 />
               </div>
@@ -424,68 +427,18 @@ const CreatePaiementPage = () => {
               {/* LIGNE 3 : FRAIS_TRANSPORT uniquement */}
               {form.motif === 'FRAIS_TRANSPORT' && (
                 <>
-                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
-                    <Input
-                      id='transport_date_debut'
-                      type='date'
-                      label='Date début de couverture'
-                      value={form.transport_date_debut}
-                      error={errors.transport_date_debut}
-                      disabled={isFormDisabled || isSelectedInscriptionClosed}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
-                    <Input
-                      id='transport_nombre_mois'
-                      type='number'
-                      min='1'
-                      label='Nombre de mois payés'
-                      placeholder='Ex: 1'
-                      value={form.transport_nombre_mois}
-                      error={errors.transport_nombre_mois}
-                      disabled={isFormDisabled || isSelectedInscriptionClosed}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
-                    <Input
-                      id='tarif_mensuel_transport'
-                      type='number'
-                      min='1'
-                      label='Tarif mensuel transport'
-                      placeholder='Tarif mensuel'
-                      value={form.tarif_mensuel_transport}
-                      error={errors.tarif_mensuel_transport}
-                      disabled={isFormDisabled || isSelectedInscriptionClosed}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </>
-              )}
-
-              {/* LIGNE 4 : Date de fin et Montant attendu pour FRAIS_TRANSPORT */}
-              {form.motif === 'FRAIS_TRANSPORT' && (
-                <>
-                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
-                    <Input
-                      id='transport_date_fin_readonly'
-                      type='date'
-                      label='Date fin de couverture (calculée)'
-                      value={computedTransportDateFin}
-                      disabled
-                    />
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
-                    <Input
-                      id='montant_attendu_readonly'
-                      type='text'
-                      label='Montant attendu (calculé)'
-                      value={computedMontantAttendu ? formatAmount(computedMontantAttendu) : ''}
-                      disabled
-                    />
-                  </div>
-                  {/* Empty div for 3rd column alignment if description takes a new row */}
+                  <SelectField
+                    id='transport_mois'
+                    label='Mois de transport'
+                    value={form.transport_mois}
+                    options={MOIS_TRANSPORT_OPTIONS}
+                    placeholder='Selectionner le mois'
+                    error={errors.transport_mois}
+                    disabled={isFormDisabled || isSelectedInscriptionClosed}
+                    onChange={handleChange}
+                  />
+                  {/* Empty divs to preserve 3-column alignment */}
+                  <div />
                   <div />
                 </>
               )}

@@ -64,6 +64,21 @@ export const MOIS_OPTIONS = [
   { value: 'Décembre', label: 'Décembre' },
 ]
 
+export const MOIS_TRANSPORT_OPTIONS = [
+  { value: 'SEPTEMBRE', label: 'Septembre' },
+  { value: 'OCTOBRE', label: 'Octobre' },
+  { value: 'NOVEMBRE', label: 'Novembre' },
+  { value: 'DECEMBRE', label: 'Décembre' },
+  { value: 'JANVIER', label: 'Janvier' },
+  { value: 'FEVRIER', label: 'Février' },
+  { value: 'MARS', label: 'Mars' },
+  { value: 'AVRIL', label: 'Avril' },
+  { value: 'MAI', label: 'Mai' },
+  { value: 'JUIN', label: 'Juin' },
+  { value: 'JUILLET', label: 'Juillet' },
+  { value: 'AOUT', label: 'Août' }
+]
+
 const currentYear = new Date().getFullYear()
 export const ANNEE_OPTIONS = [
   { value: String(currentYear - 1), label: String(currentYear - 1) },
@@ -95,9 +110,7 @@ export const normalizePaiementForm = (paiement = {}) => ({
   date_paiement: paiement.date_paiement ?? new Date().toISOString().split('T')[0],
 
   // Transport fields
-  transport_date_debut: paiement.transport_date_debut ?? '',
-  transport_nombre_mois: paiement.transport_nombre_mois ?? 1,
-  tarif_mensuel_transport: paiement.tarif_mensuel_transport ?? '',
+  transport_mois: paiement.transport?.mois ?? paiement.transport_mois ?? '',
 
   description: paiement.description ?? '',
 })
@@ -211,14 +224,8 @@ export const validatePaiementForm = (form, selectedInscription) => {
   // La validation du téléphone a été retirée pour simplifier le formulaire
 
   if (form.motif === 'FRAIS_TRANSPORT') {
-    if (!form.transport_date_debut) {
-      errors.transport_date_debut = 'La date de début est obligatoire.'
-    }
-    if (!form.transport_nombre_mois || form.transport_nombre_mois < 1) {
-      errors.transport_nombre_mois = 'Le nombre de mois doit être au moins 1.'
-    }
-    if (!form.tarif_mensuel_transport || form.tarif_mensuel_transport <= 0) {
-      errors.tarif_mensuel_transport = 'Le tarif mensuel est obligatoire et > 0.'
+    if (!form.transport_mois) {
+      errors.transport_mois = 'Le mois de transport est obligatoire.'
     }
   }
 
@@ -236,11 +243,7 @@ export const getPaiementPayload = (form) => {
     ...(form.description?.trim() ? { description: form.description.trim() } : {}),
     ...(form.motif === 'FRAIS_TRANSPORT'
       ? {
-          transport_date_debut: form.transport_date_debut,
-          transport_nombre_mois: Number(form.transport_nombre_mois),
-          transport_date_fin: calculateDateFin(form.transport_date_debut, Number(form.transport_nombre_mois)),
-          tarif_mensuel_transport: Number(form.tarif_mensuel_transport),
-          montant_attendu: Number(form.transport_nombre_mois) * Number(form.tarif_mensuel_transport)
+          transport_mois: form.transport_mois
         }
       : {}),
     source: window.location.pathname + window.location.search
