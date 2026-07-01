@@ -39,7 +39,7 @@ const GrandLivre = ({ filters, compteOptions, onCompteChange }) => {
 
   const exportToExcel = () => {
     if (!grandLivre) return
-    const rows = grandLivre.map(l => ({
+    const rows = [...grandLivre].reverse().map(l => ({
       Date: new Date(l.date).toLocaleDateString('fr-FR'),
       Journal: l.journal,
       Référence: l.reference || '',
@@ -70,7 +70,10 @@ const GrandLivre = ({ filters, compteOptions, onCompteChange }) => {
       }
       map[num].lignes.push(l)
     })
-    return Object.values(map).sort((a, b) => a.compte.numero.localeCompare(b.compte.numero))
+    return Object.values(map).map(sec => ({
+      ...sec,
+      lignes: [...sec.lignes].reverse()
+    })).sort((a, b) => a.compte.numero.localeCompare(b.compte.numero))
   }, [grandLivre])
 
   return (
